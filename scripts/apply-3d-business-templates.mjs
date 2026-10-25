@@ -2,89 +2,122 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const base = "/varese-sites/Template%203D/examples/";
-const examples = [
-  { id: "racer", keys: /officina|carrozzeria|torneria|meccanica|auto|caroleo|masala|ghiturri|cfp/ },
-  { id: "hangar", keys: /impiant|elettric|termoidraulic|idraul|tecnic|sistemi|service|switch-on|elbo/ },
-  { id: "monolith", keys: /edil|costru|scavi|serrament|cemento|rover|va-edil|varedil|ponteggi/ },
-  { id: "florae", keys: /giardin|fior|flor|verde|piante/ },
-  { id: "ember", keys: /ferro|accia|sald|artigian|lavorazion|resine/ },
-  { id: "sucre", keys: /beauty|fashion|parrucch|capelli|hair|sciampo|bellezza|donna|stile|sensation|sfumature|acconciature|virno/ },
-  { id: "nocturne", keys: /profumer|estetica|cosmetic|beauty/ },
-  { id: "keeper", keys: /puliz|clean|igien|sanific/ },
-  { id: "atlas", keys: /trasport|noleggio|logistic|viagg/ },
-  { id: "koen", keys: /casa|arred|legno|steelwood|mobili/ },
-  { id: "gambit", keys: /consulent|associat|studio|geom|basaglia|morello/ },
-  { id: "reliquary", keys: /arte|restaur|antiqu|intagliatore/ },
-  { id: "abyssal", keys: /acqua|piscin|nautica|sub/ },
-  { id: "velocity", keys: /sport|fitness|palestra|bike|cicl/ },
-  { id: "terrarium", keys: /agricol|flor|giardin/ }
-];
-const fallback = {
-  "racer": "Un concept digitale per presentare servizi, lavorazioni e contatti.",
-  "hangar": "Soluzioni tecniche presentate in modo chiaro, con una richiesta di contatto immediata.",
-  "monolith": "Progetti, lavorazioni e servizi in una vetrina digitale essenziale.",
-  "florae": "Una vetrina digitale dedicata a cura, progettazione e manutenzione del verde.",
-  "ember": "Un concept digitale per valorizzare lavorazioni, competenze e richieste di preventivo.",
-  "sucre": "Un'esperienza visiva pensata per presentare servizi, stile e prenotazioni.",
-  "nocturne": "Una presentazione elegante dei servizi e dell'esperienza del brand.",
-  "keeper": "Servizi professionali presentati in modo diretto, con contatto rapido.",
-  "atlas": "Servizi e soluzioni presentati con una navigazione semplice.",
-  "koen": "Un concept digitale ispirato a materiali, dettagli e qualità.",
-  "gambit": "Una presenza digitale pulita per spiegare attività e servizi professionali.",
-  "reliquary": "Una vetrina essenziale che mette al centro identità e competenze.",
-  "abyssal": "Una presentazione immersiva per servizi e soluzioni specialistiche.",
-  "velocity": "Un concept dinamico per mettere in evidenza servizi e attività.",
-  "terrarium": "Una vetrina visiva ispirata alla natura e ai dettagli."
-};
+const builtExamples = path.join(root, "template 3D", "Dioramas", "dist", "examples");
 
-function escapeHtml(s) {
-  return String(s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const sectors = [
+  { id: "racer", match: /officina|carrozzeria|torneria|meccanica|auto|caroleo|masala|ghiturri|cfp/i, kind: "officina", nav: ["Servizi", "Lavorazioni", "L’officina"], cta: "Richiedi un intervento", description: "Officina e lavorazioni meccaniche: scopri i servizi e contatta l’attività per informazioni o un appuntamento." },
+  { id: "hangar", match: /impiant|elettric|termoidraul|idraul|tecnic|sistemi|service|switch-on|elbo/i, kind: "impianti", nav: ["Servizi", "Soluzioni", "Contatti"], cta: "Richiedi un intervento", description: "Installazione e assistenza tecnica: scopri i servizi e contatta l’attività per informazioni o un sopralluogo." },
+  { id: "monolith", match: /edil|costru|scavi|serrament|cemento|rover|va-edil|varedil|ponteggi/i, kind: "edilizia", nav: ["Servizi", "Progetti", "Contatti"], cta: "Richiedi un preventivo", description: "Impresa edile: scopri lavorazioni e servizi e richiedi informazioni o un preventivo." },
+  { id: "florae", match: /giardin|fior|flor|verde|piante/i, kind: "verde", nav: ["Servizi", "Realizzazioni", "Contatti"], cta: "Richiedi informazioni", description: "Servizi per il verde e la cura degli spazi esterni: scopri le soluzioni e contatta l’attività." },
+  { id: "ember", match: /ferro|accia|sald|artigian|lavorazion|resine/i, kind: "lavorazioni", nav: ["Servizi", "Lavorazioni", "Contatti"], cta: "Richiedi un preventivo", description: "Lavorazioni e servizi specializzati: contatta l’attività per descrivere il tuo progetto e chiedere informazioni." },
+  { id: "nocturne", match: /beauty|fashion|parrucch|capelli|hair|sciampo|bellezza|donna|stile|sensation|sfumature|acconciature|virno|profumer|estetica|cosmetic/i, kind: "salone", nav: ["Servizi", "Il salone", "Prenotazioni"], cta: "Prenota ora", description: "Salone dedicato alla cura e allo stile: scopri i servizi e contatta l’attività per prenotare." },
+  { id: "keeper", match: /puliz|clean|igien|sanific/i, kind: "pulizie", nav: ["Servizi", "Metodo", "Contatti"], cta: "Richiedi un preventivo", description: "Servizi di pulizia e cura degli ambienti: contatta l’attività per informazioni e preventivi." },
+  { id: "atlas", match: /trasport|noleggio|logistic|viagg/i, kind: "servizi", nav: ["Servizi", "Soluzioni", "Contatti"], cta: "Richiedi informazioni", description: "Servizi e soluzioni su misura: contatta l’attività per disponibilità e informazioni." },
+  { id: "koen", match: /casa|arred|legno|steelwood|mobili/i, kind: "casa", nav: ["Servizi", "Progetti", "Contatti"], cta: "Parliamo del progetto", description: "Soluzioni per casa e ambienti: scopri i servizi e contatta l’attività per parlare del tuo progetto." },
+  { id: "gambit", match: /consulent|associat|studio|geom|basaglia|morello/i, kind: "studio", nav: ["Attività", "Competenze", "Contatti"], cta: "Richiedi un appuntamento", description: "Studio professionale: scopri le competenze e contatta l’attività per un appuntamento informativo." },
+  { id: "reliquary", match: /arte|restaur|antiqu|intagliatore/i, kind: "artigianato", nav: ["Attività", "Lavorazioni", "Contatti"], cta: "Richiedi informazioni", description: "Competenze artigianali e lavorazioni specialistiche: contatta l’attività per informazioni." },
+  { id: "terrarium", match: /agricol/i, kind: "natura", nav: ["Servizi", "Progetti", "Contatti"], cta: "Richiedi informazioni", description: "Servizi legati alla natura e al territorio: contatta l’attività per maggiori informazioni." }
+];
+const fallback = { id: "monolith", kind: "impresa", nav: ["Servizi", "Attività", "Contatti"], cta: "Richiedi informazioni", description: "Scopri i servizi dell’attività e contattala per informazioni." };
+
+function esc(s) { return String(s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function attr(html, re) { return (html.match(re) || [])[1] || ""; }
+function getTextLinks(html) {
+  return [...html.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)].map(m => ({ href: m[1], text: m[2].replace(/<[^>]+>/g, "").trim() }));
 }
-function getAttr(html, regex) { return (html.match(regex) || [])[1] || ""; }
-function findLinks(html, re) {
-  return [...html.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)]
-    .map(m => ({ href: m[1].trim(), text: m[2].replace(/<[^>]+>/g, "").trim() }))
-    .filter(x => re.test(x.href) || re.test(x.text));
+function pick(slug, title, desc) {
+  const hay = slug + " " + title + " " + desc;
+  return sectors.find(x => x.match.test(hay)) || fallback;
 }
-function chooseTemplate(slug, title, desc) {
-  const s = (slug + " " + title + " " + desc).toLowerCase();
-  for (const e of examples) if (e.keys.test(s)) return e.id;
-  return "monolith";
+function replaceAll(html, pairs) {
+  for (const [from, to] of pairs) html = html.split(from).join(to);
+  return html;
 }
-const dirs = fs.readdirSync(path.join(root, "sites"), { withFileTypes: true }).filter(d => d.isDirectory());
+function rewrite(html, business, sector, phone, email, address) {
+  const title = esc(business);
+  let out = html.replace(/<html lang="en">/i, '<html lang="it">');
+  out = out.replace(/<title>[\s\S]*?<\/title>/i, '<title>' + title + ' — ' + sector.kind + '</title>');
+  out = out.replace(/<meta name="description" content="[^"]*">/i, '<meta name="description" content="' + esc(sector.description) + '">');
+
+  const base = [
+    ["Maison Sucre", title], ["Maison&nbsp;Sucre", title], ["Nocturne No. 9", title], ["Nocturne", title],
+    ["Florae", title], ["Kōen 紅園", title], ["Kōen", title], ["Bell &amp; Moss", title],
+    ["Low Frequency", title], ["Velocity Lab", title], ["Velocity", title], ["The House", "L’attività"],
+    ["Pâtisserie", sector.kind], ["Pâtissier", sector.kind], ["A flower a month, from the edge of the map", sector.description],
+    ["Iris &amp; Oud, extrait de parfum", sector.description], ["A whole climate under glass", sector.description],
+    ["One tree, four seasons", sector.description], ["Macarons piped by hand on rue du Bac since 1962. Sugar, almonds, and a little gravity.", sector.description],
+    ["A twelve-seat listening bar and record label in Shimokitazawa. Put your hand on the record.", sector.description],
+    ["A bonsai nursery in Ōmiya, Saitama. Our oldest maple has seen 180 autumns. Scroll to turn its year.", sector.description],
+    ["The notes", sector.nav[0]], ["The house", sector.nav[1]], ["Discovery set", sector.nav[2]],
+    ["The notes", sector.nav[0]], ["La Carte", sector.nav[0]], ["L'Atelier", sector.nav[1]], ["Visit", sector.nav[2]],
+    ["Build a box", sector.nav[1]], ["Order a box", sector.cta], ["Order a box", sector.cta],
+    ["Shop No. 9", sector.cta], ["Add to bag", sector.cta], ["Add to bag — €290", sector.cta],
+    ["Meet the notes", sector.nav[0]], ["Begin with", "Scopri"], ["a drop.", "i servizi."],
+    ["Grasse, ", ""], ["since 1911.", ""], ["44 rue du Bac, Paris 7", ""], ["Depuis 1962", ""]
+  ];
+  out = replaceAll(out, base);
+
+  if (sector.kind === "salone") {
+    out = replaceAll(out, [
+      ["Bergamot", "Taglio"], ["di Calabria", "e styling"], ["Iris", "Colore"], ["pallida", "e riflessi"],
+      ["Vanilla", "Trattamenti"], ["Bourbon", "per i capelli"], ["Oud", "Styling"], ["of Assam", "su misura"],
+      ["Begin with", "Il tuo stile"], ["a drop.", "comincia qui."],
+      ["50 ml — €290", "Prenota un appuntamento"], ["The notes", "Servizi"], ["The house", "Il salone"],
+      ["Discovery set", "Prenotazioni"], ["No. 9 Extrait, 50 ml", "Servizio in salone"],
+      ["Decanting", "Preparazione"], ["maceration", "hair studio"], ["Bag", "Prenota"],
+      ["No. 9", title], ["iris, bergamot, vanilla, oud.", "taglio, colore e styling."]
+    ]);
+  } else if (sector.kind === "officina") {
+    out = replaceAll(out, [["Bergamot", "Manutenzione"], ["Iris", "Diagnosi"], ["Vanilla", "Riparazioni"], ["Oud", "Assistenza"], ["50 ml — €290", "Richiedi un intervento"], ["Shop No. 9", "Richiedi un intervento"], ["Add to bag", "Richiedi informazioni"]]);
+  } else if (sector.kind === "impianti") {
+    out = replaceAll(out, [["Bergamot", "Installazione"], ["Iris", "Manutenzione"], ["Vanilla", "Assistenza"], ["Oud", "Impianti"], ["50 ml — €290", "Richiedi un intervento"], ["Shop No. 9", "Richiedi un intervento"]]);
+  } else if (sector.kind === "edilizia") {
+    out = replaceAll(out, [["Bergamot", "Progettazione"], ["Iris", "Ristrutturazioni"], ["Vanilla", "Lavorazioni"], ["Oud", "Finiture"], ["50 ml — €290", "Richiedi un preventivo"], ["Shop No. 9", "Richiedi un preventivo"]]);
+  } else if (sector.kind === "pulizie") {
+    out = replaceAll(out, [["Bergamot", "Pulizie civili"], ["Iris", "Pulizie uffici"], ["Vanilla", "Trattamenti"], ["Oud", "Sanificazione"], ["50 ml — €290", "Richiedi un preventivo"], ["Shop No. 9", "Richiedi un preventivo"]]);
+  }
+
+  // Remove product pricing/cart affordances from the original demo and add real business actions.
+  out = out.replace(/<span class="bag"[^>]*>[\s\S]*?<\/span>/gi, '');
+  out = out.replace(/<button class="btn [^"]* add"[^>]*>[\s\S]*?<\/button>/gi, '');
+  out = out.replace(/<a class="btn btn-solid" href="#shop"[^>]*>[\s\S]*?<\/a>/i, '<a class="btn btn-solid" href="#contatti" data-magnetic>' + esc(sector.cta) + '</a>');
+  out = out.replace(/<a class="btn btn-ghost" href="#shop"[^>]*>[\s\S]*?<\/a>/i, '<a class="btn btn-ghost" href="#contatti" data-magnetic>' + esc(sector.cta) + '</a>');
+  out = out.replace(/<a class="btn btn-text" href="#bergamot"[^>]*>[\s\S]*?<\/a>/i, '<a class="btn btn-text" href="#contatti">' + esc(sector.nav[2]) + '</a>');
+
+  const mapQuery = encodeURIComponent(business + " Varese");
+  const contactHtml = '<section class="note" id="contatti" data-stop="7" data-side="left"><p class="eyebrow">Contatti</p><h2>Parliamo <em>con te.</em></h2><p>' + esc(sector.description) + '</p><div class="actions">' +
+    (phone ? '<a class="btn btn-solid" href="tel:' + esc(phone) + '">Chiama</a>' : '<span class="btn btn-ghost" aria-label="Numero telefonico da verificare">Telefono da verificare</span>') +
+    (email ? '<a class="btn btn-ghost" href="mailto:' + esc(email) + '">Scrivi</a>' : '') +
+    '<a class="btn btn-ghost" href="https://www.google.com/maps/search/?api=1&query=' + mapQuery + '" target="_blank" rel="noopener noreferrer">Indicazioni stradali</a>' +
+    '</div>' + (address ? '<p>' + esc(address) + '</p>' : '<p class="contact-note">Indirizzo da verificare prima della pubblicazione definitiva.</p>') + '</section>';
+  if (!out.includes('id="contatti"')) out = out.replace(/<footer\b/i, contactHtml + '\n<footer');
+  out = out.replace(/href="\.\.\/\.\.\/assets\//g, 'href="/varese-sites/Template%203D/assets/');
+  out = out.replace(/src="\.\.\/\.\.\/assets\//g, 'src="/varese-sites/Template%203D/assets/');
+  out = out.replace(/href="\.\.\/assets\//g, 'href="/varese-sites/Template%203D/assets/');
+  out = out.replace(/src="\.\.\/assets\//g, 'src="/varese-sites/Template%203D/assets/');
+  return out;
+}
+
+const sitesDir = path.join(root, "sites");
+const siteDirs = fs.readdirSync(sitesDir, { withFileTypes: true }).filter(d => d.isDirectory());
 let done = 0;
-for (const dir of dirs) {
-  const file = path.join(root, "sites", dir.name, "index.html");
+for (const dir of siteDirs) {
+  const file = path.join(sitesDir, dir.name, "index.html");
   if (!fs.existsSync(file)) continue;
   const old = fs.readFileSync(file, "utf8");
-  const title = getAttr(old, /<title[^>]*>([\s\S]*?)<\/title>/i).replace(/\s*[—–-]\s*concept web.*$/i, "").trim() || dir.name.replace(/-/g, " ");
-  const desc = getAttr(old, /<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i);
-  const template = chooseTemplate(dir.name, title, desc);
-  const phones = findLinks(old, /^(tel:)|telefono|chiama|phone/i);
-  const emails = findLinks(old, /^(mailto:)|email|e-mail/i);
-  const socials = findLinks(old, /instagram\.com|facebook\.com|linkedin\.com/i);
-  const addressMatch = old.match(/(?:Via|Viale|Piazza|Corso|Largo)\s+[A-ZÀ-Ü][^<\n]{5,90}/i);
-  const phone = phones.find(x => x.href.toLowerCase().startsWith("tel:"));
-  const email = emails.find(x => x.href.toLowerCase().startsWith("mailto:"));
-  const address = addressMatch ? addressMatch[0].replace(/["']/g, "").trim() : "";
-  const contactItems = [];
-  if (phone) contactItems.push('<a class="contact-button" href="' + escapeHtml(phone.href) + '">Chiama ' + escapeHtml(phone.href.replace(/^tel:/i, "")) + '</a>');
-  if (email) contactItems.push('<a class="contact-button secondary" href="' + escapeHtml(email.href) + '">Scrivi un’email</a>');
-  if (socials[0]) contactItems.push('<a class="contact-button secondary" target="_blank" rel="noopener noreferrer" href="' + escapeHtml(socials[0].href) + '">' + escapeHtml(socials[0].text || "Profilo social") + '</a>');
-  const contacts = contactItems.length ? contactItems.join("\n") : '<p class="missing">Contatti diretti da verificare prima della pubblicazione definitiva.</p>';
-  const summary = desc || fallback[template];
-  const html = `<!doctype html>
-<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b0b0d"><meta name="description" content="${escapeHtml(summary)}"><title>${escapeHtml(title)} — concept 3D</title>
-<style>
-:root{color-scheme:dark;--bg:#0b0b0d;--fg:#f5f2ec;--accent:#d6ff52;--muted:#a7a7ad}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 Inter,system-ui,-apple-system,sans-serif}a{color:inherit}.bar{height:66px;padding:0 5vw;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ffffff20;letter-spacing:.12em;font-size:11px;text-transform:uppercase}.brand{font-weight:800;letter-spacing:.06em}.brand span{color:var(--accent)}.hero{padding:clamp(24px,5vw,72px) 5vw 28px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end}.eyebrow{font:11px ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}h1{font-size:clamp(40px,7.2vw,100px);line-height:.92;letter-spacing:-.07em;margin:16px 0;max-width:1000px;overflow-wrap:anywhere}.desc{max-width:680px;color:var(--muted);font-size:clamp(15px,1.5vw,19px)}.tag{border:1px solid #ffffff30;padding:10px 12px;font:10px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}.scene{height:min(82vh,850px);min-height:540px;margin:0 5vw;border:1px solid #ffffff24;background:#111;overflow:hidden;position:relative}.scene iframe{width:100%;height:100%;border:0;display:block;background:#08090b}.scene-label{position:absolute;bottom:14px;left:14px;z-index:2;background:#0b0b0ddd;padding:8px 10px;font:10px ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;pointer-events:none}.details{margin:clamp(42px,8vw,100px) 5vw;display:grid;grid-template-columns:1fr minmax(260px,.7fr);gap:40px;border-top:1px solid #ffffff24;padding-top:32px}.details h2{font-size:clamp(28px,4vw,52px);line-height:1;margin:0 0 18px;letter-spacing:-.055em}.contact{display:flex;flex-wrap:wrap;gap:10px;align-content:start}.contact-button{display:inline-flex;align-items:center;justify-content:center;padding:14px 18px;background:var(--accent);color:#111;text-decoration:none;font-weight:750;font-size:13px;min-height:48px}.contact-button.secondary{background:transparent;border:1px solid #ffffff50;color:var(--fg)}.missing{color:#ffcf7a;font-size:13px}.footer{padding:24px 5vw;border-top:1px solid #ffffff20;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}.footer a{color:var(--fg)}@media(max-width:700px){.hero{grid-template-columns:1fr}.tag{justify-self:start}.scene{height:70vh;min-height:460px;margin:0 4vw}.details{grid-template-columns:1fr;margin:56px 4vw}.bar{padding:0 4vw}}
-</style></head><body>
-<header class="bar"><a class="brand" href="../../">VARESE <span>/</span> DIGITAL</a><span>Concept interattivo · ${template.toUpperCase()}</span></header>
-<main><section class="hero"><div><p class="eyebrow">Esperienza digitale · ${escapeHtml(template)}</p><h1>${escapeHtml(title)}</h1><p class="desc">${escapeHtml(summary)}</p></div><span class="tag">Concept non ufficiale</span></section>
-<section class="scene" aria-label="Anteprima 3D interattiva"><iframe src="/varese-sites/Template%203D/examples/${template}/index.html" title="Esperienza 3D — ${escapeHtml(title)}" loading="eager" allow="fullscreen"></iframe><span class="scene-label">Scena 3D · interagisci all’interno</span></section>
-<section class="details"><div><p class="eyebrow">Il progetto</p><h2>Un’identità digitale costruita intorno alla vostra attività.</h2><p class="desc">${escapeHtml(summary)} Questa pagina è un concept dimostrativo indipendente, da verificare e approvare con l’attività prima di considerarla ufficiale.</p>${address ? '<p class="desc">Riferimento indirizzo rilevato: ' + escapeHtml(address) + '</p>' : ''}</div><div><p class="eyebrow">Contatti</p><div class="contact">${contacts}</div></div></section></main>
-<footer class="footer"><span>${escapeHtml(title)} · Concept web indipendente</span><a href="../../">Catalogo Varese Digital ↗</a></footer></body></html>`;
-  fs.writeFileSync(file, html);
+  const business = (attr(old, /<title[^>]*>([\s\S]*?)<\/title>/i).replace(/\s*[—–-]\s*concept web.*$/i, "").trim()) || dir.name.replace(/-/g, " ");
+  const oldDesc = attr(old, /<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i);
+  const sector = pick(dir.name, business, oldDesc);
+  const templateFile = path.join(builtExamples, sector.id, "index.html");
+  if (!fs.existsSync(templateFile)) throw new Error("Missing built template: " + templateFile);
+  const originalTemplate = fs.readFileSync(templateFile, "utf8");
+  const links = getTextLinks(old);
+  const phoneLink = links.find(x => /^tel:/i.test(x.href));
+  const emailLink = links.find(x => /^mailto:/i.test(x.href));
+  const phone = phoneLink ? phoneLink.href.replace(/^tel:/i, "") : "";
+  const email = emailLink ? emailLink.href.replace(/^mailto:/i, "") : "";
+  const address = (old.match(/(?:Via|Viale|Piazza|Corso|Largo)\s+[A-ZÀ-Ü][^<\n]{5,90}/i) || [])[0] || "";
+  fs.writeFileSync(file, rewrite(originalTemplate, business, sector, phone, email, address));
   done++;
 }
-console.log(`Applied 3D concepts to ${done} business pages.`);
+console.log("Replaced " + done + " business pages with customized, full-page 3D templates.");
