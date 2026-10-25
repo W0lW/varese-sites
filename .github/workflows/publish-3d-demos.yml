@@ -1,4 +1,4 @@
-name: Publish main site to GitHub Pages
+name: Publish site and Template 3D collection
 
 on:
   workflow_dispatch:
@@ -6,6 +6,8 @@ on:
     paths:
       - "index.html"
       - "sites/**"
+      - "Template 3D/**"
+      - "template 3D/Dioramas/**"
       - ".github/workflows/publish-3d-demos.yml"
 
 permissions:
@@ -24,16 +26,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Assemble main site only
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: "template 3D/Dioramas/package-lock.json"
+
+      - name: Install 3D templates dependencies
+        working-directory: "template 3D/Dioramas"
+        run: npm ci
+
+      - name: Build all 3D demos
+        working-directory: "template 3D/Dioramas"
+        run: npm run build -- --base="/varese-sites/Template%203D/"
+
+      - name: Assemble complete site and Template 3D collection
         run: |
           mkdir -p _site
-          rsync -a --exclude='.git' --exclude='.github' --exclude='template 3D' --exclude='node_modules' --exclude='_site' ./ _site/
-          rm -rf _site/3d-demo
+          rsync -a --exclude='.git' --exclude='.github' --exclude='template 3D' --exclude='Template 3D' --exclude='node_modules' --exclude='_site' ./ _site/
+          mkdir -p "_site/Template 3D"
+          cp -a "template 3D/Dioramas/dist/." "_site/Template 3D/"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload main site
+      - name: Upload complete site
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
