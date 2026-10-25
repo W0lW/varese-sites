@@ -111,6 +111,11 @@ for (const dir of siteDirs) {
   const templateFile = path.join(builtExamples, sector.id, "index.html");
   if (!fs.existsSync(templateFile)) throw new Error("Missing built template: " + templateFile);
   const originalTemplate = fs.readFileSync(templateFile, "utf8");
+  const templateDir = path.dirname(templateFile);
+  const pageDir = path.dirname(file);
+  for (const name of fs.readdirSync(templateDir)) {
+    if (name !== "index.html") fs.cpSync(path.join(templateDir, name), path.join(pageDir, name), { recursive: true, force: true });
+  }
   const links = getTextLinks(old);
   const phoneLink = links.find(x => /^tel:/i.test(x.href));
   const emailLink = links.find(x => /^mailto:/i.test(x.href));
