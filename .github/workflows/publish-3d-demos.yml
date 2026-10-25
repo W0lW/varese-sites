@@ -1,4 +1,4 @@
-name: Publish 3D demos alongside the existing site
+name: Publish 3D demos to GitHub Pages
 
 on:
   workflow_dispatch:
@@ -6,8 +6,6 @@ on:
     paths:
       - "template 3D/Dioramas/**"
       - ".github/workflows/publish-3d-demos.yml"
-      - "index.html"
-      - "sites/**"
 
 permissions:
   contents: read
@@ -15,45 +13,33 @@ permissions:
   id-token: write
 
 concurrency:
-  group: github-pages-site
+  group: github-pages-3d-demos
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: "template 3D/Dioramas/package-lock.json"
-
-      - name: Install Dioramas dependencies
+      - name: Install dependencies
         working-directory: "template 3D/Dioramas"
         run: npm ci
-
-      - name: Build 3D gallery for its own route
+      - name: Build gallery for GitHub Pages
         working-directory: "template 3D/Dioramas"
-        run: npm run build -- --base=/varese-sites/3d-demo/
-
-      - name: Assemble complete Pages site
-        run: |
-          mkdir -p _site
-          rsync -a --exclude='.git' --exclude='.github' --exclude='template 3D' --exclude='node_modules' --exclude='_site' ./ _site/
-          mkdir -p _site/3d-demo
-          cp -a "template 3D/Dioramas/dist/." _site/3d-demo/
-
+        run: npm run build -- --base=/varese-sites/
       - name: Configure Pages
         uses: actions/configure-pages@v5
-
-      - name: Upload complete site
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: "template 3D/Dioramas/dist"
 
   deploy:
     environment:
