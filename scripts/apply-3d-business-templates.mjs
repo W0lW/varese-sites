@@ -10,7 +10,7 @@ const sectors = [
   { id: "monolith", match: /edil|costru|scavi|serrament|cemento|rover|va-edil|varedil|ponteggi/i, kind: "edilizia", nav: ["Servizi", "Progetti", "Contatti"], cta: "Richiedi un preventivo", description: "Impresa edile: scopri lavorazioni e servizi e richiedi informazioni o un preventivo." },
   { id: "florae", match: /giardin|fior|flor|verde|piante/i, kind: "verde", nav: ["Servizi", "Realizzazioni", "Contatti"], cta: "Richiedi informazioni", description: "Servizi per il verde e la cura degli spazi esterni: scopri le soluzioni e contatta l’attività." },
   { id: "ember", match: /ferro|accia|sald|artigian|lavorazion|resine/i, kind: "lavorazioni", nav: ["Servizi", "Lavorazioni", "Contatti"], cta: "Richiedi un preventivo", description: "Lavorazioni e servizi specializzati: contatta l’attività per descrivere il tuo progetto e chiedere informazioni." },
-  { id: "nocturne", match: /beauty|fashion|parrucch|capelli|hair|sciampo|bellezza|donna|stile|sensation|sfumature|acconciature|virno|profumer|estetica|cosmetic/i, kind: "salone", nav: ["Servizi", "Il salone", "Prenotazioni"], cta: "Prenota ora", description: "Salone dedicato alla cura e allo stile: scopri i servizi e contatta l’attività per prenotare." },
+  { id: "koen", match: /beauty|fashion|parrucch|capelli|hair|sciampo|bellezza|donna|stile|sensation|sfumature|acconciature|virno|profumer|estetica|cosmetic/i, kind: "salone", nav: ["Servizi", "Il salone", "Prenotazioni"], cta: "Prenota ora", description: "Salone dedicato alla cura e allo stile: scopri i servizi e contatta l’attività per prenotare." },
   { id: "keeper", match: /puliz|clean|igien|sanific/i, kind: "pulizie", nav: ["Servizi", "Metodo", "Contatti"], cta: "Richiedi un preventivo", description: "Servizi di pulizia e cura degli ambienti: contatta l’attività per informazioni e preventivi." },
   { id: "atlas", match: /trasport|noleggio|logistic|viagg/i, kind: "servizi", nav: ["Servizi", "Soluzioni", "Contatti"], cta: "Richiedi informazioni", description: "Servizi e soluzioni su misura: contatta l’attività per disponibilità e informazioni." },
   { id: "koen", match: /casa|arred|legno|steelwood|mobili/i, kind: "casa", nav: ["Servizi", "Progetti", "Contatti"], cta: "Parliamo del progetto", description: "Soluzioni per casa e ambienti: scopri i servizi e contatta l’attività per parlare del tuo progetto." },
@@ -56,6 +56,24 @@ function rewrite(html, business, sector, phone, email, address) {
     ["Grasse, ", ""], ["since 1911.", ""], ["44 rue du Bac, Paris 7", ""], ["Depuis 1962", ""]
   ];
   out = replaceAll(out, base);
+  // Common interface copy translated so no demo is published with English controls.
+  out = replaceAll(out, [
+    ["Reserve a morning", "Prenota un appuntamento"], ["Reserve a seat", "Prenota"], ["Reserve a room", "Prenota"],
+    ["Reserve", "Prenota"], ["Book an appointment", "Prenota un appuntamento"], ["Book now", "Prenota ora"],
+    ["Since 1846", ""], ["Bonsai nursery", "Salone"], ["Adopt a tree", "Scopri i servizi"],
+    ["Turn the year", "Scopri il salone"], ["Arrange a viewing", "Prenota una consulenza"],
+    ["Come in any season. Come back in all four.", "Il tuo stile, in ogni stagione."],
+    ["Trees looking for their next hundred years.", "Cura, stile e attenzione per ogni cliente."],
+    ["The tree,", "Il tuo stile,"], ["undressed.", "senza compromessi."],
+    ["Lighter than air.", "Leggerezza e precisione."], ["Storing the light.", "Valorizza il tuo look."],
+    ["Sound", "Audio"], ["Sound off", "Disattiva audio"], ["Scroll to", "Scorri per"],
+    ["Discover", "Scopri"], ["Explore", "Esplora"], ["Learn more", "Scopri di più"],
+    ["Contact", "Contatti"], ["Services", "Servizi"], ["About", "Chi siamo"],
+    ["The experience", "L’esperienza"], ["The details", "I dettagli"], ["Made to order", "Su misura"],
+    ["Request an appointment", "Richiedi un appuntamento"], ["Request a commission", "Richiedi informazioni"],
+    ["Visit", "Vieni a trovarci"], ["Shop", "Scopri i servizi"], ["Add to bag", "Prenota"],
+    ["The notes", "I servizi"], ["The house", "Il salone"], ["Discovery set", "Prenotazioni"]
+  ]);
 
   if (sector.kind === "salone") {
     out = replaceAll(out, [
