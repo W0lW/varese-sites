@@ -1,0 +1,33 @@
+name: Import 3D templates
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-dioramas:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Download Dioramas source
+        run: |
+          curl -fL --retry 3 https://github.com/blendi-remade/dioramas/archive/refs/heads/main.zip -o /tmp/dioramas.zip
+          mkdir -p /tmp/dioramas
+          unzip -q /tmp/dioramas.zip -d /tmp/dioramas
+          mkdir -p "template 3D"
+          rm -rf "template 3D/Dioramas"
+          mv /tmp/dioramas/dioramas-main "template 3D/Dioramas"
+      - name: Commit imported templates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "template 3D"
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Add open-source 3D website templates"
+            git push
+          fi
