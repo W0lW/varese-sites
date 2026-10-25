@@ -36,6 +36,9 @@ jobs:
         working-directory: "template 3D/Dioramas"
         run: npm run build -- --base="/varese-sites/Template%203D/"
 
+      - name: Generate business pages using matched 3D concepts
+        run: node scripts/apply-3d-business-templates.mjs
+
       - name: Assemble complete site and Template 3D collection
         run: |
           test -f index.html
