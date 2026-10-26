@@ -145,7 +145,6 @@ let contactSectionsAdded = 0;
 // Apply the actual interactive 3D template to each business page.
 // The previous implementation preserved the static HTML concepts and merely linked to a demo;
 // that was not a real template integration. Each output page now starts from the built template.
-let done = 0;
 let failures = [];
 for (const dir of siteDirs) {
   const file = path.join(sitesDir, dir.name, "index.html");
