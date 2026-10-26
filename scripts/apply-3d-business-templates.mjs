@@ -47,7 +47,12 @@ function rewrite(html, business, sector, phone, email, address) {
   const title = esc(business);
   let out = html.replace(/<html lang="en">/i, '<html lang="it">');
   out = out.replace(/<title>[\s\S]*?<\/title>/i, '<title>' + title + ' — ' + sector.kind + '</title>');
-  out = out.replace(/<meta name="description" content="[^"]*">/i, '<meta name="description" content="' + esc(sector.description) + '">');
+  const businessDescription = business + ": " + sector.description;
+  out = out.replace(/<meta name="description" content="[^"]*">/i, '<meta name="description" content="' + esc(businessDescription) + '">');
+  // Replace the visible hero headline and lead with business-specific Italian copy,
+  // while keeping the template's 3D scene, layout, animation and interaction code.
+  out = out.replace(/(<h1\\b[^>]*>)[\\s\\S]*?(<\\/h1>)/i, '$1' + title + '$2');
+  out = out.replace(/(<p\\b[^>]*class=["'][^"']*\\b(?:sub|lead|lede)\\b[^"']*["'][^>]*>)[\\s\\S]*?(<\\/p>)/i, '$1' + esc(businessDescription) + '$2');
 
   const base = [
     ["Maison Sucre", title], ["Maison&nbsp;Sucre", title], ["Nocturne No. 9", title], ["Nocturne", title],
@@ -88,7 +93,26 @@ function rewrite(html, business, sector, phone, email, address) {
     ["The notes", "I servizi"], ["The house", "Il salone"], ["Discovery set", "Prenotazioni"]
   ]);
 
-  if (sector.kind === "salone") {
+  if (sector.kind === "ospitalità") {
+    out = replaceAll(out, [
+      ["Listening bar &amp; record label · Shimokitazawa, Tokyo", "Locale · Bar e ristorazione"],
+      ["Listening bar & record label · Shimokitazawa, Tokyo", "Locale · Bar e ristorazione"],
+      ["This week’s pressing", "La proposta del locale"], ["This week's pressing", "La proposta del locale"],
+      ["The bar", "Il locale"], ["Catalogue", "La proposta"], ["Record club", "Eventi e contatti"],
+      ["Pressing", "La proposta"], ["Pre-order the LP", "Chiedi informazioni"],
+      ["Aubergine Hours", business], ["Kazu Nomura &amp; The Late Room", "La proposta del locale"],
+      ["Kazu Nomura & The Late Room", "La proposta del locale"],
+      ["Tidal Room", "Un momento da condividere"], ["Counter Culture", "Il gusto di stare insieme"],
+      ["Shimokita Rain", "La tua prossima visita"], ["vinyl", "proposta"], ["records", "momenti"],
+      ["record label", "locale"], ["turntable", "atmosfera"], ["the needle", "locale"],
+      ["The room", "Il locale"], ["the room", "il locale"], ["House rule", "Informazioni"],
+      ["Hours", "Orari da confermare"], ["Seats", "Accoglienza"], ["Requests", "Richieste"],
+      ["No phones on the counter.", "Contatta il locale per informazioni e disponibilità."],
+      ["12 seats", "Accoglienza"], ["4,800 records on the wall", "Una proposta da scoprire"],
+      ["turntable", "atmosfera"], ["playlists", "esperienze"],
+      ["Put your hand on the record", business], ["Drop the needle", "Scopri il locale"]
+    ]);
+  } else if (sector.kind === "salone") {
     out = replaceAll(out, [
       ["Bergamot", "Taglio"], ["di Calabria", "e styling"], ["Iris", "Colore"], ["pallida", "e riflessi"],
       ["Vanilla", "Trattamenti"], ["Bourbon", "per i capelli"], ["Oud", "Styling"], ["of Assam", "su misura"],
