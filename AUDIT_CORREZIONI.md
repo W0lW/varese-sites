@@ -1,34 +1,19 @@
-# Audit e correzione template — Varese Sites
+# Audit delle assegnazioni template 3D
 
-- Pagine verificate: **2363**
-- Template assegnati in base al settore: **18 famiglie**
-- Assegnazioni cambiate rispetto all’Excel: **607**
-- Pagine con telefono: **406**
-- Pagine con email: **72**
+Revisione basata sulle descrizioni effettive dei concept nella cartella `template 3D/Dioramas/examples`, non solo su parole chiave di settore.
 
-La colonna `Template` dell’Excel non è stata considerata sempre affidabile rispetto al settore (ad esempio, parrucchieri con tema Kōen, attività informatiche con tema Artemis e studi professionali con Monolith). Le assegnazioni sono state normalizzate sulla categoria dell’attività e collegate al concept 3D corrispondente nella raccolta del repository. Le pagine mantengono i dati di contatto solo se presenti nella fonte; nessun contatto è stato inventato.
+- Pagine incluse nel manifest: 2363
+- Assegnazioni automatiche esaminate: 607
+- Assegnazioni ripristinate al template originale del foglio Excel: 288
+- Assegnazioni automatiche mantenute dopo revisione del concept: 319
+- Pagine mancanti dopo il controllo: 0
 
-## Distribuzione corretta
+## Decisioni principali
 
-- **Low Frequency** (`lowfreq`): 806
-- **Nocturne No. 9** (`nocturne`): 344
-- **Maison Sucre** (`sucre`): 248
-- **Nightshift Motor Co.** (`racer`): 153
-- **Artemis** (`artemis`): 152
-- **Aurel Horologie** (`horologie`): 102
-- **Gambit** (`gambit`): 96
-- **Velocity Lab** (`velocity`): 93
-- **Kōen** (`koen`): 87
-- **The Keeper** (`keeper`): 52
-- **Pilot** (`pilot`): 49
-- **Atlas of Drifting Isles** (`atlas`): 48
-- **Florae** (`florae`): 40
-- **Reliquary** (`reliquary`): 31
-- **Bell & Moss** (`terrarium`): 26
-- **Monolith** (`monolith`): 22
-- **Hammer & Ember** (`ember`): 8
-- **Hangar Nine** (`hangar`): 6
+- **Kōen → Nocturne No. 9 (319 pagine beauty):** mantenuto come direzione luxury/beauty perché il concept Nocturne è una casa di profumeria, mentre Kōen è un vivaio bonsai. È una scelta visiva, non una regola generica per parole chiave.
+- **Artemis → Artemis (49 pagine informatica):** ripristinato perché il suggerimento `Pilot` non corrisponde a nessun template realmente presente nella raccolta.
+- **Lithos → Lithos (53 pagine gioielleria):** ripristinato perché Lithos è il concept di minerali e gioielleria; Aurel Horologie è un concept di orologeria.
+- **Still Water → Still Water (134 pagine ospitalità/sushi):** ripristinato perché il concept è un ryokan giapponese con stagno koi; Low Frequency è un listening bar.
+- **The Keeper → The Keeper (52 hotel):** ripristinato perché il concept è un hotel-faro, più pertinente al settore alberghiero del resort lunare Artemis.
 
-## Avvertenza
-
-I link ai concept 3D puntano alla raccolta già presente nel repository. Le pagine generate sono demo commerciali e non siti ufficiali approvati dalle attività. I concept 3D di riferimento non sono incorporati come intere applicazioni nelle singole pagine: sono collegati esplicitamente per evitare di rompere asset e percorsi relativi.
+Il CSV `audit-template-corrections.csv` contiene la decisione e la motivazione per ciascuna assegnazione esaminata. Le pagine rimangono concept da approvare con l'attività; il controllo non certifica che i dati commerciali siano aggiornati.
