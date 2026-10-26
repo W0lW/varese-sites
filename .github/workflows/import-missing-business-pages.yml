@@ -83,6 +83,211 @@ jobs:
           print(f"Business page directories now present: {sum(1 for p in dest_sites.iterdir() if p.is_dir() and (p / 'index.html').is_file())}")
           PY
 
+      - name: Audit original template assignments against actual 3D concepts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import csv, json, re
+          from pathlib import Path
+
+          root = Path('.')
+          manifest_csv = root / 'varese_sites_missing_manifest.csv'
+          manifest_json = root / 'varese_sites_missing_manifest.json'
+          corrections_path = root / 'audit-template-corrections.csv'
+          rows = list(csv.DictReader(corrections_path.open(encoding='utf-8-sig', newline='')))
+          mapping = {
+              'Low Frequency': ('lowfreq', 'lowfreq'),
+              'Kōen': ('koen', 'koen'),
+              'Maison Sucre': ('sucre', 'sucre'),
+              'Nightshift Motor Co.': ('racer', 'racer'),
+              'Still Water': ('koi', 'koi'),
+              'The Keeper': ('keeper', 'keeper'),
+              'Gambit': ('gambit', 'gambit'),
+              'Velocity Lab': ('velocity', 'velocity'),
+              'Lithos': ('lithos', 'lithos'),
+              'Artemis': ('artemis', 'artemis'),
+              'Aurel Horologie': ('horologie', 'horologie'),
+              'Atlas of Drifting Isles': ('atlas', 'atlas'),
+              'Florae': ('florae', 'florae'),
+              'Reliquary': ('reliquary', 'reliquary'),
+              'Bell & Moss': ('terrarium', 'terrarium'),
+              'Nocturne No. 9': ('nocturne', 'nocturne'),
+              'Monolith': ('monolith', 'monolith'),
+              'Hammer & Ember': ('ember', 'ember'),
+              'Hangar Nine': ('hangar', 'hangar'),
+          }
+          palettes = {
+              'koi': ('#0b1511', '#eee9dc', '#b9a477'),
+              'keeper': ('#05080c', '#ece7dc', '#ffd27a'),
+              'lithos': ('#050407', '#f3efff', '#9d6bff'),
+              'artemis': ('#000000', '#f4f5f7', '#c7d6ff'),
+          }
+          corrections = {}
+          audit_rows = []
+          for row in rows:
+              slug = row['slug']
+              original = row['template_prima']
+              proposed = row['template_corretto']
+              if original == 'Kōen' and proposed == 'Nocturne No. 9':
+                  final = proposed
+                  reason = 'Mantenuto dopo revisione del concept: direzione luxury/beauty di Nocturne più pertinente al settore beauty rispetto al concept vivaio bonsai di Kōen.'
+                  decision = 'MANTENUTO'
+              elif original == 'Artemis' and proposed == 'Pilot':
+                  final = original
+                  reason = 'Ripristinato: Pilot non esiste nella raccolta 3D; Artemis è il concept futuristico effettivamente disponibile.'
+                  decision = 'RIPRISTINATO'
+              elif original == 'Lithos' and proposed == 'Aurel Horologie':
+                  final = original
+                  reason = 'Ripristinato: Lithos è il concept dedicato a minerali e gioielleria; Aurel Horologie è centrato sull’orologeria.'
+                  decision = 'RIPRISTINATO'
+              elif original == 'Still Water' and proposed == 'Low Frequency':
+                  final = original
+                  reason = 'Ripristinato: Still Water è un ryokan giapponese attorno a uno stagno koi; più coerente con ospitalità e ristorazione giapponese del concept listening bar.'
+                  decision = 'RIPRISTINATO'
+              elif original == 'The Keeper' and proposed == 'Artemis':
+                  final = original
+                  reason = 'Ripristinato: The Keeper è un hotel-faro; il concept è più pertinente al settore alberghiero di Artemis, resort lunare.'
+                  decision = 'RIPRISTINATO'
+              else:
+                  final = original
+                  reason = 'Assegnazione originale mantenuta.'
+                  decision = 'RIPRISTINATO'
+              corrections[slug] = (original, proposed, final, reason, decision, row.get('settore', ''))
+              row.update({
+                  'template_excel_originale': original,
+                  'template_raccomandazione_automatica': proposed,
+                  'template_finale_audit': final,
+                  'decisione_audit': decision,
+                  'motivo_audit': reason,
+              })
+              audit_rows.append(row)
+
+          # Update the CSV manifest, retaining the automatic proposal as a separate audit field.
+          with manifest_csv.open(encoding='utf-8-sig', newline='') as f:
+              reader = csv.DictReader(f)
+              fieldnames = list(reader.fieldnames or [])
+              data = list(reader)
+          if 'template_corretto' in fieldnames:
+              fieldnames[fieldnames.index('template_corretto')] = 'template_raccomandazione_automatica_non_applicata'
+          for newfield in ['template_excel_originale', 'template_finale_audit', 'decisione_audit', 'motivo_audit']:
+              if newfield not in fieldnames:
+                  fieldnames.append(newfield)
+          for item in data:
+              slug = item.get('slug', '')
+              original, proposed, final, reason, decision, sector = corrections.get(
+                  slug, (item.get('template',''), item.get('template',''), item.get('template',''), 'Assegnazione originale mantenuta.', 'ORIGINALE', item.get('settore',''))
+              )
+              template_id = mapping.get(final, (item.get('template_id_3d','lowfreq'),))[0]
+              item['template_excel_originale'] = original
+              item['template_finale_audit'] = final
+              item['decisione_audit'] = decision
+              item['motivo_audit'] = reason
+              item['template'] = final
+              item['template_id_3d'] = template_id
+              item['url_template_3d'] = f'https://w0lw.github.io/varese-sites/template%203D/Dioramas/examples/{template_id}/index.html'
+              if 'template_corretto' in item:
+                  item['template_raccomandazione_automatica_non_applicata'] = proposed
+                  del item['template_corretto']
+              elif 'template_raccomandazione_automatica_non_applicata' in fieldnames:
+                  item['template_raccomandazione_automatica_non_applicata'] = proposed
+          with manifest_csv.open('w', encoding='utf-8-sig', newline='') as f:
+              writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction='ignore')
+              writer.writeheader()
+              writer.writerows(data)
+
+          # Update the JSON manifest using the same audited decisions.
+          jdata = json.loads(manifest_json.read_text(encoding='utf-8'))
+          for item in jdata:
+              slug = item.get('slug', '')
+              original, proposed, final, reason, decision, sector = corrections.get(
+                  slug, (item.get('template',''), item.get('template',''), item.get('template',''), 'Assegnazione originale mantenuta.', 'ORIGINALE', item.get('settore',''))
+              )
+              template_id = mapping.get(final, (item.get('template_id_3d','lowfreq'),))[0]
+              item['template_excel_originale'] = original
+              item['template_raccomandazione_automatica_non_applicata'] = proposed
+              item['template_finale_audit'] = final
+              item['decisione_audit'] = decision
+              item['motivo_audit'] = reason
+              item['template'] = final
+              item['template_id_3d'] = template_id
+              item['url_template_3d'] = f'https://w0lw.github.io/varese-sites/template%203D/Dioramas/examples/{template_id}/index.html'
+              item.pop('template_corretto', None)
+          manifest_json.write_text(json.dumps(jdata, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+          # Update each changed page's visible assignment, real preview link and matching concept palette.
+          changed = 0
+          for slug, (original, proposed, final, reason, decision, sector) in corrections.items():
+              page = root / 'sites' / slug / 'index.html'
+              if not page.is_file():
+                  raise SystemExit(f'Missing page for audited template: {slug}')
+              html = page.read_text(encoding='utf-8')
+              template_id = mapping[final][0]
+              html = re.sub(r'data-template-3d="[^"]+"', f'data-template-3d="{template_id}"', html, count=1)
+              html = re.sub(r'CONCEPT VISIVO 3D · [^<]+', f'CONCEPT VISIVO 3D · {template_id.upper()}', html, count=1)
+              html = re.sub(
+                  r'Direzione visiva selezionata per il settore: <strong>.*?</strong>\.',
+                  f'Template assegnato dopo audit del concept: <strong>{final}</strong>.',
+                  html, count=1
+              )
+              html = re.sub(
+                  r'href="/varese-sites/template%203D/Dioramas/examples/[^/]+/index\.html"',
+                  f'href="/varese-sites/template%203D/Dioramas/examples/{template_id}/index.html"',
+                  html, count=1
+              )
+              if template_id in palettes:
+                  bg, fg, accent = palettes[template_id]
+                  html, n = re.subn(
+                      r':root\{--bg:[^;]+;--fg:[^;]+;--accent:[^;]+;',
+                      f':root{{--bg:{bg};--fg:{fg};--accent:{accent};',
+                      html, count=1
+                  )
+                  if n != 1:
+                      raise SystemExit(f'Could not update palette for {slug} ({template_id})')
+              page.write_text(html, encoding='utf-8')
+              changed += 1
+
+          # Replace the previous purely heuristic audit with the decisions made against the actual concept descriptions.
+          with corrections_path.open('w', encoding='utf-8-sig', newline='') as f:
+              fields = ['slug','settore','template_excel_originale','template_raccomandazione_automatica','template_finale_audit','decisione_audit','motivo_audit']
+              writer = csv.DictWriter(f, fieldnames=fields)
+              writer.writeheader()
+              for row in audit_rows:
+                  writer.writerow({
+                      'slug': row['slug'], 'settore': row.get('settore',''),
+                      'template_excel_originale': row['template_prima'],
+                      'template_raccomandazione_automatica': row['template_corretto'],
+                      'template_finale_audit': corrections[row['slug']][2],
+                      'decisione_audit': corrections[row['slug']][4],
+                      'motivo_audit': corrections[row['slug']][3],
+                  })
+
+          restored = sum(1 for v in corrections.values() if v[4] == 'RIPRISTINATO')
+          kept = sum(1 for v in corrections.values() if v[4] == 'MANTENUTO')
+          report = f"""# Audit delle assegnazioni template 3D
+
+          Revisione basata sulle descrizioni effettive dei concept nella cartella `template 3D/Dioramas/examples`, non solo su parole chiave di settore.
+
+          - Pagine incluse nel manifest: {len(data)}
+          - Assegnazioni automatiche esaminate: {len(corrections)}
+          - Assegnazioni ripristinate al template originale del foglio Excel: {restored}
+          - Assegnazioni automatiche mantenute dopo revisione del concept: {kept}
+          - Pagine mancanti dopo il controllo: 0
+
+          ## Decisioni principali
+
+          - **Kōen → Nocturne No. 9 ({kept} pagine beauty):** mantenuto come direzione luxury/beauty perché il concept Nocturne è una casa di profumeria, mentre Kōen è un vivaio bonsai. È una scelta visiva, non una regola generica per parole chiave.
+          - **Artemis → Artemis (49 pagine informatica):** ripristinato perché il suggerimento `Pilot` non corrisponde a nessun template realmente presente nella raccolta.
+          - **Lithos → Lithos (53 pagine gioielleria):** ripristinato perché Lithos è il concept di minerali e gioielleria; Aurel Horologie è un concept di orologeria.
+          - **Still Water → Still Water (134 pagine ospitalità/sushi):** ripristinato perché il concept è un ryokan giapponese con stagno koi; Low Frequency è un listening bar.
+          - **The Keeper → The Keeper (52 hotel):** ripristinato perché il concept è un hotel-faro, più pertinente al settore alberghiero del resort lunare Artemis.
+
+          Il CSV `audit-template-corrections.csv` contiene la decisione e la motivazione per ciascuna assegnazione esaminata. Le pagine rimangono concept da approvare con l'attività; il controllo non certifica che i dati commerciali siano aggiornati.
+          """
+          (root / 'AUDIT_CORREZIONI.md').write_text(report, encoding='utf-8')
+          print(f'Assignments reviewed: {len(corrections)}; restored: {restored}; kept after visual review: {kept}; pages updated: {changed}')
+          PY
+
       - name: Validate merged site
         shell: bash
         run: |
