@@ -51,8 +51,8 @@ function rewrite(html, business, sector, phone, email, address) {
   out = out.replace(/<meta name="description" content="[^"]*">/i, '<meta name="description" content="' + esc(businessDescription) + '">');
   // Replace the visible hero headline and lead with business-specific Italian copy,
   // while keeping the template's 3D scene, layout, animation and interaction code.
-  out = out.replace(/(<h1\\b[^>]*>)[\\s\\S]*?(<\\/h1>)/i, '$1' + title + '$2');
-  out = out.replace(/(<p\\b[^>]*class=["'][^"']*\\b(?:sub|lead|lede)\\b[^"']*["'][^>]*>)[\\s\\S]*?(<\\/p>)/i, '$1' + esc(businessDescription) + '$2');
+  out = out.replace(/(<h1\b[^>]*>)[\s\S]*?(<\/h1>)/i, '$1' + title + '$2');
+  out = out.replace(/(<p\b[^>]*class=["'][^"']*\b(?:sub|lead|lede)\b[^"']*["'][^>]*>)[\s\S]*?(<\/p>)/i, '$1' + esc(businessDescription) + '$2');
 
   const base = [
     ["Maison Sucre", title], ["Maison&nbsp;Sucre", title], ["Nocturne No. 9", title], ["Nocturne", title],
