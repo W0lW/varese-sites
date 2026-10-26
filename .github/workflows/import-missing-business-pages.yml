@@ -216,7 +216,7 @@ jobs:
               item['motivo_audit'] = reason
               item['template'] = final
               item['template_id_3d'] = template_id
-              item['url_template_3d'] = f'https://w0lw.github.io/varese-sites/template%203D/Dioramas/examples/{template_id}/index.html'
+              item['url_template_3d'] = f'https://w0lw.github.io/varese-sites/Template%203D/examples/{template_id}/index.html'
               item.pop('template_corretto', None)
           for item in jdata:
               final = item.get('template', '')
