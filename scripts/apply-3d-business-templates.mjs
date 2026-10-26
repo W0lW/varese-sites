@@ -150,11 +150,11 @@ for (const dir of siteDirs) {
   const templateFile = path.join(builtExamples, sector.id, "index.html");
   if (!fs.existsSync(templateFile)) throw new Error("Missing built template: " + templateFile);
   const originalTemplate = fs.readFileSync(templateFile, "utf8");
-  const templateDir = path.dirname(templateFile);
-  const pageDir = path.dirname(file);
-  for (const name of fs.readdirSync(templateDir)) {
-    if (name !== "index.html") fs.cpSync(path.join(templateDir, name), path.join(pageDir, name), { recursive: true, force: true });
-  }
+  // Vite has already emitted the template CSS/JS/media into the shared
+  // Template 3D/assets directory. Copying every built example folder into
+  // every business page duplicated large bundles dozens of times (300+ MB).
+  // Keep each business page as HTML and let its built asset URLs point to the
+  // single shared, versioned bundle set published under /Template%203D/assets/.
   const links = getTextLinks(old);
   const phoneLink = links.find(x => /^tel:/i.test(x.href));
   const emailLink = links.find(x => /^mailto:/i.test(x.href));
