@@ -118,6 +118,7 @@ flag_counts = Counter()
 for page in pages:
     slug = clean(page.get("slug"))
     m = manifest.get(slug, {})
+    has_manifest = slug in manifest
     name = business_name(page, m)
     comune, settore = clean(m.get("comune")), clean(m.get("settore"))
     query_parts = [f'"{name}"', comune or "provincia di Varese"]
@@ -126,10 +127,14 @@ for page in pages:
     query = " ".join(query_parts)
     cached = cache.get(query)
     sources = cached.get("results", []) if cached else []
-    status, candidate, note = classify_presence(name, sources, cached)
+    if has_manifest:
+        status, candidate, note = classify_presence(name, sources, cached)
+    else:
+        status, candidate, note = ("FUORI MANIFEST — NON TRATTARE COME PROSPECT", "",
+            "Questa pagina non corrisponde a una voce del manifest attività; non inserirla nella lista commerciale finché nome, comune e attività non siano verificati.")
     status_counts[status] += 1
     rec = {
-        "slug": slug, "name": name, "comune": comune, "settore": settore, "query": query,
+        "slug": slug, "name": name, "comune": comune, "settore": settore, "query": query, "has_manifest": has_manifest,
         "status": status, "candidate": candidate, "note": note, "sources": sources,
         "phone": clean(m.get("telefono")), "email": clean(m.get("email")),
         "address": clean(m.get("indirizzo")), "social": clean(m.get("sito_social_trovato")),
@@ -163,7 +168,9 @@ summary.title = "Riepilogo"
 summary.append(["Voce", "Valore"])
 summary_data = [
     ("Generato (UTC)", datetime.now(timezone.utc).isoformat(timespec="seconds")),
-    ("Attività/pagine nel manifest", len(records)),
+    ("Pagine sottoposte a controllo", len(records)),
+    ("Attività presenti nel manifest", len(manifest)),
+    ("Pagine fuori manifest — escluse dalla lista prospect", sum(1 for r in records if not r["has_manifest"])),
     ("Ricerche con risultati in cache", sum(1 for r in records if r["sources"])),
     ("Sito probabile (dominio specifico; confermare)", sum(1 for r in records if r["status"].startswith("SITO PROBABILE"))),
     ("Nessun sito ufficiale individuato — prospect da confermare", sum(1 for r in records if r["status"].startswith("NESSUN SITO UFFICIALE"))),
@@ -174,6 +181,9 @@ summary_data = [
     ("Metodo", "Riclassificazione conservativa dei risultati del precedente audit; nessuna nuova ricerca web eseguita."),
     ("Limite importante", "Non è una verifica definitiva: i candidati senza sito vanno controllati su Google/Maps/social; un dominio aziendale può non contenere il nome e finire nel controllo manuale."),
     ("Contatti", "Telefono, email, indirizzo e social provengono dal manifest iniziale e possono essere incompleti o da aggiornare."),
+    ("Prospect con telefono", sum(1 for r in records if r["has_manifest"] and r["status"].startswith("NESSUN SITO UFFICIALE") and r["phone"])),
+    ("Prospect con email", sum(1 for r in records if r["has_manifest"] and r["status"].startswith("NESSUN SITO UFFICIALE") and r["email"])),
+    ("Prospect con telefono o email", sum(1 for r in records if r["has_manifest"] and r["status"].startswith("NESSUN SITO UFFICIALE") and (r["phone"] or r["email"]))),
     ("Esito template", "I flag HTML sono controlli automatici: richiedono verifica visiva e dei contenuti. La presenza di testo demo non prova da sola ogni singolo errore."),
 ]
 for row in summary_data:
@@ -218,7 +228,7 @@ prospects.append([
     "stato", "fonte directory/social (non sito ufficiale)", "query", "sito demo", "prossima azione"
 ])
 for r in sorted(records, key=lambda x: (x["comune"], x["name"])):
-    if r["status"].startswith("NESSUN SITO UFFICIALE"):
+    if r["has_manifest"] and r["status"].startswith("NESSUN SITO UFFICIALE"):
         evidence = r["sources"][0].get("url", "") if r["sources"] else ""
         prospects.append([
             r["name"], r["comune"], r["settore"], r["phone"], r["email"], r["address"],
@@ -232,7 +242,7 @@ exclude.append([
     "URL probabile sito ufficiale", "query", "sito demo", "nota"
 ])
 for r in sorted(records, key=lambda x: (x["comune"], x["name"])):
-    if r["status"].startswith("SITO PROBABILE"):
+    if r["has_manifest"] and r["status"].startswith("SITO PROBABILE"):
         exclude.append([r["name"], r["comune"], r["settore"], r["phone"], r["email"],
                         r["address"], r["status"], r["candidate"], r["query"], r["demo"], r["note"]])
 
@@ -242,10 +252,19 @@ manual.append([
     "stato", "URL da controllare", "query", "sito demo", "motivo/azione"
 ])
 for r in sorted(records, key=lambda x: (x["comune"], x["name"])):
-    if r["status"].startswith(("INCERTO", "DA VERIFICARE")):
+    if r["has_manifest"] and r["status"].startswith(("INCERTO", "DA VERIFICARE")):
         manual.append([r["name"], r["comune"], r["settore"], r["phone"], r["email"],
                        r["address"], r["social"], r["status"], r["candidate"], r["query"],
                        r["demo"], r["note"]])
+
+outside = wb.create_sheet("Fuori manifest")
+outside.append(["attività dalla pagina", "slug", "comune pagina", "settore pagina", "titolo pagina", "H1", "URL pagina demo", "motivo"])
+for r in sorted(records, key=lambda x: (x["name"])):
+    if not r["has_manifest"]:
+        p = r["page"]
+        outside.append([r["name"], r["slug"], r["comune"], r["settore"], clean(p.get("title")),
+                        clean(p.get("h1")), r["demo"],
+                        "Non presente nel manifest iniziale: non considerare un lead senza verifica manuale."])
 
 corr = wb.create_sheet("Correzioni template")
 if corrections:
