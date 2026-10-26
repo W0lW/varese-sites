@@ -52,6 +52,9 @@ DIRECTORY_HOST_MARKERS = (
     "yellowpages.", "yelp.", "it.indeed.com", "glassdoor.", "crunchbase.com",
     "opendi.", "pagine.it", "orari-di-apertura.", "trovaprezzi.", "doveconviene."
 )
+EMAIL_RE = re.compile(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}", re.I)
+PHONE_RE = re.compile(r"(?<!\\d)(?:(?:\\+39|0039)[\\s./-]*)?(?:0\\d{1,3}|3\\d{2})[\\s./-]?\\d{3,4}[\\s./-]?\\d{3,4}(?!\\d)")
+
 STOP_TOKENS = {
     "centro", "studi", "studio", "bar", "caffe", "cafe", "ristorante", "ristoro",
     "hotel", "albergo", "pizzeria", "ristoranti", "negozio", "negozi", "servizi",
@@ -64,6 +67,30 @@ STOP_TOKENS = {
 def is_directory(url):
     host = urlparse(url).netloc.lower().removeprefix("www.")
     return any(marker in host for marker in DIRECTORY_HOST_MARKERS)
+
+def extract_contacts(sources):
+    phones, emails, evidence = [], [], []
+    for source in sources:
+        desc = clean(source.get("description"))
+        url = clean(source.get("url"))
+        found_here = False
+        for email in EMAIL_RE.findall(desc):
+            email = email.lower()
+            if email not in emails:
+                emails.append(email)
+                found_here = True
+        for raw in PHONE_RE.findall(desc):
+            digits = re.sub(r"\\D", "", raw)
+            if digits.startswith("0039"):
+                digits = digits[4:]
+            elif digits.startswith("39") and len(digits) > 10:
+                digits = digits[2:]
+            if 9 <= len(digits) <= 10 and digits not in phones:
+                phones.append(digits)
+                found_here = True
+        if found_here and url and url not in evidence:
+            evidence.append(url)
+    return phones[:4], emails[:4], evidence[:6]
 
 def classify_presence(name, sources, cached):
     if not cached:
@@ -133,10 +160,13 @@ for page in pages:
         status, candidate, note = ("FUORI MANIFEST — NON TRATTARE COME PROSPECT", "",
             "Questa pagina non corrisponde a una voce del manifest attività; non inserirla nella lista commerciale finché nome, comune e attività non siano verificati.")
     status_counts[status] += 1
+    web_phones, web_emails, contact_evidence = extract_contacts(sources)
     rec = {
         "slug": slug, "name": name, "comune": comune, "settore": settore, "query": query, "has_manifest": has_manifest,
         "status": status, "candidate": candidate, "note": note, "sources": sources,
         "phone": clean(m.get("telefono")), "email": clean(m.get("email")),
+        "web_phones": "; ".join(web_phones), "web_emails": "; ".join(web_emails),
+        "contact_evidence": "; ".join(contact_evidence),
         "address": clean(m.get("indirizzo")), "social": clean(m.get("sito_social_trovato")),
         "demo": clean(m.get("url_demo")) or f"https://w0lw.github.io/varese-sites/sites/{slug}/",
         "page": page, "manifest": m, "correction": correction_map.get(slug, {}),
@@ -183,7 +213,9 @@ summary_data = [
     ("Contatti", "Telefono, email, indirizzo e social provengono dal manifest iniziale e possono essere incompleti o da aggiornare."),
     ("Prospect con telefono", sum(1 for r in records if r["has_manifest"] and r["status"].startswith("NESSUN SITO UFFICIALE") and r["phone"])),
     ("Prospect con email", sum(1 for r in records if r["has_manifest"] and r["status"].startswith("NESSUN SITO UFFICIALE") and r["email"])),
-    ("Prospect con telefono o email", sum(1 for r in records if r["has_manifest"] and r["status"].startswith("NESSUN SITO UFFICIALE") and (r["phone"] or r["email"]))),
+    ("Prospect con telefono o email nel manifest", sum(1 for r in records if r["has_manifest"] and r["status"].startswith("NESSUN SITO UFFICIALE") and (r["phone"] or r["email"]))),
+    ("Prospect con contatto trovato negli snippet web (da confermare)", sum(1 for r in records if r["has_manifest"] and r["status"].startswith("NESSUN SITO UFFICIALE") and (r["web_phones"] or r["web_emails"]))),
+    ("Prospect con almeno un contatto nel manifest o negli snippet", sum(1 for r in records if r["has_manifest"] and r["status"].startswith("NESSUN SITO UFFICIALE") and (r["phone"] or r["email"] or r["web_phones"] or r["web_emails"]))),
     ("Esito template", "I flag HTML sono controlli automatici: richiedono verifica visiva e dei contenuti. La presenza di testo demo non prova da sola ogni singolo errore."),
 ]
 for row in summary_data:
@@ -199,7 +231,8 @@ for k, v in sorted(template_counts.items(), key=lambda x: (-x[1], x[0])):
 
 activities = wb.create_sheet("Attività")
 activities.append([
-    "attività", "comune", "settore", "telefono manifest", "email manifest", "indirizzo manifest",
+    "attività", "comune", "settore", "telefono manifest", "email manifest", "telefono da snippet web (da verificare)",
+    "email da snippet web (da verificare)", "fonti dei contatti estratti", "indirizzo manifest",
     "social/sito trovato nel manifest", "stato sito da ricerca", "URL probabile sito ufficiale",
     "nota verifica sito", "query ricerca", "URL sito demo", "slug", "template assegnato",
     "titolo pagina", "H1", "anomalie automatiche", "decisione audit template", "motivazione audit template"
@@ -207,8 +240,8 @@ activities.append([
 for r in records:
     p, c = r["page"], r["correction"]
     activities.append([
-        r["name"], r["comune"], r["settore"], r["phone"], r["email"], r["address"], r["social"],
-        r["status"], r["candidate"], r["note"], r["query"], r["demo"], r["slug"],
+        r["name"], r["comune"], r["settore"], r["phone"], r["email"], r["web_phones"], r["web_emails"],
+        r["contact_evidence"], r["address"], r["social"], r["status"], r["candidate"], r["note"], r["query"], r["demo"], r["slug"],
         clean(p.get("templateTitle")) or clean(p.get("template")), clean(p.get("title")),
         clean(p.get("h1")), clean(p.get("flags")), clean(c.get("decisione_audit")), clean(c.get("motivo_audit"))
     ])
@@ -224,17 +257,28 @@ for row in source_rows:
 
 prospects = wb.create_sheet("Prospect senza sito")
 prospects.append([
-    "attività", "comune", "settore", "telefono", "email", "indirizzo", "social/sito noto",
+    "attività", "comune", "settore", "telefono manifest", "email manifest", "telefono da snippet web (da verificare)",
+    "email da snippet web (da verificare)", "fonti contatto web", "indirizzo", "social/sito noto",
     "stato", "fonte directory/social (non sito ufficiale)", "query", "sito demo", "prossima azione"
 ])
 for r in sorted(records, key=lambda x: (x["comune"], x["name"])):
     if r["has_manifest"] and r["status"].startswith("NESSUN SITO UFFICIALE"):
         evidence = r["sources"][0].get("url", "") if r["sources"] else ""
         prospects.append([
-            r["name"], r["comune"], r["settore"], r["phone"], r["email"], r["address"],
-            r["social"], r["status"], evidence, r["query"], r["demo"],
-            "Controllare sito tramite Google/Maps/social; solo dopo conferma proporre il sito demo."
+            r["name"], r["comune"], r["settore"], r["phone"], r["email"], r["web_phones"],
+            r["web_emails"], r["contact_evidence"], r["address"], r["social"], r["status"], evidence,
+            r["query"], r["demo"],
+            "Confermare contatti e assenza di sito ufficiale; solo dopo proporre il sito demo."
         ])
+
+contact_sheet = wb.create_sheet("Contatti da verificare")
+contact_sheet.append(["attività", "comune", "settore", "telefono manifest", "email manifest",
+                      "telefono da snippet web", "email da snippet web", "fonti contatto web",
+                      "stato sito", "sito demo"])
+for r in sorted(records, key=lambda x: (x["comune"], x["name"])):
+    if r["has_manifest"] and r["status"].startswith("NESSUN SITO UFFICIALE") and (r["phone"] or r["email"] or r["web_phones"] or r["web_emails"]):
+        contact_sheet.append([r["name"], r["comune"], r["settore"], r["phone"], r["email"],
+                              r["web_phones"], r["web_emails"], r["contact_evidence"], r["status"], r["demo"]])
 
 exclude = wb.create_sheet("Sito probabile - verifica")
 exclude.append([
@@ -302,7 +346,8 @@ for sheet, widths in {
     "Riepilogo": {"A": 62, "B": 100},
     "Attività": {"A": 32, "B": 22, "C": 42, "D": 22, "E": 34, "F": 34, "G": 42, "H": 52, "I": 60, "J": 72, "K": 64, "L": 54, "M": 30, "N": 30, "O": 44, "P": 34, "Q": 34, "R": 28, "S": 75},
     "Ricerca web": {"A": 30, "B": 32, "C": 22, "D": 40, "E": 64, "F": 20, "G": 36, "H": 10, "I": 48, "J": 60, "K": 75, "L": 52, "M": 60, "N": 75, "O": 72},
-    "Prospect senza sito": {"A": 34, "B": 22, "C": 40, "D": 22, "E": 34, "F": 34, "G": 42, "H": 52, "I": 62, "J": 64, "K": 54, "L": 76},
+    "Prospect senza sito": {"A": 34, "B": 22, "C": 40, "D": 22, "E": 34, "F": 26, "G": 32, "H": 60, "I": 34, "J": 42, "K": 50, "L": 62, "M": 64, "N": 54, "O": 76},
+    "Contatti da verificare": {"A": 34, "B": 22, "C": 40, "D": 22, "E": 34, "F": 30, "G": 34, "H": 80, "I": 52, "J": 54},
     "Sito probabile - verifica": {"A": 34, "B": 22, "C": 40, "D": 22, "E": 34, "F": 34, "G": 50, "H": 60, "I": 64, "J": 54, "K": 75},
     "Controllo manuale": {"A": 34, "B": 22, "C": 40, "D": 22, "E": 34, "F": 34, "G": 42, "H": 50, "I": 60, "J": 64, "K": 54, "L": 78},
 }.items():
