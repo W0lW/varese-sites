@@ -1,0 +1,71 @@
+name: Full business audit and Excel report
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_searches:
+        description: "Maximum business web searches (one per business)"
+        required: true
+        default: "2500"
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      BRAVE_SEARCH_API_KEY: \${{ secrets.BRAVE_SEARCH_API_KEY }}
+      AUDIT_MAX_SEARCHES: \${{ inputs.max_searches }}
+      AUDIT_SEARCH_PAUSE_SECONDS: "1.0"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: "template 3D/Dioramas/package-lock.json"
+
+      - name: Install 3D template dependencies
+        working-directory: "template 3D/Dioramas"
+        run: npm ci
+
+      - name: Build 3D templates
+        working-directory: "template 3D/Dioramas"
+        run: npm run build -- --base="/varese-sites/Template%203D/"
+
+      - name: Regenerate business pages with current template rules
+        run: node scripts/apply-3d-business-templates.mjs
+
+      - name: Audit all generated business pages
+        run: node scripts/audit-3d-business-pages.mjs
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Excel workbook dependency
+        run: python -m pip install --disable-pip-version-check openpyxl
+
+      - name: Search the web and build Excel workbook
+        run: python scripts/build-audit-workbook.py
+
+      - name: Upload audit workbook and evidence files
+        uses: actions/upload-artifact@v4
+        with:
+          name: varese-sites-full-audit
+          path: |
+            audit-report/audit-completo-attivita.xlsx
+            audit-report/all-pages.csv
+            audit-report/audit-summary.json
+            audit-report/template-inventory.json
+            audit-report/web-search-cache.json
+          if-no-files-found: error
+          retention-days: 30
