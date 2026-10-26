@@ -28,7 +28,7 @@ CORRECTIONS_CSV = ROOT / "audit-template-corrections.csv"
 CACHE_PATH = REPORT / "web-search-cache.json"
 OUT = REPORT / "audit-completo-attivita.xlsx"
 API_KEY = os.getenv("BRAVE_SEARCH_API_KEY", "").strip()
-MAX_SEARCHES = int(os.getenv("AUDIT_MAX_SEARCHES", "2500"))
+MAX_SEARCHES = int(os.getenv("AUDIT_MAX_SEARCHES") or "2500")
 PAUSE = float(os.getenv("AUDIT_SEARCH_PAUSE_SECONDS", "0.25"))
 
 def read_csv(path):
