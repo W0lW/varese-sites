@@ -44,11 +44,27 @@ function replaceAll(html, pairs) {
   for (const [from, to] of pairs) html = html.split(from).join(to);
   return html;
 }
-function rewrite(html, business, sector, phone, email, address) {
+function generatedDescription(business, sector, context = "") {
+  const hay = (business + " " + context).toLocaleLowerCase("it");
+  if (sector.kind === "ospitalità") {
+    if (/pizzer|ristorant|trattoria|osteria|sushi|piadiner|ristoro|cucina/.test(hay)) {
+      return business + " è un indirizzo da scoprire per una pausa a tavola. Contatta il locale per conoscere la proposta, verificare gli orari e chiedere informazioni sulle prenotazioni.";
+    }
+    return business + " è un punto d’incontro per una pausa, un aperitivo o una serata in compagnia. Contatta il locale per verificare orari, proposta e disponibilità.";
+  }
+  if (sector.kind === "salone") return business + " è uno spazio dedicato alla cura personale e allo stile. Contatta il salone per conoscere i servizi disponibili e concordare un appuntamento.";
+  if (sector.kind === "officina") return business + " è un riferimento per informazioni su manutenzione e interventi per il tuo veicolo. Contatta l’attività per descrivere il problema e verificare disponibilità e tempi.";
+  if (sector.kind === "tecnologia e assistenza") return business + " offre un punto di contatto per informazioni su dispositivi e assistenza tecnologica. Contatta l’attività per verificare servizi, tempi e disponibilità.";
+  if (sector.kind === "pasticceria") return business + " propone un’attività legata alla pasticceria e ai prodotti da forno. Contatta il laboratorio per conoscere le specialità disponibili e chiedere informazioni sugli ordini.";
+  if (sector.kind === "sport") return business + " è un punto di riferimento per conoscere attività e percorsi sportivi. Contatta la struttura per ricevere dettagli su corsi, accessi e disponibilità.";
+  if (sector.kind === "edilizia") return business + " si occupa di servizi per l’edilizia e lavori su progetto. Contatta l’attività per descrivere l’intervento e richiedere informazioni o un preventivo.";
+  return business + ": " + sector.description;
+}
+function rewrite(html, business, sector, phone, email, address, context = "") {
   const title = esc(business);
   let out = html.replace(/<html lang="en">/i, '<html lang="it">');
   out = out.replace(/<title>[\s\S]*?<\/title>/i, '<title>' + title + ' — ' + sector.kind + '</title>');
-  const businessDescription = business + ": " + sector.description;
+  const businessDescription = generatedDescription(business, sector, context);
   out = out.replace(/<meta name="description" content="[^"]*">/i, '<meta name="description" content="' + esc(businessDescription) + '">');
   // Replace the visible hero headline and lead with business-specific Italian copy,
   // while keeping the template's 3D scene, layout, animation and interaction code.
@@ -111,8 +127,14 @@ function rewrite(html, business, sector, phone, email, address) {
       ["No phones on the counter.", "Contatta il locale per informazioni e disponibilità."],
       ["12 seats", "Accoglienza"], ["4,800 records on the wall", "Una proposta da scoprire"],
       ["turntable", "atmosfera"], ["playlists", "esperienze"],
-      ["Put your hand on the record", business], ["Drop the needle", "Scopri il locale"]
+      ["Put your hand on the record", business], ["Drop the needle", "Scopri il locale"],
+      ["Pressed for the room first.", "La proposta del locale."],
+      ["Recorded in a single night at the bar after close, with the room mics still up. Nomura plays the house Rhodes; the rhythm section plays the counter. Pick a band — the arm will find it.", sector.description],
+      ["Every release on the label is played here before it is cut. If it can’t hold twelve strangers quiet for a whole side, it doesn’t get a number.", sector.description],
+      ["Each cue is sixteen bars, synthesised in your browser the moment you press it. Nothing is streamed; nothing is sampled.", sector.description]
     ]);
+    // Keep the original animated scene, but remove fictional record tracks, vinyl stock and prices.
+    out = out.replace(/<\\/head>/i, '<style>.pressing .tracks,.pressing .buy,.catalogue .sleeves{display:none!important}</style>\\n</head>');
   } else if (sector.kind === "salone") {
     out = replaceAll(out, [
       ["Bergamot", "Taglio"], ["di Calabria", "e styling"], ["Iris", "Colore"], ["pallida", "e riflessi"],
@@ -194,7 +216,7 @@ for (const dir of siteDirs) {
     continue;
   }
   const templateHtml = fs.readFileSync(templatePath, "utf8");
-  let html = rewrite(templateHtml, titleText, sector, phone, email, address);
+  let html = rewrite(templateHtml, titleText, sector, phone, email, address, sectorText);
   // Remove any old preview-link remnants if a template contained them.
   html = html.replace(/<section[^>]*class=["'][^"']*template-preview[^"']*["'][^>]*>[\s\S]*?<\/section>/gi, "");
   html = html.replace(/<html([^>]*?)lang=["']en["']/i, '<html$1lang="it"');
