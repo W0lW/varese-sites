@@ -1,0 +1,116 @@
+name: Import 2363 missing business pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: import-missing-business-pages
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Verify and extract uploaded archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s varese_sites_missing_2363_CORRETTO.zip
+          mkdir -p /tmp/varese-missing
+          unzip -q varese_sites_missing_2363_CORRETTO.zip -d /tmp/varese-missing
+          test -f /tmp/varese-missing/index.html
+          test -f /tmp/varese-missing/manifest.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('/tmp/varese-missing')
+          manifest = json.loads((root / 'manifest.json').read_text(encoding='utf-8'))
+          pages = list((root / 'sites').glob('*/index.html'))
+          print(f"Manifest records: {len(manifest)}")
+          print(f"Business pages in archive: {len(pages)}")
+          if len(pages) != 2363:
+              raise SystemExit(f"Expected 2363 pages, found {len(pages)}")
+          if len(manifest) != 2363:
+              raise SystemExit(f"Expected 2363 manifest records, found {len(manifest)}")
+          PY
+
+      - name: Merge without overwriting existing business pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, shutil
+          from pathlib import Path
+          src = Path('/tmp/varese-missing')
+          repo = Path('.')
+          source_sites = src / 'sites'
+          dest_sites = repo / 'sites'
+          dest_sites.mkdir(exist_ok=True)
+          copied = skipped = 0
+          for page_dir in source_sites.iterdir():
+              if not page_dir.is_dir():
+                  continue
+              dest = dest_sites / page_dir.name
+              if dest.exists():
+                  skipped += 1
+                  continue
+              shutil.copytree(page_dir, dest)
+              copied += 1
+          # Replace the old 84-item directory with the searchable full directory.
+          shutil.copy2(src / 'index.html', dest_sites / 'index.html')
+          for filename, destname in [
+              ('manifest.csv', 'varese_sites_missing_manifest.csv'),
+              ('manifest.json', 'varese_sites_missing_manifest.json'),
+              ('AUDIT_CORREZIONI.md', 'AUDIT_CORREZIONI.md'),
+              ('audit-template-corrections.csv', 'audit-template-corrections.csv'),
+          ]:
+              shutil.copy2(src / filename, repo / destname)
+          print(f"New business pages added: {copied}")
+          print(f"Existing business pages preserved: {skipped}")
+          print(f"Business page directories now present: {sum(1 for p in dest_sites.iterdir() if p.is_dir() and (p / 'index.html').is_file())}")
+          PY
+
+      - name: Validate merged site
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f sites/index.html
+          test -f varese_sites_missing_manifest.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path('varese_sites_missing_manifest.json').read_text(encoding='utf-8'))
+          missing = [x.get('slug') for x in manifest if not (Path('sites') / str(x.get('slug','')) / 'index.html').is_file()]
+          print(f"Manifest entries: {len(manifest)}")
+          print(f"Missing generated pages after merge: {len(missing)}")
+          if missing:
+              print("Examples:", missing[:20])
+              raise SystemExit(1)
+          print("Sample pages validated:")
+          for slug in ['bar-punto-g', 'pancake-factory', 'casa-del-pane']:
+              p = Path('sites') / slug / 'index.html'
+              print(f"{slug}: {'OK' if p.is_file() else 'not present (slug may differ)'}")
+          PY
+
+      - name: Commit merged pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sites varese_sites_missing_manifest.csv varese_sites_missing_manifest.json AUDIT_CORREZIONI.md audit-template-corrections.csv
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Import 2363 missing business concept pages"
+          git push origin HEAD:main
