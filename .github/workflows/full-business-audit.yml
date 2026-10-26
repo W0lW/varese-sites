@@ -1,6 +1,14 @@
 name: Full business audit and Excel report
 
 on:
+  push:
+    branches: ["main"]
+    paths:
+      - "scripts/audit-3d-business-pages.mjs"
+      - "scripts/build-audit-workbook.py"
+      - ".github/workflows/full-business-audit.yml"
+      - "audit-template-corrections.csv"
+      - "varese_sites_missing_manifest.csv"
   workflow_dispatch:
     inputs:
       max_searches:
