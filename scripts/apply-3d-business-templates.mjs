@@ -134,7 +134,7 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
       ["Each cue is sixteen bars, synthesised in your browser the moment you press it. Nothing is streamed; nothing is sampled.", sector.description]
     ]);
     // Keep the original animated scene, but remove fictional record tracks, vinyl stock and prices.
-    out = out.replace(/<\\/head>/i, '<style>.pressing .tracks,.pressing .buy,.catalogue .sleeves{display:none!important}</style>\\n</head>');
+    out = out.replace(/<\/head>/i, '<style>.pressing .tracks,.pressing .buy,.catalogue .sleeves{display:none!important}</style>\n</head>');
   } else if (sector.kind === "salone") {
     out = replaceAll(out, [
       ["Bergamot", "Taglio"], ["di Calabria", "e styling"], ["Iris", "Colore"], ["pallida", "e riflessi"],
