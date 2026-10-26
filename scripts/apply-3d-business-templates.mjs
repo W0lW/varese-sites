@@ -150,11 +150,11 @@ for (const dir of siteDirs) {
   const file = path.join(sitesDir, dir.name, "index.html");
   if (!fs.existsSync(file)) continue;
   let html = fs.readFileSync(file, "utf8");
-  const titleText = (attr(html, /<title[^>]*>([\\s\\S]*?)<\\/title>/i).replace(/\\s*[—–-]\\s*concept web.*$/i, "").trim()) || dir.name.replace(/-/g, " ");
+  const titleText = (attr(html, /<title[^>]*>([\s\S]*?)<\/title>/i).replace(/\s*[—–-]\s*concept web.*$/i, "").trim()) || dir.name.replace(/-/g, " ");
   const links = getTextLinks(html);
   const discoveredPhone = (links.find(x => /^tel:/i.test(x.href)) || {}).href?.replace(/^tel:/i, "") || "";
   const discoveredEmail = (links.find(x => /^mailto:/i.test(x.href)) || {}).href?.replace(/^mailto:/i, "") || "";
-  const discoveredAddress = (html.match(/(?:Via|Viale|Piazza|Corso|Largo|Strada|Viazza)\\s+[A-ZÀ-Ü][^<\\n]{5,90}/i) || [])[0] || "";
+  const discoveredAddress = (html.match(/(?:Via|Viale|Piazza|Corso|Largo|Strada|Viazza)\s+[A-ZÀ-Ü][^<\n]{5,90}/i) || [])[0] || "";
   const verified = verifiedContacts[dir.name] || {};
   const phone = verified.phone || discoveredPhone;
   const email = verified.email || discoveredEmail;
@@ -170,7 +170,7 @@ for (const dir of siteDirs) {
       mapLink
     ].filter(Boolean).join(' ');
     const contact = '<section id="contatti" aria-labelledby="contatti-title" class="site-contact-check"><style>.site-contact-check{padding:clamp(28px,6vw,72px) max(22px,calc((100vw - 1120px)/2));margin:0;background:#111;color:#f5f2ec;border-top:1px solid #555}.site-contact-check h2{font-size:clamp(28px,4vw,48px);margin:0 0 12px}.site-contact-check p{max-width:680px;line-height:1.7}.site-contact-check .contact-actions{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0}.site-contact-check a{display:inline-block;padding:12px 16px;border:1px solid currentColor;border-radius:3px;color:inherit;text-decoration:none}.site-contact-check .verify{opacity:.72;font-size:.9em}</style><p>CONTATTI</p><h2 id="contatti-title">Parliamone.</h2><p>Contatta direttamente ' + esc(titleText) + ' per informazioni sui servizi.</p><div class="contact-actions">' + actions + '</div>' + (address ? '<p>' + esc(address) + '</p>' : '<p class="verify">Indirizzo da verificare prima della pubblicazione definitiva.</p>') + ((!phone && !email) ? '<p class="verify">Telefono ed email non presenti nei dati disponibili: da verificare con l’attività.</p>' : '') + '</section>';
-    html = /<footer\\b/i.test(html) ? html.replace(/<footer\\b/i, contact + '\\n<footer') : html.replace(/<\\/body>/i, contact + '\\n</body>');
+    html = /<footer\b/i.test(html) ? html.replace(/<footer\b/i, contact + '\n<footer') : html.replace(/<\/body>/i, contact + '\n</body>');
     contactSectionsAdded++;
   }
   // Normalize document language only when it is explicitly English; preserve
