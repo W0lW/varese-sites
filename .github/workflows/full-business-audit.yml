@@ -60,7 +60,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install Excel workbook dependency
-        run: python -m pip install --disable-pip-version-check openpyxl
+        run: python -m pip install --disable-pip-version-check openpyxl ddgs
 
       - name: Search the web and build Excel workbook
         run: python scripts/build-audit-workbook.py
