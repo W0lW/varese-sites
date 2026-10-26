@@ -1,0 +1,56 @@
+name: Rebuild corrected audit workbook from cache
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "scripts/rebuild-audit-from-cache.py"
+      - ".github/workflows/rebuild-audit-report.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download completed audit evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: varese-sites-full-audit
+          run-id: 40301944122
+          github-token: ${{ github.token }}
+          path: audit-source
+
+      - name: Prepare cached audit data
+        run: |
+          mkdir -p audit-report
+          cp audit-source/all-pages.csv audit-report/all-pages.csv
+          cp audit-source/web-search-cache.json audit-report/web-search-cache.json
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install workbook dependency
+        run: python -m pip install --disable-pip-version-check openpyxl
+
+      - name: Reclassify sites and rebuild workbook offline
+        run: python scripts/rebuild-audit-from-cache.py
+
+      - name: Upload corrected workbook
+        uses: actions/upload-artifact@v4
+        with:
+          name: varese-sites-corrected-audit
+          path: |
+            audit-report/audit-completo-attivita.xlsx
+            audit-report/all-pages.csv
+            audit-report/web-search-cache.json
+          if-no-files-found: error
+          retention-days: 30
