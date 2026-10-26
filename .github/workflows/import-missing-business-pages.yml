@@ -185,12 +185,17 @@ jobs:
               item['motivo_audit'] = reason
               item['template'] = final
               item['template_id_3d'] = template_id
-              item['url_template_3d'] = f'https://w0lw.github.io/varese-sites/template%203D/Dioramas/examples/{template_id}/index.html'
+              item['url_template_3d'] = f'https://w0lw.github.io/varese-sites/Template%203D/examples/{template_id}/index.html'
               if 'template_corretto' in item:
                   item['template_raccomandazione_automatica_non_applicata'] = proposed
                   del item['template_corretto']
               elif 'template_raccomandazione_automatica_non_applicata' in fieldnames:
                   item['template_raccomandazione_automatica_non_applicata'] = proposed
+          for item in data:
+              final = item.get('template', '')
+              template_id = mapping.get(final, (item.get('template_id_3d','lowfreq'),))[0]
+              item['template_id_3d'] = template_id
+              item['url_template_3d'] = f'https://w0lw.github.io/varese-sites/Template%203D/examples/{template_id}/index.html'
           with manifest_csv.open('w', encoding='utf-8-sig', newline='') as f:
               writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction='ignore')
               writer.writeheader()
@@ -213,6 +218,11 @@ jobs:
               item['template_id_3d'] = template_id
               item['url_template_3d'] = f'https://w0lw.github.io/varese-sites/template%203D/Dioramas/examples/{template_id}/index.html'
               item.pop('template_corretto', None)
+          for item in jdata:
+              final = item.get('template', '')
+              template_id = mapping.get(final, (item.get('template_id_3d','lowfreq'),))[0]
+              item['template_id_3d'] = template_id
+              item['url_template_3d'] = f'https://w0lw.github.io/varese-sites/Template%203D/examples/{template_id}/index.html'
           manifest_json.write_text(json.dumps(jdata, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
           # Update each changed page's visible assignment, real preview link and matching concept palette.
@@ -232,7 +242,7 @@ jobs:
               )
               html = re.sub(
                   r'href="/varese-sites/template%203D/Dioramas/examples/[^/]+/index\.html"',
-                  f'href="/varese-sites/template%203D/Dioramas/examples/{template_id}/index.html"',
+                  f'href="/varese-sites/Template%203D/examples/{template_id}/index.html"',
                   html, count=1
               )
               if template_id in palettes:
@@ -246,6 +256,19 @@ jobs:
                       raise SystemExit(f'Could not update palette for {slug} ({template_id})')
               page.write_text(html, encoding='utf-8')
               changed += 1
+
+          # All concept links must target the published Pages artifact, not source-only repository paths.
+          link_fixes = 0
+          for page in (root / 'sites').glob('*/index.html'):
+              html = page.read_text(encoding='utf-8')
+              html, n = re.subn(
+                  r'href="/varese-sites/template%203D/Dioramas/examples/([^/]+)/index\\.html"',
+                  r'href="/varese-sites/Template%203D/examples/\\1/index.html"',
+                  html
+              )
+              if n:
+                  page.write_text(html, encoding='utf-8')
+                  link_fixes += n
 
           # Replace the previous purely heuristic audit with the decisions made against the actual concept descriptions.
           with corrections_path.open('w', encoding='utf-8-sig', newline='') as f:
@@ -285,7 +308,7 @@ jobs:
           Il CSV `audit-template-corrections.csv` contiene la decisione e la motivazione per ciascuna assegnazione esaminata. Le pagine rimangono concept da approvare con l'attività; il controllo non certifica che i dati commerciali siano aggiornati.
           """
           (root / 'AUDIT_CORREZIONI.md').write_text(report, encoding='utf-8')
-          print(f'Assignments reviewed: {len(corrections)}; restored: {restored}; kept after visual review: {kept}; pages updated: {changed}')
+          print(f'Assignments reviewed: {len(corrections)}; restored: {restored}; kept after visual review: {kept}; pages updated: {changed}; published template links fixed: {link_fixes}')
           PY
 
       - name: Validate merged site
