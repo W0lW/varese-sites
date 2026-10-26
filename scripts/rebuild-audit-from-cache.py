@@ -52,8 +52,8 @@ DIRECTORY_HOST_MARKERS = (
     "yellowpages.", "yelp.", "it.indeed.com", "glassdoor.", "crunchbase.com",
     "opendi.", "pagine.it", "orari-di-apertura.", "trovaprezzi.", "doveconviene."
 )
-EMAIL_RE = re.compile(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}", re.I)
-PHONE_RE = re.compile(r"(?<!\\d)(?:(?:\\+39|0039)[\\s./-]*)?(?:0\\d{1,3}|3\\d{2})[\\s./-]?\\d{3,4}[\\s./-]?\\d{3,4}(?!\\d)")
+EMAIL_RE = re.compile(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", re.I)
+PHONE_RE = re.compile(r"(?<!\d)(?:(?:\+39|0039)[\s./-]*)?(?:0\d{1,3}|3\d{2})[\s./-]?\d{3,4}[\s./-]?\d{3,4}(?!\d)")
 
 STOP_TOKENS = {
     "centro", "studi", "studio", "bar", "caffe", "cafe", "ristorante", "ristoro",
@@ -80,7 +80,7 @@ def extract_contacts(sources):
                 emails.append(email)
                 found_here = True
         for raw in PHONE_RE.findall(desc):
-            digits = re.sub(r"\\D", "", raw)
+            digits = re.sub(r"\D", "", raw)
             if digits.startswith("0039"):
                 digits = digits[4:]
             elif digits.startswith("39") and len(digits) > 10:
