@@ -151,15 +151,15 @@ for (const dir of siteDirs) {
   const file = path.join(sitesDir, dir.name, "index.html");
   if (!fs.existsSync(file)) continue;
   const oldHtml = fs.readFileSync(file, "utf8");
-  const titleText = (attr(oldHtml, /<title[^>]*>([\\s\\S]*?)<\\/title>/i).replace(/\\s*[—–-]\\s*concept web.*$/i, "").trim()) || dir.name.replace(/-/g, " ");
+  const titleText = (attr(oldHtml, /<title[^>]*>([\s\S]*?)<\/title>/i).replace(/\s*[—–-]\s*concept web.*$/i, "").trim()) || dir.name.replace(/-/g, " ");
   const description = attr(oldHtml, /<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i);
-  const eyebrow = (oldHtml.match(/class=["'][^"']*eyebrow[^"']*["'][^>]*>([\\s\\S]*?)<\\/[^>]+>/i) || [])[1] || "";
-  const sectorText = (oldHtml.match(/<h1[^>]*>[\\s\\S]*?<\\/h1>/i) || [""])[0] + " " + eyebrow + " " + description;
+  const eyebrow = (oldHtml.match(/class=["'][^"']*eyebrow[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>/i) || [])[1] || "";
+  const sectorText = (oldHtml.match(/<h1[^>]*>[\s\S]*?<\/h1>/i) || [""])[0] + " " + eyebrow + " " + description;
   const sector = pick(dir.name, titleText, sectorText);
   const links = getTextLinks(oldHtml);
   const discoveredPhone = (links.find(x => /^tel:/i.test(x.href)) || {}).href?.replace(/^tel:/i, "") || "";
   const discoveredEmail = (links.find(x => /^mailto:/i.test(x.href)) || {}).href?.replace(/^mailto:/i, "") || "";
-  const discoveredAddress = (oldHtml.match(/(?:Via|Viale|Piazza|P.zza|Corso|Largo|Strada|Vicolo|Piazzale)\\s+[^<\\n]{4,100}/i) || [])[0] || "";
+  const discoveredAddress = (oldHtml.match(/(?:Via|Viale|Piazza|P.zza|Corso|Largo|Strada|Vicolo|Piazzale)\s+[^<\n]{4,100}/i) || [])[0] || "";
   const verified = verifiedContacts[dir.name] || {};
   const phone = verified.phone || discoveredPhone;
   const email = verified.email || discoveredEmail;
@@ -172,11 +172,11 @@ for (const dir of siteDirs) {
   const templateHtml = fs.readFileSync(templatePath, "utf8");
   let html = rewrite(templateHtml, titleText, sector, phone, email, address);
   // Remove any old preview-link remnants if a template contained them.
-  html = html.replace(/<section[^>]*class=["'][^"']*template-preview[^"']*["'][^>]*>[\\s\\S]*?<\\/section>/gi, "");
+  html = html.replace(/<section[^>]*class=["'][^"']*template-preview[^"']*["'][^>]*>[\s\S]*?<\/section>/gi, "");
   html = html.replace(/<html([^>]*?)lang=["']en["']/i, '<html$1lang="it"');
-  html = html.replace(/<html(?![^>]*\\blang=)/i, '<html lang="it"');
+  html = html.replace(/<html(?![^>]*\blang=)/i, '<html lang="it"');
   // Keep the actual chosen template identifiable for the catalog and audits.
-  html = html.replace(/<html([^>]*)>/i, (m, attrs) => '<html' + attrs.replace(/\\sdata-template-3d=["'][^"']*["']/i, "") + ' data-template-3d="' + sector.id + '">');
+  html = html.replace(/<html([^>]*)>/i, (m, attrs) => '<html' + attrs.replace(/\sdata-template-3d=["'][^"']*["']/i, "") + ' data-template-3d="' + sector.id + '">');
   fs.writeFileSync(file, html);
   done++;
 }
