@@ -26,8 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
-      BRAVE_SEARCH_API_KEY: \${{ secrets.BRAVE_SEARCH_API_KEY }}
-      AUDIT_MAX_SEARCHES: \${{ inputs.max_searches }}
+      BRAVE_SEARCH_API_KEY: ${{ secrets.BRAVE_SEARCH_API_KEY }}
+      AUDIT_MAX_SEARCHES: ${{ inputs.max_searches }}
       AUDIT_SEARCH_PAUSE_SECONDS: "1.0"
     steps:
       - name: Checkout repository
