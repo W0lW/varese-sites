@@ -2,6 +2,10 @@ name: Import 2363 missing business pages
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/import-missing-business-pages.yml'
 
 permissions:
   contents: write
