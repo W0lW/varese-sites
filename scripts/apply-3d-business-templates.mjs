@@ -10,7 +10,7 @@ const sectors = [
   { id: "monolith", match: /edil|costru|scavi|serrament|cemento|rover|va-edil|varedil|ponteggi/i, kind: "edilizia", nav: ["Servizi", "Progetti", "Contatti"], cta: "Richiedi un preventivo", description: "Impresa edile: scopri lavorazioni e servizi e richiedi informazioni o un preventivo." },
   { id: "florae", match: /giardin|fior|flor|verde|piante/i, kind: "verde", nav: ["Servizi", "Realizzazioni", "Contatti"], cta: "Richiedi informazioni", description: "Servizi per il verde e la cura degli spazi esterni: scopri le soluzioni e contatta l’attività." },
   { id: "ember", match: /ferro|accia|sald|artigian|lavorazion|resine/i, kind: "lavorazioni", nav: ["Servizi", "Lavorazioni", "Contatti"], cta: "Richiedi un preventivo", description: "Lavorazioni e servizi specializzati: contatta l’attività per descrivere il tuo progetto e chiedere informazioni." },
-  { id: "koen", match: /beauty|fashion|parrucch|capelli|hair|sciampo|bellezza|donna|stile|sensation|sfumature|acconciature|virno|profumer|estetica|cosmetic/i, kind: "salone", nav: ["Servizi", "Il salone", "Prenotazioni"], cta: "Prenota ora", description: "Salone dedicato alla cura e allo stile: scopri i servizi e contatta l’attività per prenotare." },
+  { id: "nocturne", match: /beauty|fashion|parrucch|capelli|hair|sciampo|bellezza|donna|stile|sensation|sfumature|acconciature|virno|profumer|estetica|cosmetic/i, kind: "salone", nav: ["Servizi", "Il salone", "Prenotazioni"], cta: "Prenota ora", description: "Salone dedicato alla cura e allo stile: scopri i servizi e contatta l’attività per prenotare." },
   { id: "keeper", match: /puliz|clean|igien|sanific/i, kind: "pulizie", nav: ["Servizi", "Metodo", "Contatti"], cta: "Richiedi un preventivo", description: "Servizi di pulizia e cura degli ambienti: contatta l’attività per informazioni e preventivi." },
   { id: "atlas", match: /trasport|noleggio|logistic|viagg/i, kind: "servizi", nav: ["Servizi", "Soluzioni", "Contatti"], cta: "Richiedi informazioni", description: "Servizi e soluzioni su misura: contatta l’attività per disponibilità e informazioni." },
   { id: "koen", match: /casa|arred|legno|steelwood|mobili/i, kind: "casa", nav: ["Servizi", "Progetti", "Contatti"], cta: "Parliamo del progetto", description: "Soluzioni per casa e ambienti: scopri i servizi e contatta l’attività per parlare del tuo progetto." },
@@ -102,7 +102,7 @@ function rewrite(html, business, sector, phone, email, address) {
   out = out.replace(/<a class="btn btn-ghost" href="#shop"[^>]*>[\s\S]*?<\/a>/i, '<a class="btn btn-ghost" href="#contatti" data-magnetic>' + esc(sector.cta) + '</a>');
   out = out.replace(/<a class="btn btn-text" href="#bergamot"[^>]*>[\s\S]*?<\/a>/i, '<a class="btn btn-text" href="#contatti">' + esc(sector.nav[2]) + '</a>');
 
-  const mapQuery = encodeURIComponent(business + " Varese");
+  const mapQuery = encodeURIComponent(address ? address : business + " Varese");
   const contactHtml = '<section class="note" id="contatti" data-stop="7" data-side="left"><p class="eyebrow">Contatti</p><h2>Parliamo <em>con te.</em></h2><p>' + esc(sector.description) + '</p><div class="actions">' +
     (phone ? '<a class="btn btn-solid" href="tel:' + esc(phone) + '">Chiama</a>' : '<span class="btn btn-ghost" aria-label="Numero telefonico da verificare">Telefono da verificare</span>') +
     (email ? '<a class="btn btn-ghost" href="mailto:' + esc(email) + '">Scrivi</a>' : '') +
@@ -115,6 +115,14 @@ function rewrite(html, business, sector, phone, email, address) {
   out = out.replace(/src="\.\.\/assets\//g, 'src="/varese-sites/Template%203D/assets/');
   return out;
 }
+
+// Contatti pubblici verificati online; gli altri dati vengono mantenuti solo se già presenti nella pagina sorgente.
+const verifiedContacts = {
+  "carpe-diem-parrucchieri": { phone: "3519908483", address: "Via Severo Piatti, 9, 21100 Varese (VA)" },
+  "beauty-diffusion-snc": { phone: "0332223588", email: "deboracarcano79@gmail.com", address: "Via Daniele Manin, 30, 21100 Varese (VA)", website: "https://www.beautydiffusion.it" },
+  "bergamo-srl": { phone: "0332262356", email: "andrea@bergamosrl.com", address: "Via Stromboli, 16, 21100 Varese (VA)" },
+  "officina-caroleo": { phone: "0332333064", address: "Via Valle Venosta, 9, 21100 Varese (VA)" }
+};
 
 const sitesDir = path.join(root, "sites");
 const siteDirs = fs.readdirSync(sitesDir, { withFileTypes: true }).filter(d => d.isDirectory());
@@ -137,9 +145,13 @@ for (const dir of siteDirs) {
   const links = getTextLinks(old);
   const phoneLink = links.find(x => /^tel:/i.test(x.href));
   const emailLink = links.find(x => /^mailto:/i.test(x.href));
-  const phone = phoneLink ? phoneLink.href.replace(/^tel:/i, "") : "";
-  const email = emailLink ? emailLink.href.replace(/^mailto:/i, "") : "";
-  const address = (old.match(/(?:Via|Viale|Piazza|Corso|Largo)\s+[A-ZÀ-Ü][^<\n]{5,90}/i) || [])[0] || "";
+  const discoveredPhone = phoneLink ? phoneLink.href.replace(/^tel:/i, "") : "";
+  const discoveredEmail = emailLink ? emailLink.href.replace(/^mailto:/i, "") : "";
+  const discoveredAddress = (old.match(/(?:Via|Viale|Piazza|Corso|Largo)\s+[A-ZÀ-Ü][^<\n]{5,90}/i) || [])[0] || "";
+  const verified = verifiedContacts[dir.name] || {};
+  const phone = verified.phone || discoveredPhone;
+  const email = verified.email || discoveredEmail;
+  const address = verified.address || discoveredAddress;
   fs.writeFileSync(file, rewrite(originalTemplate, business, sector, phone, email, address));
   done++;
 }
