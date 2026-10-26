@@ -258,7 +258,7 @@ else:
 templates = wb.create_sheet("Distribuzione template")
 templates.append(["Template ID", "Numero pagine", "Titolo/label"])
 for key, count in sorted(template_counts.items(), key=lambda x: (-x[1], x[0])):
-    label = next((clean(p.get("templateTitle")) for p in pages if clean(p.get("template")) == key and clean(p.get("templateTitle")), "")
+    label = next((clean(p.get("templateTitle")) for p in pages if clean(p.get("template")) == key and clean(p.get("templateTitle"))), "")
     templates.append([key, count, label])
 
 for ws in wb.worksheets:
