@@ -11,6 +11,7 @@ import re
 import time
 import urllib.parse
 import urllib.request
+from urllib.parse import urlparse
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -54,6 +55,47 @@ def business_name(page, manifest):
     name = re.split(r"\s+[|—–-]\s+", name)[0]
     name = re.sub(r"^(home|benvenuti da|benvenuti a|welcome to)\s+", "", name, flags=re.I)
     return clean(name) or clean(page.get("slug"))
+
+EXCLUDED_HOSTS = (
+    "facebook.com", "instagram.com", "linkedin.com", "tiktok.com", "youtube.com",
+    "x.com", "twitter.com", "tripadvisor.", "paginegialle.", "paginebianche.",
+    "virgilio.it", "tuttocitta.it", "yelp.", "misterimprese.", "aziende.it",
+    "treatwell.", "booking.com", "thefork.", "quandoo.", "google.com",
+    "maps.google.", "goo.gl", "wikipedia.org", "kompass.", "cylex.", "infobel.",
+    "foursquare.com", "justeat.", "deliveroo.", "glovoapp.", "ubereats.",
+    "prontoimprese.", "impresaitalia.info", "registroimprese."
+)
+
+def classify_website_presence(sources, name, status):
+    if not sources:
+        return ("DA VERIFICARE MANUALMENTE — nessun risultato non prova l'assenza di sito", "", "Ricerca senza fonti utilizzabili; ripetere con altre query o controllare Maps/social.")
+    name_tokens = [t.lower() for t in re.findall(r"[a-z0-9]+", name) if len(t) >= 3]
+    directory_sources = []
+    likely_sites = []
+    other_sources = []
+    for source in sources:
+        url = clean(source.get("url"))
+        title = clean(source.get("title"))
+        desc = clean(source.get("description"))
+        host = urlparse(url).netloc.lower().removeprefix("www.")
+        text_blob = (title + " " + desc + " " + host).lower()
+        if any(domain in host for domain in EXCLUDED_HOSTS):
+            directory_sources.append(source)
+            continue
+        # Do not treat every unrelated result as the business's own site.
+        token_hits = sum(1 for token in name_tokens if token in text_blob)
+        if token_hits >= 1:
+            likely_sites.append(source)
+        else:
+            other_sources.append(source)
+    if likely_sites:
+        return ("SITO WEB PROBABILE — ESCLUDERE DALLE PROSPECT FINO A CONTROLLO", likely_sites[0].get("url", ""),
+                "Risultato su dominio non classificato come directory/social che richiama il nome dell'attività; confermare che sia il sito ufficiale e funzionante.")
+    if directory_sources and not other_sources:
+        return ("NESSUN SITO UFFICIALE INDIVIDUATO — POTENZIALE PROSPECT DA CONFERMARE", directory_sources[0].get("url", ""),
+                "Sono emersi solo profili social, directory o piattaforme terze; verificare manualmente prima del contatto.")
+    return ("INCERTO — CONTROLLO MANUALE NECESSARIO", (other_sources or directory_sources)[0].get("url", ""),
+            "Risultati ambigui o non sufficienti per stabilire se esista un sito ufficiale.")
 
 def write_cache(cache):
     CACHE_PATH.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -132,6 +174,7 @@ except Exception:
     cache = {}
 
 research_rows = []
+website_audit = {}
 searched_this_run = 0
 businesses_with_results = 0
 businesses_with_no_results = 0
@@ -160,6 +203,9 @@ for index, page in enumerate(pages):
             searched_this_run += 1
 
     sources = result.get("results", [])
+    presence, candidate_url, presence_note = classify_website_presence(sources, name, result.get("status", ""))
+    website_audit[slug] = {"status": presence, "url": candidate_url, "note": presence_note, "query": query,
+                           "sources": sources, "name": name, "comune": comune, "settore": settore}
     if sources:
         businesses_with_results += 1
         source_count += len(sources)
@@ -172,6 +218,8 @@ for index, page in enumerate(pages):
                 "URL fonte": source.get("url", ""), "estratto fonte": source.get("description", ""),
                 "testo del sito da confrontare": clean(page.get("visibleText"))[:1500],
                 "esito verifica contenuti": "FONTE TROVATA — confronto puntuale ancora da fare",
+                "stato sito ufficiale": presence, "URL candidato sito ufficiale": candidate_url,
+                "nota verifica sito": presence_note,
                 "azione": "Confrontare nome, settore, servizi, indirizzo, contatti e affermazioni specifiche con la fonte."
             })
     else:
@@ -186,6 +234,8 @@ for index, page in enumerate(pages):
             "fonte #": "", "titolo fonte": "", "URL fonte": "", "estratto fonte": "",
             "testo del sito da confrontare": clean(page.get("visibleText"))[:1500],
             "esito verifica contenuti": "NON VERIFICATO: nessuna fonte recuperata",
+            "stato sito ufficiale": presence, "URL candidato sito ufficiale": candidate_url,
+            "nota verifica sito": presence_note,
             "azione": "Ripetere la ricerca o trovare una fonte ufficiale affidabile; non trattare l'assenza di risultati come prova di falsità."
         })
 
@@ -208,6 +258,9 @@ summary_data = [
     ("Generato (UTC)", datetime.now(timezone.utc).isoformat(timespec="seconds")),
     ("Pagine censite", len(pages)),
     ("Attività con risultati web", businesses_with_results),
+    ("Sito ufficiale probabile — da escludere dalle prospect", sum(1 for v in website_audit.values() if v["status"].startswith("SITO WEB PROBABILE"))),
+    ("Nessun sito ufficiale individuato — prospect da confermare", sum(1 for v in website_audit.values() if v["status"].startswith("NESSUN SITO UFFICIALE"))),
+    ("Presenza sito incerta / controllo manuale", sum(1 for v in website_audit.values() if v["status"].startswith(("DA VERIFICARE", "INCERTO")))),
     ("Ricerche effettivamente avviate in questa esecuzione", searched_this_run),
     ("Attività senza risultati", businesses_with_no_results),
     ("Attività con errori di ricerca", businesses_with_errors),
@@ -240,7 +293,8 @@ activities = wb.create_sheet("Attività")
 activities.append([
     "slug", "attività", "comune", "settore da manifest", "titolo pagina", "H1",
     "template 3D", "URL sito", "descrizione SEO", "anomalie automatiche",
-    "testo visibile estratto", "template finale audit", "decisione audit template", "motivazione audit"
+    "testo visibile estratto", "presenza sito web", "URL candidato sito ufficiale", "nota verifica sito",
+    "template finale audit", "decisione audit template", "motivazione audit"
 ])
 for page in pages:
     slug = clean(page.get("slug"))
@@ -252,6 +306,8 @@ for page in pages:
         page.get("templateTitle") or page.get("template", ""),
         "https://w0lw.github.io/varese-sites/sites/" + slug + "/",
         page.get("metaDescription", ""), page.get("flags", ""), page.get("visibleText", ""),
+        website_audit.get(slug, {}).get("status", "DA VERIFICARE MANUALMENTE"),
+        website_audit.get(slug, {}).get("url", ""), website_audit.get(slug, {}).get("note", ""),
         correction.get("template_finale_audit", ""), correction.get("decisione_audit", ""),
         correction.get("motivo_audit", "")
     ])
@@ -260,11 +316,31 @@ research = wb.create_sheet("Ricerca web")
 research_headers = [
     "slug", "attività", "comune", "settore", "query ricerca", "motore", "esito ricerca",
     "fonte #", "titolo fonte", "URL fonte", "estratto fonte",
-    "testo del sito da confrontare", "esito verifica contenuti", "azione"
+    "testo del sito da confrontare", "esito verifica contenuti", "stato sito ufficiale",
+    "URL candidato sito ufficiale", "nota verifica sito", "azione"
 ]
 research.append(research_headers)
 for row in research_rows:
     research.append([row.get(header, "") for header in research_headers])
+
+# Commercial prospect list: only businesses for which the search found no clear official website.
+prospects = wb.create_sheet("Prospect senza sito")
+prospects.append(["attività", "comune", "settore", "stato verifica", "query ricerca", "fonte emersa", "nota", "URL sito demo", "prossima azione"])
+for slug, info in sorted(website_audit.items(), key=lambda kv: (kv[1]["comune"], kv[1]["name"])):
+    if not info["status"].startswith("NESSUN SITO UFFICIALE"):
+        continue
+    source_url = info["url"]
+    prospects.append([info["name"], info["comune"], info["settore"], info["status"], info["query"], source_url,
+                      info["note"], "https://w0lw.github.io/varese-sites/sites/" + slug + "/",
+                      "Controllo manuale Google/Maps e social; se confermato senza sito, contatto commerciale."])
+
+with_site = wb.create_sheet("Da escludere - sito probabile")
+with_site.append(["attività", "comune", "settore", "stato verifica", "URL candidato", "nota", "query ricerca", "URL sito demo"])
+for slug, info in sorted(website_audit.items(), key=lambda kv: (kv[1]["comune"], kv[1]["name"])):
+    if not info["status"].startswith("SITO WEB PROBABILE"):
+        continue
+    with_site.append([info["name"], info["comune"], info["settore"], info["status"], info["url"], info["note"],
+                      info["query"], "https://w0lw.github.io/varese-sites/sites/" + slug + "/"])
 
 corr_sheet = wb.create_sheet("Correzioni template")
 if corrections:
@@ -300,8 +376,10 @@ for ws in wb.worksheets:
 
 for ws_name, widths in {
     "Riepilogo": {"A": 58, "B": 90},
-    "Attività": {"A": 32, "B": 32, "C": 24, "D": 42, "E": 42, "F": 34, "G": 30, "H": 54, "I": 60, "J": 38, "K": 85, "L": 32, "M": 25, "N": 75},
-    "Ricerca web": {"A": 32, "B": 32, "C": 24, "D": 40, "E": 58, "F": 22, "G": 40, "H": 10, "I": 48, "J": 58, "K": 75, "L": 85, "M": 48, "N": 75},
+    "Attività": {"A": 32, "B": 32, "C": 24, "D": 42, "E": 42, "F": 34, "G": 30, "H": 54, "I": 60, "J": 38, "K": 85, "L": 38, "M": 54, "N": 75, "O": 32, "P": 25, "Q": 75},
+    "Ricerca web": {"A": 32, "B": 32, "C": 24, "D": 40, "E": 58, "F": 22, "G": 40, "H": 10, "I": 48, "J": 58, "K": 75, "L": 85, "M": 48, "N": 38, "O": 58, "P": 75, "Q": 75},
+    "Prospect senza sito": {"A": 34, "B": 24, "C": 40, "D": 60, "E": 60, "F": 58, "G": 80, "H": 60, "I": 75},
+    "Da escludere - sito probabile": {"A": 34, "B": 24, "C": 40, "D": 60, "E": 65, "F": 80, "G": 60, "H": 60},
     "Correzioni template": {"A": 42, "B": 42, "C": 28, "D": 34, "E": 34, "F": 24, "G": 80},
 }.items():
     for col, width in widths.items():
@@ -311,6 +389,9 @@ wb.save(OUT)
 print(json.dumps({
     "output": str(OUT),
     "pages": len(pages),
+    "prospects_without_official_site_found": sum(1 for v in website_audit.values() if v["status"].startswith("NESSUN SITO UFFICIALE")),
+    "probable_existing_websites": sum(1 for v in website_audit.values() if v["status"].startswith("SITO WEB PROBABILE")),
+    "manual_review": sum(1 for v in website_audit.values() if v["status"].startswith(("DA VERIFICARE", "INCERTO"))),
     "searched_this_run": searched_this_run,
     "businesses_with_results": businesses_with_results,
     "businesses_with_no_results": businesses_with_no_results,
