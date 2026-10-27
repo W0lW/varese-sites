@@ -32,12 +32,21 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install 3D template dependencies
+        working-directory: "template 3D/Dioramas"
+        run: npm ci
+
+      - name: Build compiled 3D templates
+        working-directory: "template 3D/Dioramas"
+        run: npm run build -- --base="/varese-sites/Template%203D/"
+
       - name: Confirm source templates exist
         shell: bash
         run: |
           set -euo pipefail
           test -d "template 3D/Dioramas/examples"
-          test -f "varese_sites_missing_manifest.json"
+          test -d "template 3D/Dioramas/dist/examples"
+          test -f "varese_sites_missing_manifest.csv"
           test -f "scripts/apply-3d-business-templates.mjs"
 
       - name: Rebuild business pages using audited assignments
@@ -72,8 +81,8 @@ jobs:
                   errors.append(f'{page}: html lang is not Italian')
               if '<title>' not in html.lower() or '<h1' not in html.lower():
                   errors.append(f'{page}: missing title or H1')
-          manifest_path = root / 'varese_sites_missing_manifest.json'
-          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          with (root / 'varese_sites_missing_manifest.csv').open(encoding='utf-8-sig', newline='') as f:
+              manifest = list(csv.DictReader(f))
           manifest_ids = {x.get('slug'): x.get('template_id_3d') for x in manifest if x.get('slug')}
           mismatches = []
           for page in pages:
@@ -105,8 +114,8 @@ jobs:
           from pathlib import Path
           root = Path('.')
           pages = sorted(p for p in (root / 'sites').glob('*/index.html') if p.is_file())
-          manifest_path = root / 'varese_sites_missing_manifest.json'
-          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          with (root / 'varese_sites_missing_manifest.csv').open(encoding='utf-8-sig', newline='') as f:
+              manifest = list(csv.DictReader(f))
           by_slug = {x.get('slug'): x for x in manifest if x.get('slug')}
           qa = []
           dist = {}
