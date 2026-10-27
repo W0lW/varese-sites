@@ -51,7 +51,7 @@ jobs:
           test -f sites/index.html
           count=$(find sites -mindepth 2 -maxdepth 2 -type f -name index.html | wc -l)
           echo "Business concept pages: $count"
-          test "$count" -ge 80
+          test "$count" -ge 2000
           mkdir -p _site
           rsync -a --exclude='.git' --exclude='.github' --exclude='template 3D' --exclude='Template 3D' --exclude='node_modules' --exclude='_site' ./ _site/
           mkdir -p "_site/Template 3D"
