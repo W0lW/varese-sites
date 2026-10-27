@@ -39,6 +39,9 @@ jobs:
       - name: Generate business pages using matched 3D concepts
         run: node scripts/apply-3d-business-templates.mjs
 
+      - name: Audit generated pages for demo residue and structural defects
+        run: node scripts/audit-generated-pages.mjs
+
       - name: Assemble complete site and Template 3D collection
         run: |
           test -f index.html
