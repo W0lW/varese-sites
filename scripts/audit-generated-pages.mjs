@@ -24,9 +24,9 @@ const rules = [
 
 function stripNonContent(html) {
   return html
-    .replace(/<!--[\\s\\S]*?-->/g, " ")
-    .replace(/<script\\b[^>]*>[\\s\\S]*?<\\/script>/gi, " ")
-    .replace(/<style\\b[^>]*>[\\s\\S]*?<\\/style>/gi, " ")
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
     // Audit visible copy, not aria-labels, asset URLs, class names or other markup attributes.
     .replace(/<[^>]+>/g, " ")
     .replace(/&(?:amp|nbsp|lt|gt|quot|#39);/gi, " ");
