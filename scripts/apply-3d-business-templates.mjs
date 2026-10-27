@@ -234,7 +234,7 @@ for (const dir of siteDirs) {
   const eyebrow = (oldHtml.match(/class=["'][^"']*eyebrow[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>/i) || [])[1] || "";
   const manifestSector = String(record.settore || "");
   const sectorText = manifestSector + " " + (oldHtml.match(/<h1[^>]*>[\s\S]*?<\/h1>/i) || [""])[0] + " " + eyebrow + " " + description;
-  const sector = pick(dir.name, titleText, sectorText);
+  const sector = { ...pick(dir.name, titleText, sectorText) };
   // Keep sector-appropriate Italian copy, but use the audited 3D concept for this exact business.
   const auditedTemplateId = record.template_id_3d || "";
   if (auditedTemplateId && /^[a-z0-9-]+$/.test(auditedTemplateId)) sector.id = auditedTemplateId;
