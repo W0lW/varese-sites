@@ -52,7 +52,7 @@ jobs:
           distribution = {}
           for page in pages:
               html = page.read_text(encoding='utf-8')
-              match = re.search(r'<html\\b[^>]*data-template-3d="([^"]+)"', html, re.I)
+              match = re.search(r'<html\b[^>]*data-template-3d="([^"]+)"', html, re.I)
               if not match:
                   errors.append(f'{page}: missing data-template-3d')
                   continue
@@ -60,7 +60,7 @@ jobs:
               distribution[template_id] = distribution.get(template_id, 0) + 1
               if not (examples / template_id / 'index.html').is_file():
                   errors.append(f'{page}: template source missing: {template_id}')
-              if not re.search(r'<html\\b[^>]*lang="it"', html, re.I):
+              if not re.search(r'<html\b[^>]*lang="it"', html, re.I):
                   errors.append(f'{page}: html lang is not Italian')
               if '<title>' not in html.lower() or '<h1' not in html.lower():
                   errors.append(f'{page}: missing title or H1')
@@ -72,7 +72,7 @@ jobs:
               expected = manifest_ids.get(page.parent.name)
               if expected:
                   html = page.read_text(encoding='utf-8')
-                  match = re.search(r'<html\\b[^>]*data-template-3d="([^"]+)"', html, re.I)
+                  match = re.search(r'<html\b[^>]*data-template-3d="([^"]+)"', html, re.I)
                   actual = match.group(1) if match else None
                   if actual != expected:
                       mismatches.append(f'{page.parent.name}: expected {expected}, got {actual}')
