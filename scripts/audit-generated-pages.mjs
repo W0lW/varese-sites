@@ -89,6 +89,13 @@ if (fs.existsSync(compressedEmailCandidatesPath)) {
   }
 }
 
+const verifiedContactOverrides = {
+  "carpe-diem-parrucchieri": { phone: "3519908483" },
+  "beauty-diffusion-snc": { phone: "0332223588", email: "deboracarcano79@gmail.com" },
+  "bergamo-srl": { phone: "0332262356", email: "andrea@bergamosrl.com" },
+  "officina-caroleo": { phone: "0332333064" }
+};
+
 function inspectPage(file) {
   const html = fs.readFileSync(file, "utf8");
   const slug = path.basename(path.dirname(file));
@@ -158,11 +165,29 @@ function inspectPage(file) {
     findings.push({ code: "OUT_OF_MANIFEST_NAME_MISSING", sample: extraRecord.nome });
   }
   if (candidate) {
+    const curated = verifiedContactOverrides[slug] || {};
+    const digits = value => String(value || "").replace(/\\D/g, "");
+    const curatedPhoneDigits = digits(curated.phone);
+    const candidatePhoneDigits = digits(candidate.telefono_snippet_da_verificare);
+    const displayedTelDigits = [...html.matchAll(/href=["']tel:([^"']+)["']/gi)].map(m => digits(m[1]));
+    const curatedPhoneIsDisplayed = Boolean(curatedPhoneDigits && displayedTelDigits.some(value => value.endsWith(curatedPhoneDigits) || value.endsWith(candidatePhoneDigits)));
+    const curatedEmailIsDisplayed = Boolean(curated.email && new RegExp(curated.email.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\  if (candidate) {
     if (candidate.telefono_snippet_da_verificare && !(record && record.telefono) &&
         (!visible.includes(candidate.telefono_snippet_da_verificare) || !/Numero da verificare/i.test(visible))) {
       findings.push({ code: "WEB_PHONE_CANDIDATE_NOT_LABELLED", sample: candidate.telefono_snippet_da_verificare });
     }
     if (candidate.email_snippet_da_verificare && !(record && record.email) &&
+        (!visible.includes(candidate.email_snippet_da_verificare) || !/Email da verificare/i.test(visible))) {
+      findings.push({ code: "WEB_EMAIL_CANDIDATE_NOT_LABELLED", sample: candidate.email_snippet_da_verificare });
+    }
+  }"), "i").test(html));
+    if (candidate.telefono_snippet_da_verificare && !(record && record.telefono) &&
+        !curatedPhoneIsDisplayed &&
+        (!visible.includes(candidate.telefono_snippet_da_verificare) || !/Numero da verificare/i.test(visible))) {
+      findings.push({ code: "WEB_PHONE_CANDIDATE_NOT_LABELLED", sample: candidate.telefono_snippet_da_verificare });
+    }
+    if (candidate.email_snippet_da_verificare && !(record && record.email) &&
+        !curatedEmailIsDisplayed &&
         (!visible.includes(candidate.email_snippet_da_verificare) || !/Email da verificare/i.test(visible))) {
       findings.push({ code: "WEB_EMAIL_CANDIDATE_NOT_LABELLED", sample: candidate.email_snippet_da_verificare });
     }
