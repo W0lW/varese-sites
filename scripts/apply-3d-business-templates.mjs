@@ -272,7 +272,10 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
     ];
   let detailIndex = 0;
   out = out.replace(/<p\b([^>]*\bclass=["'][^"']*\b(?:sub|lead|lede|byline|fine)\b[^"']*["'][^>]*)>[\s\S]*?<\/p>/gi,
-    (_, attrs) => '<p' + attrs + '>' + esc(detailCopy[detailIndex++ % detailCopy.length]) + '</p>');
+    (_, attrs) => {
+      const copy = detailIndex++ === 0 ? businessDescription : detailCopy[(detailIndex - 2) % detailCopy.length];
+      return '<p' + attrs + '>' + esc(copy) + '</p>';
+    });
   // Decorative Japanese copy and demo-specific secondary headings are not business content.
   out = out.replace(/<(p|span|div)\b([^>]*\bclass=["'][^"']*\bjp\b[^"']*["'][^>]*)>[\s\S]*?<\/\1>/gi, '');
   let h2Index = 0;
