@@ -96,6 +96,13 @@ const verifiedContactOverrides = {
   "officina-caroleo": { phone: "0332333064" }
 };
 
+const businessCategoryCodes = {
+  bc: "bar_cafe", rd: "retail_design", ba: "bakery", ha: "hair", re: "restaurant", au: "automotive", ho: "hospitality",
+  be: "beauty", ct: "construction_trades", fg: "florist_garden", cl: "cleaning_services", lp: "legal_professional",
+  sb: "salon_beauty", ac: "art_craft", op: "optical", tr: "travel", ri: "real_estate", fi: "fitness", ta: "tattoo",
+  cs: "creative_services", ec: "education_culture", he: "health", pz: "pizzeria", ps: "pet_supply", fr: "food_retail",
+  "??": "needs_review", is: "industrial_services", lb: "logistics_business"
+};
 const businessCategoryLetterCodes = {
   a: "bar_cafe", b: "retail_design", c: "bakery", d: "hair", e: "restaurant", f: "automotive", g: "hospitality",
   h: "beauty", i: "construction_trades", j: "florist_garden", k: "cleaning_services", l: "legal_professional",
