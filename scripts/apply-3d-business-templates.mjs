@@ -242,6 +242,8 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
   // Template navigation labels can sit outside removable demo sections; translate them globally.
   out = out.replace(/\bRecord club\b/gi, sector.nav[2]);
   out = out.replace(/\bThe bar\b/gi, sector.nav[1]);
+  out = out.replace(/The\s*<em>\s*bar\s*<\/em>/gi, sector.nav[1]);
+  out = out.replace(/the\s*<em>\s*bar\s*<\/em>/gi, sector.nav[1]);
   // Common interface copy translated so no demo is published with English controls.
   out = replaceAll(out, [
     ["Reserve a morning", "Prenota un appuntamento"], ["Reserve a seat", "Prenota"], ["Reserve a room", "Prenota"],
@@ -363,7 +365,8 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
   // Last-resort cleanup for known fictional demo content that must never reach a business page.
   // Keep unknown content for the QA gate to flag rather than guessing at a replacement.
   out = out
-    .replace(/Maison(?:\s|&nbsp;|&#160;)*Sucre/gi, title)
+    .replace(/Maison(?:\s|&nbsp;|&#160;|&#x0*a0;|&amp;nbsp;)*Sucre/gi, title)
+    .replace(/Maison\s*<em>\s*Sucre\s*<\/em>/gi, title)
     .replace(/maisonsucre\.fr/gi, "")
     .replace(/44\s+rue\s+du\s+Bac/gi, "")
     .replace(/75007\s+Paris/gi, "")
