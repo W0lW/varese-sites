@@ -166,21 +166,14 @@ function inspectPage(file) {
   }
   if (candidate) {
     const curated = verifiedContactOverrides[slug] || {};
-    const digits = value => String(value || "").replace(/\\D/g, "");
+    const digits = value => String(value || "").replace(/\D/g, "");
     const curatedPhoneDigits = digits(curated.phone);
     const candidatePhoneDigits = digits(candidate.telefono_snippet_da_verificare);
     const displayedTelDigits = [...html.matchAll(/href=["']tel:([^"']+)["']/gi)].map(m => digits(m[1]));
-    const curatedPhoneIsDisplayed = Boolean(curatedPhoneDigits && displayedTelDigits.some(value => value.endsWith(curatedPhoneDigits) || value.endsWith(candidatePhoneDigits)));
-    const curatedEmailIsDisplayed = Boolean(curated.email && new RegExp(curated.email.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\  if (candidate) {
-    if (candidate.telefono_snippet_da_verificare && !(record && record.telefono) &&
-        (!visible.includes(candidate.telefono_snippet_da_verificare) || !/Numero da verificare/i.test(visible))) {
-      findings.push({ code: "WEB_PHONE_CANDIDATE_NOT_LABELLED", sample: candidate.telefono_snippet_da_verificare });
-    }
-    if (candidate.email_snippet_da_verificare && !(record && record.email) &&
-        (!visible.includes(candidate.email_snippet_da_verificare) || !/Email da verificare/i.test(visible))) {
-      findings.push({ code: "WEB_EMAIL_CANDIDATE_NOT_LABELLED", sample: candidate.email_snippet_da_verificare });
-    }
-  }"), "i").test(html));
+    const curatedPhoneIsDisplayed = Boolean(curatedPhoneDigits && displayedTelDigits.some(value =>
+      value.endsWith(curatedPhoneDigits) || (candidatePhoneDigits && value.endsWith(candidatePhoneDigits))
+    ));
+    const curatedEmailIsDisplayed = Boolean(curated.email && html.toLocaleLowerCase("it").includes(curated.email.toLocaleLowerCase("it")));
     if (candidate.telefono_snippet_da_verificare && !(record && record.telefono) &&
         !curatedPhoneIsDisplayed &&
         (!visible.includes(candidate.telefono_snippet_da_verificare) || !/Numero da verificare/i.test(visible))) {
