@@ -34,7 +34,7 @@ function stripNonContent(html) {
 }
 
 function phoneDigits(value) {
-  return String(value || "").replace(/\\D/g, "");
+  return String(value || "").replace(/\D/g, "");
 }
 function phoneMatchesHtml(html, phone) {
   const expected = phoneDigits(phone);
