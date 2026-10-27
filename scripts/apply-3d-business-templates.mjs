@@ -189,6 +189,9 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
   const title = esc(business);
   let out = html.replace(/<html lang="en">/i, '<html lang="it">');
   out = out.replace(/<title>[\s\S]*?<\/title>/i, '<title>' + title + ' — ' + sector.kind + '</title>');
+  // Replace the template's split/marked brand wordmark too (e.g. "Maison <em>Sucre</em>").
+  out = out.replace(/<([a-z]+)\b([^>]*\bclass=["'][^"']*\bbrand-name\b[^"']*["'][^>]*)>[\s\S]*?<\/\1>/i,
+    (_, tag, attrs) => '<' + tag + attrs + '>' + title + '</' + tag + '>');
   const businessDescription = generatedDescription(business, sector, context, business.toLocaleLowerCase('it').replace(/[^a-z0-9]+/g, '-'), municipality);
   out = out.replace(/<meta name="description" content="[^"]*">/i, '<meta name="description" content="' + esc(businessDescription) + '">');
   // Replace the visible hero headline and lead with business-specific Italian copy,
@@ -236,6 +239,9 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
     ["50 ml — €290", sector.cta], ["Add to bag — €290", sector.cta],
     ["No. 9 Extrait, 50 ml", title], ["iris, bergamot, vanilla, oud.", sector.description]
   ]);
+  // Template navigation labels can sit outside removable demo sections; translate them globally.
+  out = out.replace(/\bRecord club\b/gi, sector.nav[2]);
+  out = out.replace(/\bThe bar\b/gi, sector.nav[1]);
   // Common interface copy translated so no demo is published with English controls.
   out = replaceAll(out, [
     ["Reserve a morning", "Prenota un appuntamento"], ["Reserve a seat", "Prenota"], ["Reserve a room", "Prenota"],
