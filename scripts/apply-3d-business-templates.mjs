@@ -174,7 +174,10 @@ function generatedDescription(business, sector, context = "", slug = "", municip
     ] : (variants[sector.kind] || variants.default);
   let hash = 0;
   for (const char of (slug || business)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
-  const chosen = pool[hash % pool.length];
+  const curatedCopy = {
+    "barber-garage": "Tagli uomo, sfumature e cura della barba in un barbershop dal carattere industriale. Barber Garage si trova in via Giacomo Matteotti 13, Busto Arsizio: chiama per concordare un appuntamento e confermare i servizi disponibili."
+  };
+  const chosen = curatedCopy[slug] || pool[hash % pool.length];
   const place = String(municipality || "").trim();
   const localClosers = [
     place ? "A " + place + ", contatta direttamente " + business + " per confermare servizi e disponibilità." : "Contatta direttamente " + business + " per confermare servizi e disponibilità.",
@@ -399,7 +402,7 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
   // on the 3D showcase, never on a customer's public website.
   const businessChrome = '<style id="business-page-cleanup">.tw-nav,.tw-nav-home,.tw-nav-step,.tw-nav-count{display:none!important;visibility:hidden!important;pointer-events:none!important}';
   // Remove complete nested demo-only sections; first-close regexes left fictional cards visible.
-  for (const sectionId of ["pressing", "catalogue", "club", "shop", "membership", "program", "apply", "waitlist", "subscribe", "book", "price", "collection", "coffret"]) {
+  for (const sectionId of ["pressing", "catalogue", "club", "shop", "membership", "program", "apply", "waitlist", "subscribe", "book", "price", "collection", "coffret", "calibre", "finishing", "nursery", "craft"]) {
     out = removeSectionById(out, sectionId);
   }
   out = out.replace(/<head>/i, '<head>\n' + businessChrome +
