@@ -77,6 +77,18 @@ if (fs.existsSync(compressedPhoneCandidatesPath)) {
   }
 }
 
+const compressedEmailCandidatesPath = path.join(root, "audit-email-candidates.json.gz.b64");
+if (fs.existsSync(compressedEmailCandidatesPath)) {
+  const encoded = fs.readFileSync(compressedEmailCandidatesPath, "utf8").trim();
+  const candidates = JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString("utf8"));
+  for (const item of candidates) {
+    if (!item.s || !item.e) continue;
+    const existing = candidateContacts.get(item.s) || {};
+    if (existing.email_snippet_da_verificare) continue;
+    candidateContacts.set(item.s, { ...existing, slug: item.s, email_snippet_da_verificare: item.e, email_source_url: item.u || "", provenance: existing.provenance || "Ricerca web — contatto da verificare" });
+  }
+}
+
 function inspectPage(file) {
   const html = fs.readFileSync(file, "utf8");
   const slug = path.basename(path.dirname(file));
@@ -171,6 +183,7 @@ function inspectPage(file) {
     phone_candidate_source: candidate?.source_url || candidate?.fonte_contatto_web || "",
     phone_candidate_labelled: Boolean(candidate?.telefono_snippet_da_verificare && visible.includes(candidate.telefono_snippet_da_verificare) && /Numero da verificare/i.test(visible)),
     email_candidate: candidate?.email_snippet_da_verificare || "",
+    email_candidate_source: candidate?.email_source_url || candidate?.fonte_contatto_web || "",
     email_candidate_labelled: Boolean(candidate?.email_snippet_da_verificare && visible.includes(candidate.email_snippet_da_verificare) && /Email da verificare/i.test(visible))
   };
 }
