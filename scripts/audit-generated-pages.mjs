@@ -44,9 +44,21 @@ function inspectPage(file) {
     findings.push({ code: "MISSING_3D_MODULE_SCRIPT", sample: "No bundled module script found" });
   }
 
-  // Verify that generated stylesheet and module URLs resolve to files produced by Vite.
-  const assetRefs = [...html.matchAll(/(?:href|src)=["']([^"']+)["']/gi)].map(match => match[1]);
-  for (const ref of assetRefs) {
+  // Verify that each required stylesheet and module script resolves to a built file.
+  const requiredAssets = [];
+  for (const match of html.matchAll(/<link\b([^>]*)>/gi)) {
+    if (/\brel=["']stylesheet["']/i.test(match[1])) {
+      const ref = (match[1].match(/\bhref=["']([^"']+)["']/i) || [])[1];
+      if (ref) requiredAssets.push(ref);
+    }
+  }
+  for (const match of html.matchAll(/<script\b([^>]*)>/gi)) {
+    if (/\btype=["']module["']/i.test(match[1])) {
+      const ref = (match[1].match(/\bsrc=["']([^"']+)["']/i) || [])[1];
+      if (ref) requiredAssets.push(ref);
+    }
+  }
+  for (const ref of requiredAssets) {
     if (/^(?:https?:|data:|#|mailto:|tel:|javascript:)/i.test(ref)) continue;
     const clean = decodeURIComponent(ref.split(/[?#]/)[0]);
     let diskPath;
@@ -59,7 +71,7 @@ function inspectPage(file) {
     } else {
       diskPath = path.resolve(path.dirname(file), clean);
     }
-    if (!fs.existsSync(diskPath) && /(?:stylesheet|module)/i.test(ref)) {
+    if (!fs.existsSync(diskPath)) {
       findings.push({ code: "BROKEN_LOCAL_ASSET", sample: ref.slice(0, 120) });
     }
   }
