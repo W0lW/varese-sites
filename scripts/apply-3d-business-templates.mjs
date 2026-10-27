@@ -154,7 +154,7 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
     ["The tree,", "Il tuo stile,"], ["undressed.", "senza compromessi."],
     ["Lighter than air.", "Leggerezza e precisione."], ["Storing the light.", "Valorizza il tuo look."],
     ["Sound", "Audio"], ["Sound off", "Disattiva audio"], ["Scroll to", "Scorri per"],
-    ["Discover", "Scopri"], ["Explore", "Esplora"], ["Learn more", "Scopri di più"],
+    ["Discover", "Scopri"], ["Explore", "Esplora"], ["Learn more", "Scopri di più"], ["Subscribe", "Contatti"], ["Newsletter", "Aggiornamenti"],
     ["Contact", "Contatti"], ["Services", "Servizi"], ["About", "Chi siamo"],
     ["The experience", "L’esperienza"], ["The details", "I dettagli"], ["Made to order", "Su misura"],
     ["Request an appointment", "Richiedi un appuntamento"], ["Request a commission", "Richiedi informazioni"],
