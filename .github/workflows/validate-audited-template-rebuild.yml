@@ -1,0 +1,90 @@
+name: Validate audited 3D template rebuild
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/apply-3d-business-templates.mjs'
+      - 'varese_sites_missing_manifest.json'
+      - 'template 3D/Dioramas/examples/**'
+      - '.github/workflows/validate-audited-template-rebuild.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Confirm source templates exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d "template 3D/Dioramas/examples"
+          test -f "varese_sites_missing_manifest.json"
+          test -f "scripts/apply-3d-business-templates.mjs"
+
+      - name: Rebuild business pages using audited assignments
+        run: node scripts/apply-3d-business-templates.mjs
+
+      - name: Validate rebuilt pages and template IDs
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, re
+          from pathlib import Path
+
+          root = Path('.')
+          sites = root / 'sites'
+          examples = root / 'template 3D' / 'Dioramas' / 'examples'
+          pages = sorted(p for p in sites.glob('*/index.html') if p.is_file())
+          if not pages:
+              raise SystemExit('No business pages found')
+          errors = []
+          distribution = {}
+          for page in pages:
+              html = page.read_text(encoding='utf-8')
+              match = re.search(r'<html\\b[^>]*data-template-3d="([^"]+)"', html, re.I)
+              if not match:
+                  errors.append(f'{page}: missing data-template-3d')
+                  continue
+              template_id = match.group(1)
+              distribution[template_id] = distribution.get(template_id, 0) + 1
+              if not (examples / template_id / 'index.html').is_file():
+                  errors.append(f'{page}: template source missing: {template_id}')
+              if not re.search(r'<html\\b[^>]*lang="it"', html, re.I):
+                  errors.append(f'{page}: html lang is not Italian')
+              if '<title>' not in html.lower() or '<h1' not in html.lower():
+                  errors.append(f'{page}: missing title or H1')
+          manifest_path = root / 'varese_sites_missing_manifest.json'
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          manifest_ids = {x.get('slug'): x.get('template_id_3d') for x in manifest if x.get('slug')}
+          mismatches = []
+          for page in pages:
+              expected = manifest_ids.get(page.parent.name)
+              if expected:
+                  html = page.read_text(encoding='utf-8')
+                  match = re.search(r'<html\\b[^>]*data-template-3d="([^"]+)"', html, re.I)
+                  actual = match.group(1) if match else None
+                  if actual != expected:
+                      mismatches.append(f'{page.parent.name}: expected {expected}, got {actual}')
+          print(f'Pages checked: {len(pages)}')
+          print(f'3D concepts used: {len(distribution)}')
+          print('Largest template groups:', sorted(distribution.items(), key=lambda x: x[1], reverse=True)[:12])
+          print(f'Manifest template mismatches: {len(mismatches)}')
+          if mismatches:
+              errors.extend(mismatches[:50])
+          if errors:
+              print('Validation errors:')
+              print('\\n'.join(errors[:100]))
+              raise SystemExit(f'Validation failed: {len(errors)} issue(s)')
+          print('Validation passed.')
+          PY
