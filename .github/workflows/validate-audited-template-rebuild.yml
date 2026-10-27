@@ -1,6 +1,14 @@
 name: Validate audited 3D template rebuild
 
 on:
+  push:
+    branches:
+      - work/audit-driven-template-rebuild
+    paths:
+      - 'scripts/apply-3d-business-templates.mjs'
+      - 'varese_sites_missing_manifest.json'
+      - 'template 3D/Dioramas/examples/**'
+      - '.github/workflows/validate-audited-template-rebuild.yml'
   pull_request:
     paths:
       - 'scripts/apply-3d-business-templates.mjs'
