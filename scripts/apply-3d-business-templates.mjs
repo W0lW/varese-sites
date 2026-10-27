@@ -91,6 +91,26 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
     ["Grasse, ", ""], ["since 1911.", ""], ["44 rue du Bac, Paris 7", ""], ["Depuis 1962", ""]
   ];
   out = replaceAll(out, base);
+  // Replace fragrance-product labels with terms that fit the business sector in every template.
+  const featureLabels = sector.kind === "salone" ? ["Taglio", "Colore", "Trattamenti", "Styling"]
+    : sector.kind === "ospitalità" ? ["Cucina", "Accoglienza", "Atmosfera", "Proposta"]
+    : sector.kind === "pasticceria" ? ["Pasticceria", "Dolci", "Laboratorio", "Ordini"]
+    : sector.kind === "officina" ? ["Manutenzione", "Diagnosi", "Riparazioni", "Assistenza"]
+    : sector.kind === "impianti" ? ["Installazione", "Manutenzione", "Assistenza", "Impianti"]
+    : sector.kind === "edilizia" ? ["Progettazione", "Ristrutturazioni", "Lavorazioni", "Finiture"]
+    : [sector.nav[0], sector.nav[1], "Servizi", "Informazioni"];
+  out = replaceAll(out, [
+    ["Bergamot", featureLabels[0]], ["bergamot", featureLabels[0].toLowerCase()],
+    ["Iris", featureLabels[1]], ["iris", featureLabels[1].toLowerCase()],
+    ["Vanilla", featureLabels[2]], ["vanilla", featureLabels[2].toLowerCase()],
+    ["Oud", featureLabels[3]], ["oud", featureLabels[3].toLowerCase()],
+    ["No phones on the counter.", "Contatta l’attività per informazioni e disponibilità."],
+    ["No phones on the counter", "Informazioni e disponibilità"],
+    ["Drop the needle", sector.nav[0]], ["Put your hand on the record", sector.nav[0]],
+    ["lunar", ""], ["moon resort", ""], ["vinyl records", ""],
+    ["50 ml — €290", sector.cta], ["Add to bag — €290", sector.cta],
+    ["No. 9 Extrait, 50 ml", title], ["iris, bergamot, vanilla, oud.", sector.description]
+  ]);
   // Common interface copy translated so no demo is published with English controls.
   out = replaceAll(out, [
     ["Reserve a morning", "Prenota un appuntamento"], ["Reserve a seat", "Prenota"], ["Reserve a room", "Prenota"],
@@ -184,14 +204,13 @@ const verifiedContacts = {
   "officina-caroleo": { phone: "0332333064", address: "Via Valle Venosta, 9, 21100 Varese (VA)" }
 };
 
-// Prefer the slug-specific, audited template assignment from the corrected manifest.
-const manifestTemplates = new Map();
+// Use the corrected manifest as the source of truth for names, location, sector and template.
+const manifestRecords = new Map();
 const manifestPath = path.join(root, "varese_sites_missing_manifest.json");
 if (fs.existsSync(manifestPath)) {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   for (const item of manifest) {
-    const templateId = item.template_id_3d || "";
-    if (item.slug && /^[a-z0-9-]+$/.test(templateId)) manifestTemplates.set(item.slug, templateId);
+    if (item.slug) manifestRecords.set(item.slug, item);
   }
 }
 
@@ -208,22 +227,25 @@ for (const dir of siteDirs) {
   const file = path.join(sitesDir, dir.name, "index.html");
   if (!fs.existsSync(file)) continue;
   const oldHtml = fs.readFileSync(file, "utf8");
-  const titleText = (attr(oldHtml, /<title[^>]*>([\s\S]*?)<\/title>/i).replace(/\s*[—–-]\s*concept web.*$/i, "").trim()) || dir.name.replace(/-/g, " ");
+  const record = manifestRecords.get(dir.name) || {};
+  const rawTitle = attr(oldHtml, /<title[^>]*>([\s\S]*?)<\/title>/i).replace(/<[^>]+>/g, "").trim();
+  const titleText = String(record.nome || rawTitle.replace(/\s*[—–-]\s*(?:Varese|[A-ZÀ-Ü][a-zà-ü]+)(?:\s*[—–-]\s*.*)?$/i, "").replace(/\s*[—–-]\s*concept web.*$/i, "").trim() || dir.name.replace(/-/g, " "));
   const description = attr(oldHtml, /<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i);
   const eyebrow = (oldHtml.match(/class=["'][^"']*eyebrow[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>/i) || [])[1] || "";
-  const sectorText = (oldHtml.match(/<h1[^>]*>[\s\S]*?<\/h1>/i) || [""])[0] + " " + eyebrow + " " + description;
+  const manifestSector = String(record.settore || "");
+  const sectorText = manifestSector + " " + (oldHtml.match(/<h1[^>]*>[\s\S]*?<\/h1>/i) || [""])[0] + " " + eyebrow + " " + description;
   const sector = pick(dir.name, titleText, sectorText);
   // Keep sector-appropriate Italian copy, but use the audited 3D concept for this exact business.
-  const auditedTemplateId = manifestTemplates.get(dir.name);
-  if (auditedTemplateId) sector.id = auditedTemplateId;
+  const auditedTemplateId = record.template_id_3d || "";
+  if (auditedTemplateId && /^[a-z0-9-]+$/.test(auditedTemplateId)) sector.id = auditedTemplateId;
   const links = getTextLinks(oldHtml);
   const discoveredPhone = (links.find(x => /^tel:/i.test(x.href)) || {}).href?.replace(/^tel:/i, "") || "";
   const discoveredEmail = (links.find(x => /^mailto:/i.test(x.href)) || {}).href?.replace(/^mailto:/i, "") || "";
   const discoveredAddress = (oldHtml.match(/(?:Via|Viale|Piazza|P.zza|Corso|Largo|Strada|Vicolo|Piazzale)\s+[^<\n]{4,100}/i) || [])[0] || "";
   const verified = verifiedContacts[dir.name] || {};
-  const phone = verified.phone || discoveredPhone;
-  const email = verified.email || discoveredEmail;
-  const address = verified.address || discoveredAddress;
+  const phone = verified.phone || record.telefono || discoveredPhone;
+  const email = verified.email || record.email || discoveredEmail;
+  const address = verified.address || record.indirizzo || discoveredAddress;
   const templatePath = path.join(builtExamples, sector.id, "index.html");
   if (!fs.existsSync(templatePath)) {
     failures.push(dir.name + " -> template mancante: " + sector.id);
