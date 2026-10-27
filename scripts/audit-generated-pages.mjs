@@ -19,7 +19,7 @@ const rules = [
   ["ENGLISH_DEMO_UI", /(?:^|[>])\s*(?:Subscribe|Fill it for me|Untie &amp; start again|Today,\s*<em>|The shop|Order this box)\s*(?:<|$)/i],
   ["SAMPLE_ADDRESS_OR_CONTACT", /(?:555\s*014\s*\d{3,}|example\.com|your@email\.fr)/i],
   ["FICTIONAL_MEMBERSHIP_OR_PRODUCT_CARD", /(?:Join Sleeve|MOST KEPT|Every LF pressing|Liner notes written at the counter|10% off anything on the wall|¥\s*[0-9,]+\s*\/\s*month|SLEEVE)/i],
-  ["UNTRANSLATED_DEMO_CONTROL", /(?:Listening bar & record label|Shimokitazawa|Sound off|Audio off|Subscribe|Newsletter|Drop the needle|The bar|Record club|Pre-order the LP)/i],
+  ["UNTRANSLATED_DEMO_CONTROL", /(?:Listening bar & record label|Shimokitazawa|Sound off|Audio off|Subscribe|Newsletter|Drop the needle|\bThe bar\b|Record club|Pre-order the LP)/i],
 ];
 
 function stripNonContent(html) {
