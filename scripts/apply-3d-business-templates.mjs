@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { gunzipSync } from "node:zlib";
 
 const root = process.cwd();
 const builtExamples = path.join(root, "template 3D", "Dioramas", "dist", "examples");
@@ -478,6 +479,23 @@ const candidateContactsPath = path.join(root, "audit-contact-candidates.csv");
 if (fs.existsSync(candidateContactsPath)) {
   for (const item of parseCsv(fs.readFileSync(candidateContactsPath, "utf8"))) {
     if (item.slug) candidateContacts.set(item.slug, item);
+  }
+}
+const compressedPhoneCandidatesPath = path.join(root, "audit-phone-candidates.json.gz.b64");
+if (fs.existsSync(compressedPhoneCandidatesPath)) {
+  const encoded = fs.readFileSync(compressedPhoneCandidatesPath, "utf8").trim();
+  const candidates = JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString("utf8"));
+  for (const item of candidates) {
+    if (!item.s || !item.p) continue;
+    const existing = candidateContacts.get(item.s) || {};
+    if (existing.telefono_snippet_da_verificare) continue;
+    candidateContacts.set(item.s, {
+      ...existing, slug: item.s,
+      telefono_snippet_da_verificare: item.p,
+      fonte_contatto_web: existing.fonte_contatto_web || item.u || "",
+      source_url: item.u || "",
+      provenance: "Ricerca web — contatto da verificare"
+    });
   }
 }
 
