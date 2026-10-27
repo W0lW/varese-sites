@@ -121,7 +121,10 @@ jobs:
               title = (re.search(r'<title[^>]*>(.*?)</title>', html, re.I | re.S) or [None, ''])[1]
               h1 = (re.search(r'<h1[^>]*>(.*?)</h1>', html, re.I | re.S) or [None, ''])[1]
               template = (re.search(r'<html\b[^>]*data-template-3d="([^"]+)"', html, re.I) or [None, ''])[1]
-              plain = re.sub(r'<[^>]+>', ' ', html)
+              visible_html = re.sub(r'<script\b[\s\S]*?</script>', ' ', html, flags=re.I)
+              visible_html = re.sub(r'<style\b[\s\S]*?</style>', ' ', visible_html, flags=re.I)
+              visible_html = re.sub(r'<!--[\s\S]*?-->', ' ', visible_html)
+              plain = re.sub(r'<[^>]+>', ' ', visible_html)
               plain = re.sub(r'\s+', ' ', plain)
               found = [x for x in leftovers if x.lower() in plain.lower()]
               tel_count = len(re.findall(r'href=["\']tel:', html, re.I))
