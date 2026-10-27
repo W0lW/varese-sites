@@ -110,7 +110,11 @@ function pick(slug, title, desc, manifestSector = "") {
   return sectors.find(x => x.match.test(hay)) || fallback;
 }
 function replaceAll(html, pairs) {
-  // Replace authored copy case-insensitively without touching HTML attributes, CSS or JS.
+  for (const [from, to] of pairs) html = html.split(from).join(to);
+  return html;
+}
+function replaceVisibleCopy(html, pairs) {
+  // One text-only pass for case variants; never alter selectors, URLs, attributes or scripts.
   const tokens = /<script\b[\s\S]*?<\/script>|<style\b[\s\S]*?<\/style>|<[^>]+>|[^<]+/gi;
   const replacements = pairs.map(([from, to]) => [
     new RegExp(from.replace(/[-/\\^$*+?.()|[\]{}]/g, ch => String.fromCharCode(92) + ch), "gi"),
@@ -564,7 +568,7 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
 
   // Final visible-copy pass catches capitalization variants in the original demos without
   // rewriting class names, asset paths, inline JS or CSS.
-  out = replaceAll(out, [
+  out = replaceVisibleCopy(out, [
     ["Listening bar & record label · Shimokitazawa, Tokyo", "Locale · Bar e ristorazione"],
     ["Sound off", "Audio disattivato"], ["Sound on", "Audio attivo"],
     ["Audio off", "Audio disattivato"], ["Audio on", "Audio attivo"],
