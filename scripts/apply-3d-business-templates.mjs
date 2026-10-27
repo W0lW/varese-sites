@@ -39,6 +39,39 @@ function unescapeHtml(s) {
 }
 function esc(s) { return String(s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 function attr(html, re) { return (html.match(re) || [])[1] || ""; }
+function parseCsv(text) {
+  const rows = []; let row = [], cell = "", quoted = false;
+  const input = String(text || "").replace(/^\uFEFF/, "");
+  for (let i = 0; i < input.length; i++) {
+    const ch = input[i];
+    if (quoted) {
+      if (ch === '"' && input[i + 1] === '"') { cell += '"'; i++; }
+      else if (ch === '"') quoted = false;
+      else cell += ch;
+    } else if (ch === '"' && cell === "") quoted = true;
+    else if (ch === ",") { row.push(cell); cell = ""; }
+    else if (ch === "\n") { row.push(cell.replace(/\r$/, "")); rows.push(row); row = []; cell = ""; }
+    else cell += ch;
+  }
+  if (cell.length || row.length) { row.push(cell.replace(/\r$/, "")); rows.push(row); }
+  const headers = (rows.shift() || []).map(x => x.trim());
+  return rows.filter(r => r.some(v => v.trim())).map(r => Object.fromEntries(headers.map((h, i) => [h, r[i] || ""])));
+}
+function removeSectionById(html, id) {
+  const openRe = new RegExp("<section\\b(?=[^>]*\\bid=[\\\"']" + id + "[\\\"'])[^>]*>", "i");
+  const match = openRe.exec(html);
+  if (!match) return html;
+  const start = match.index;
+  const tokenRe = /<\/?section\b[^>]*>/gi;
+  tokenRe.lastIndex = start;
+  let depth = 0, token;
+  while ((token = tokenRe.exec(html))) {
+    if (/^<\s*section\b/i.test(token[0])) depth++;
+    else depth--;
+    if (depth === 0) return html.slice(0, start) + html.slice(tokenRe.lastIndex);
+  }
+  return html;
+}
 function getTextLinks(html) {
   return [...html.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)].map(m => ({ href: m[1], text: m[2].replace(/<[^>]+>/g, "").trim() }));
 }
@@ -76,7 +109,7 @@ function replaceAll(html, pairs) {
   for (const [from, to] of pairs) html = html.split(from).join(to);
   return html;
 }
-function generatedDescription(business, sector, context = "", slug = "") {
+function generatedDescription(business, sector, context = "", slug = "", municipality = "") {
   const hay = (business + " " + context).toLocaleLowerCase("it");
   const variants = {
     ospitalità: [
@@ -140,11 +173,11 @@ function generatedDescription(business, sector, context = "", slug = "") {
   for (const char of (slug || business)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
   return pool[hash % pool.length];
 }
-function rewrite(html, business, sector, phone, email, address, context = "") {
+function rewrite(html, business, sector, phone, email, address, context = "", municipality = "") {
   const title = esc(business);
   let out = html.replace(/<html lang="en">/i, '<html lang="it">');
   out = out.replace(/<title>[\s\S]*?<\/title>/i, '<title>' + title + ' — ' + sector.kind + '</title>');
-  const businessDescription = generatedDescription(business, sector, context, business.toLocaleLowerCase('it').replace(/[^a-z0-9]+/g, '-'));
+  const businessDescription = generatedDescription(business, sector, context, business.toLocaleLowerCase('it').replace(/[^a-z0-9]+/g, '-'), municipality);
   out = out.replace(/<meta name="description" content="[^"]*">/i, '<meta name="description" content="' + esc(businessDescription) + '">');
   // Replace the visible hero headline and lead with business-specific Italian copy,
   // while keeping the template's 3D scene, layout, animation and interaction code.
@@ -294,7 +327,7 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
 
   const mapQuery = encodeURIComponent(address ? address : business + " Varese");
   const contactHtml = '<section class="note" id="contatti" data-stop="7" data-side="left"><p class="eyebrow">Contatti</p><h2>Parliamo <em>con te.</em></h2><p>' + esc(sector.description) + '</p><div class="actions">' +
-    (phone ? '<a class="btn btn-solid" href="tel:' + esc(phone) + '">Chiama</a>' : '<span class="btn btn-ghost" aria-label="Numero telefonico da verificare">Telefono da verificare</span>') +
+    (phone ? '<a class="btn btn-solid" href="tel:' + esc(String(phone).replace(/[^0-9+]/g, "")) + '">Chiama ' + esc(phone) + '</a>' : '<span class="btn btn-ghost" aria-label="Numero telefonico non disponibile nei dati verificati">Numero non disponibile</span>') +
     (email ? '<a class="btn btn-ghost" href="mailto:' + esc(email) + '">Scrivi</a>' : '') +
     '<a class="btn btn-ghost" href="https://www.google.com/maps/search/?api=1&query=' + mapQuery + '" target="_blank" rel="noopener noreferrer">Indicazioni stradali</a>' +
     '</div>' + (address ? '<p>' + esc(address) + '</p>' : '<p class="contact-note">Indirizzo da verificare prima della pubblicazione definitiva.</p>') + '</section>';
@@ -341,10 +374,10 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
   // Remove the collection/template switcher from every business page. It belongs only
   // on the 3D showcase, never on a customer's public website.
   const businessChrome = '<style id="business-page-cleanup">.tw-nav,.tw-nav-home,.tw-nav-step,.tw-nav-count{display:none!important;visibility:hidden!important;pointer-events:none!important}';
-  // The original showcase's catalogue and paid club contain fictional products/prices.
-  // They are not factual services for any of the local businesses, so remove them.
-  out = out.replace(/<section\b[^>]*\bid=["']club["'][^>]*>[\s\S]*?<\/section>/i, '');
-  out = out.replace(/<section\b[^>]*\bid=["']catalogue["'][^>]*>[\s\S]*?<\/section>/i, '');
+  // Remove complete nested demo-only sections; first-close regexes left fictional cards visible.
+  for (const sectionId of ["pressing", "catalogue", "club", "shop", "membership", "program", "apply", "waitlist", "subscribe", "book", "price", "collection", "coffret"]) {
+    out = removeSectionById(out, sectionId);
+  }
   out = out.replace(/<head>/i, '<head>\n' + businessChrome +
     '.tw-nav{display:none!important}.pressing .tracks,.pressing .buy,.catalogue .sleeves,.club .tiers{display:none!important}' +
     '</style>');
@@ -359,14 +392,17 @@ const verifiedContacts = {
   "officina-caroleo": { phone: "0332333064", address: "Via Valle Venosta, 9, 21100 Varese (VA)" }
 };
 
-// Use the corrected manifest as the source of truth for names, location, sector and template.
+// Use the audited CSV first: it contains corrected phones, addresses and template decisions.
 const manifestRecords = new Map();
+const manifestCsvPath = path.join(root, "varese_sites_missing_manifest.csv");
 const manifestPath = path.join(root, "varese_sites_missing_manifest.json");
-if (fs.existsSync(manifestPath)) {
-  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-  for (const item of manifest) {
-    if (item.slug) manifestRecords.set(item.slug, item);
+if (fs.existsSync(manifestCsvPath)) {
+  for (const item of parseCsv(fs.readFileSync(manifestCsvPath, "utf8"))) {
+    if (!item.slug) continue;
+    manifestRecords.set(item.slug, { ...item, nome: item.nome || "", settore: item.settore || "", telefono: item.telefono || "", email: item.email || "", indirizzo: item.indirizzo || "", comune: item.comune || "", template_id_3d: item.template_id_3d || "" });
   }
+} else if (fs.existsSync(manifestPath)) {
+  for (const item of JSON.parse(fs.readFileSync(manifestPath, "utf8"))) if (item.slug) manifestRecords.set(item.slug, item);
 }
 
 const sitesDir = path.join(root, "sites");
@@ -407,7 +443,7 @@ for (const dir of siteDirs) {
     continue;
   }
   const templateHtml = fs.readFileSync(templatePath, "utf8");
-  let html = rewrite(templateHtml, titleText, sector, phone, email, address, sectorText);
+  let html = rewrite(templateHtml, titleText, sector, phone, email, address, sectorText, String(record.comune || ""));
   // Remove any old preview-link remnants if a template contained them.
   html = html.replace(/<section[^>]*class=["'][^"']*template-preview[^"']*["'][^>]*>[\s\S]*?<\/section>/gi, "");
   html = html.replace(/<html([^>]*?)lang=["']en["']/i, '<html$1lang="it"');
