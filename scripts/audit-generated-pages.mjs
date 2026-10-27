@@ -32,6 +32,32 @@ function stripNonContent(html) {
     .replace(/&(?:amp|nbsp|lt|gt|quot|#39);/gi, " ");
 }
 
+function parseCsv(text) {
+  const rows = []; let row = [], cell = "", quoted = false;
+  const input = String(text || "").replace(/^\uFEFF/, "");
+  for (let i = 0; i < input.length; i++) {
+    const ch = input[i];
+    if (quoted) {
+      if (ch === '"' && input[i + 1] === '"') { cell += '"'; i++; }
+      else if (ch === '"') quoted = false;
+      else cell += ch;
+    } else if (ch === '"' && cell === "") quoted = true;
+    else if (ch === ",") { row.push(cell); cell = ""; }
+    else if (ch === "\n") { row.push(cell.replace(/\r$/, "")); rows.push(row); row = []; cell = ""; }
+    else cell += ch;
+  }
+  if (cell.length || row.length) { row.push(cell.replace(/\r$/, "")); rows.push(row); }
+  const headers = rows.shift() || [];
+  return rows.filter(r => r.some(v => String(v || "").trim())).map(r => Object.fromEntries(headers.map((h, i) => [h, r[i] || ""])));
+}
+const manifestRecords = new Map();
+const manifestCsv = path.join(root, "varese_sites_missing_manifest.csv");
+if (fs.existsSync(manifestCsv)) {
+  for (const record of parseCsv(fs.readFileSync(manifestCsv, "utf8"))) {
+    if (record.slug) manifestRecords.set(record.slug, record);
+  }
+}
+
 function inspectPage(file) {
   const html = fs.readFileSync(file, "utf8");
   const slug = path.basename(path.dirname(file));
@@ -48,6 +74,13 @@ function inspectPage(file) {
     findings.push({ code: "UNRELATED_COMMERCE_SECTION", sample: "Fictional catalogue or paid membership section remains in the page source" });
   }
   if (!title.trim()) findings.push({ code: "MISSING_TITLE", sample: "(missing title)" });
+  const record = manifestRecords.get(slug);
+  if (record) {
+    if (record.telefono && !html.includes(record.telefono)) findings.push({ code: "MANIFEST_PHONE_MISSING", sample: record.telefono });
+    if (record.email && !html.includes(record.email)) findings.push({ code: "MANIFEST_EMAIL_MISSING", sample: record.email });
+    if (record.indirizzo && !html.includes(record.indirizzo)) findings.push({ code: "MANIFEST_ADDRESS_MISSING", sample: record.indirizzo });
+    if (record.template_id_3d && template !== record.template_id_3d) findings.push({ code: "AUDITED_TEMPLATE_MISMATCH", sample: "expected " + record.template_id_3d + ", got " + (template || "(missing)") });
+  }
   if (!/<link\b[^>]*rel=["']stylesheet["'][^>]*href=["'][^"']+["']/i.test(html)) {
     findings.push({ code: "MISSING_3D_STYLESHEET", sample: "No linked stylesheet found" });
   }
