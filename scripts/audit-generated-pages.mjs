@@ -96,6 +96,29 @@ const verifiedContactOverrides = {
   "officina-caroleo": { phone: "0332333064" }
 };
 
+const businessCategoryCodes = {
+  bc: "bar_cafe", rd: "retail_design", ba: "bakery", ha: "hair", re: "restaurant", au: "automotive", ho: "hospitality",
+  be: "beauty", ct: "construction_trades", fg: "florist_garden", cl: "cleaning_services", lp: "legal_professional",
+  sb: "salon_beauty", ac: "art_craft", op: "optical", tr: "travel", ri: "real_estate", fi: "fitness", ta: "tattoo",
+  cs: "creative_services", ec: "education_culture", he: "health", pz: "pizzeria", ps: "pet_supply", fr: "food_retail",
+  "??": "needs_review", is: "industrial_services", lb: "logistics_business"
+};
+const businessCategoryOverrides = new Map();
+const businessCategoryPath = path.join(root, "audit-business-categories.json.gz.b64");
+if (fs.existsSync(businessCategoryPath)) {
+  const encoded = fs.readFileSync(businessCategoryPath, "utf8").trim();
+  for (const [slug, code] of JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString("utf8"))) {
+    if (slug) businessCategoryOverrides.set(slug, businessCategoryCodes[code] || "needs_review");
+  }
+}
+const businessCategorySources = new Map();
+const businessCategorySourcesPath = path.join(root, "audit-category-sources.csv");
+if (fs.existsSync(businessCategorySourcesPath)) {
+  for (const item of parseCsv(fs.readFileSync(businessCategorySourcesPath, "utf8"))) {
+    if (item.slug) businessCategorySources.set(item.slug, item);
+  }
+}
+
 function inspectPage(file) {
   const html = fs.readFileSync(file, "utf8");
   const slug = path.basename(path.dirname(file));
@@ -115,6 +138,9 @@ function inspectPage(file) {
   const record = manifestRecords.get(slug);
   const extraRecord = extraPageRecords.get(slug);
   const candidate = candidateContacts.get(slug);
+  const categoryKey = businessCategoryOverrides.get(slug) || "";
+  const categorySource = businessCategorySources.get(slug) || {};
+  if (!categoryKey) findings.push({ code: "MISSING_BUSINESS_CATEGORY_OVERRIDE", sample: "No per-business category mapping" });
   if (record) {
     if (record.telefono && !html.includes(record.telefono)) findings.push({ code: "MANIFEST_PHONE_MISSING", sample: record.telefono });
     if (record.email && !html.includes(record.email)) findings.push({ code: "MANIFEST_EMAIL_MISSING", sample: record.email });
@@ -193,6 +219,9 @@ function inspectPage(file) {
   const intro = (html.match(/<p\b[^>]*class=["'][^"']*\b(?:sub|lead|lede)\b[^"']*["'][^>]*>[\s\S]*?<\/p>/i) || [""])[0].replace(/<[^>]+>/g, " ").replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim();
   return {
     slug, findings, title: title.replace(/<[^>]+>/g, "").replace(/&amp;/gi, "&").trim(), h1, template, intro,
+    category_key: categoryKey, category_review_required: categoryKey === "needs_review",
+    category_source: categorySource.source_url || "",
+    category_reason: categorySource.reason || (categoryKey === "needs_review" ? "needs_review" : "nome/settore auditato"),
     data_source: record ? "manifest" : (extraRecord ? "fuori_manifest_da_verificare" : "pagina_senza_record_audit"),
     phone_from_manifest: record?.telefono || "", phone_present: Boolean(record?.telefono && html.includes(record.telefono)),
     email_from_manifest: record?.email || "", email_present: Boolean(record?.email && html.includes(record.email)),
@@ -240,6 +269,9 @@ const report = {
   manifest_rows: manifestRecords.size,
   out_of_manifest_audit_rows: extraPageRecords.size,
   contact_candidate_rows: candidateContacts.size,
+  category_mapped_pages: results.filter(r => r.category_key).length,
+  pages_needing_category_review: results.filter(r => r.category_review_required).length,
+  category_review_slugs: results.filter(r => r.category_review_required).map(r => r.slug),
   manifest_phone_rows: results.filter(r => r.phone_from_manifest).length,
   manifest_email_rows: results.filter(r => r.email_from_manifest).length,
   manifest_address_rows: results.filter(r => r.address_from_manifest).length,
