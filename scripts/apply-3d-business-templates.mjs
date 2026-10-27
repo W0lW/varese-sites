@@ -421,9 +421,19 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
     horologie: ["collection", "calibre", "finishing"],
     koen: ["nursery", "craft"]
   };
-  for (const sectionId of (demoSectionsByTemplate[sector.id] || [])) {
+  const removedSections = demoSectionsByTemplate[sector.id] || [];
+  for (const sectionId of removedSections) {
     out = removeSectionById(out, sectionId);
+    out = out.replace(new RegExp('href=["\\']#' + sectionId + '["\\']', 'gi'), 'href="#contatti"');
   }
+  // Translate navigation labels whose matching demo-only section was removed.
+  out = out.replace(/\bPressing\b/gi, sector.nav[0]);
+  out = out.replace(/\bCatalogue\b/gi, sector.nav[1]);
+  out = out.replace(/\bMembership\b/gi, sector.nav[2]);
+  out = out.replace(/\bCollection\b/gi, sector.nav[0]);
+  out = out.replace(/\bNight hours\b/gi, sector.nav[1]);
+  out = out.replace(/\bCoffrets?\b/gi, sector.nav[0]);
+  out = out.replace(/\bBook a night visit\b/gi, sector.cta);
   out = out.replace(/<head>/i, '<head>\n' + businessChrome +
     '.tw-nav{display:none!important}.pressing .tracks,.pressing .buy,.catalogue .sleeves,.club .tiers{display:none!important}' +
     '</style>');
@@ -519,6 +529,20 @@ for (const dir of siteDirs) {
   html = html.replace(/<html(?![^>]*\blang=)/i, '<html lang="it"');
   // Keep the actual chosen template identifiable for the catalog and audits.
   html = html.replace(/<html([^>]*)>/i, (m, attrs) => '<html' + attrs.replace(/\sdata-template-3d=["'][^"']*["']/i, "") + ' data-template-3d="' + sector.id + '">');
+  if (!/<title\b[^>]*>[\s\S]*?<\/title>/i.test(html)) {
+    html = html.replace(/<head\b[^>]*>/i, '  // Keep the actual chosen template identifiable for the catalog and audits.
+  html = html.replace(/<html([^>]*)>/i, (m, attrs) => '<html' + attrs.replace(/\sdata-template-3d=["'][^"']*["']/i, "") + ' data-template-3d="' + sector.id + '">');
+  fs.writeFileSync(file, html);<title>' + titleText + ' — ' + sector.kind + '</title>');
+  }
+  if (!/<h1\b[^>]*>[\s\S]*?<\/h1>/i.test(html)) {
+    const fallbackHeading = '<h1 class="business-title">' + esc(titleText) + '</h1>';
+    if (/<main\b[^>]*>/i.test(html)) html = html.replace(/<main\b[^>]*>/i, '  // Keep the actual chosen template identifiable for the catalog and audits.
+  html = html.replace(/<html([^>]*)>/i, (m, attrs) => '<html' + attrs.replace(/\sdata-template-3d=["'][^"']*["']/i, "") + ' data-template-3d="' + sector.id + '">');
+  fs.writeFileSync(file, html);' + fallbackHeading);
+    else html = html.replace(/<body\b[^>]*>/i, '  // Keep the actual chosen template identifiable for the catalog and audits.
+  html = html.replace(/<html([^>]*)>/i, (m, attrs) => '<html' + attrs.replace(/\sdata-template-3d=["'][^"']*["']/i, "") + ' data-template-3d="' + sector.id + '">');
+  fs.writeFileSync(file, html);' + fallbackHeading);
+  }
   fs.writeFileSync(file, html);
   done++;
 }
