@@ -31,6 +31,12 @@ const sectors = [
 ];
 const fallback = { id: "gambit", kind: "attività professionale", nav: ["Servizi", "Attività", "Contatti"], cta: "Richiedi informazioni", description: "Scopri i servizi dell’attività e contattala per informazioni. Le informazioni specifiche vanno confermate direttamente con l’attività." };
 
+function unescapeHtml(s) {
+  return String(s || "").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'").replace(/&nbsp;/gi, " ")
+    .replace(/&#(\\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)));
+}
 function esc(s) { return String(s || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 function attr(html, re) { return (html.match(re) || [])[1] || ""; }
 function getTextLinks(html) {
@@ -229,7 +235,7 @@ for (const dir of siteDirs) {
   const oldHtml = fs.readFileSync(file, "utf8");
   const record = manifestRecords.get(dir.name) || {};
   const rawTitle = attr(oldHtml, /<title[^>]*>([\s\S]*?)<\/title>/i).replace(/<[^>]+>/g, "").trim();
-  const titleText = String(record.nome || rawTitle.replace(/\s*[—–-]\s*(?:Varese|[A-ZÀ-Ü][a-zà-ü]+)(?:\s*[—–-]\s*.*)?$/i, "").replace(/\s*[—–-]\s*concept web.*$/i, "").trim() || dir.name.replace(/-/g, " "));
+  const titleText = unescapeHtml(record.nome || rawTitle.replace(/\s*[—–-]\s*(?:Varese|[A-ZÀ-Ü][a-zà-ü]+)(?:\s*[—–-]\s*.*)?$/i, "").replace(/\s*[—–-]\s*concept web.*$/i, "").trim() || dir.name.replace(/-/g, " "));
   const description = attr(oldHtml, /<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i);
   const eyebrow = (oldHtml.match(/class=["'][^"']*eyebrow[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>/i) || [])[1] || "";
   const manifestSector = String(record.settore || "");
