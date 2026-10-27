@@ -209,15 +209,15 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
 
   // Normalize every remaining visible section, not only the first hero paragraph.
   // Template demo stories often live in repeated .lede/.byline elements or styled headings.
-  out = out.replace(/<p\\b([^>]*\\bclass=["'][^"']*\\b(?:sub|lead|lede|byline|fine)\\b[^"']*["'][^>]*)>[\\s\\S]*?<\\/p>/gi,
+  out = out.replace(/<p\b([^>]*\bclass=["'][^"']*\b(?:sub|lead|lede|byline|fine)\b[^"']*["'][^>]*)>[\s\S]*?<\/p>/gi,
     (_, attrs) => '<p' + attrs + '>' + esc(businessDescription) + '</p>');
   // Decorative Japanese copy and demo-specific secondary headings are not business content.
-  out = out.replace(/<(p|span|div)\\b([^>]*\\bclass=["'][^"']*\\bjp\\b[^"']*["'][^>]*)>[\\s\\S]*?<\\/\\1>/gi, '');
+  out = out.replace(/<(p|span|div)\b([^>]*\bclass=["'][^"']*\bjp\b[^"']*["'][^>]*)>[\s\S]*?<\/\1>/gi, '');
   let h2Index = 0;
-  out = out.replace(/<h2\\b([^>]*)>[\\s\\S]*?<\\/h2>/gi, (_, attrs) =>
+  out = out.replace(/<h2\b([^>]*)>[\s\S]*?<\/h2>/gi, (_, attrs) =>
     '<h2' + attrs + '>' + esc(sector.nav[h2Index++ % sector.nav.length]) + '</h2>');
   let h3Index = 0;
-  out = out.replace(/<h3\\b([^>]*)>[\\s\\S]*?<\\/h3>/gi, (_, attrs) =>
+  out = out.replace(/<h3\b([^>]*)>[\s\S]*?<\/h3>/gi, (_, attrs) =>
     '<h3' + attrs + '>' + esc(sector.nav[h3Index++ % sector.nav.length]) + '</h3>');
 
   // Remove product pricing/cart affordances from the original demo and add real business actions.
