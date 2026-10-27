@@ -112,13 +112,14 @@ function pick(slug, title, desc, manifestSector = "") {
 function replaceAll(html, pairs) {
   // Replace authored copy case-insensitively without touching HTML attributes, CSS or JS.
   const tokens = /<script\b[\s\S]*?<\/script>|<style\b[\s\S]*?<\/style>|<[^>]+>|[^<]+/gi;
+  const replacements = pairs.map(([from, to]) => [
+    new RegExp(from.replace(/[-/\\^$*+?.()|[\]{}]/g, ch => String.fromCharCode(92) + ch), "gi"),
+    to
+  ]);
   return html.replace(tokens, token => {
     if (token.startsWith("<")) return token;
     let text = token;
-    for (const [from, to] of pairs) {
-      const escaped = from.replace(/[-/\\^$*+?.()|[\]{}]/g, ch => String.fromCharCode(92) + ch);
-      text = text.replace(new RegExp(escaped, "gi"), to);
-    }
+    for (const [pattern, replacement] of replacements) text = text.replace(pattern, replacement);
     return text;
   });
 }
