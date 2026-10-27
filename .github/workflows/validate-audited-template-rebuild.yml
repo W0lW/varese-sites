@@ -126,11 +126,12 @@ jobs:
               visible_html = re.sub(r'<!--[\s\S]*?-->', ' ', visible_html)
               plain = re.sub(r'<[^>]+>', ' ', visible_html)
               plain = re.sub(r'\s+', ' ', plain)
-              found = [x for x in leftovers if x.lower() in plain.lower()]
+              record = by_slug.get(page.parent.name, {})
+              business_name = str(record.get('nome', record.get('attivita', record.get('name', '')))).lower()
+              found = [x for x in leftovers if x.lower() in plain.lower() and x.lower() not in business_name]
               tel_count = len(re.findall(r'href=["\']tel:', html, re.I))
               mail_count = len(re.findall(r'href=["\']mailto:', html, re.I))
               contact_section = bool(re.search(r'id=["\']contatti["\']', html, re.I))
-              record = by_slug.get(page.parent.name, {})
               qa.append({
                   'slug': page.parent.name,
                   'attivita_manifest': record.get('attivita', record.get('nome', record.get('name',''))),
