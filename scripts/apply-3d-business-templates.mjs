@@ -216,7 +216,127 @@ function generatedDescription(business, sector, context = "", slug = "", municip
     place ? "Se ti trovi a " + place + ", usa i contatti di " + business + " per chiarire la richiesta e concordare i prossimi passi." : "Usa i contatti di " + business + " per chiarire la richiesta e concordare i prossimi passi.",
     place ? "Per informazioni aggiornate su " + business + " a " + place + ", fai riferimento ai contatti riportati in questa pagina." : "Per informazioni aggiornate, fai riferimento ai contatti riportati in questa pagina."
   ];
-  return chosen + " " + localClosers[hash % localClosers.length];
+  const openers = [
+    "Una buona scelta comincia da dettagli chiari: ",
+    "Prima di decidere, vale la pena conoscere meglio ",
+    "Ogni richiesta ha il suo contesto: parti da ",
+    "Per capire quale soluzione fa al caso tuo, contatta ",
+    "Un confronto diretto evita supposizioni: chiedi a ",
+    "Quando contano tempi e disponibilità, il punto di partenza è ",
+    "Il primo passo è capire cosa serve davvero: parla con ",
+    "Le informazioni più utili arrivano dal contatto diretto con ",
+    "Per organizzarti senza sorprese, verifica i dettagli con ",
+    "Una scelta fatta bene parte da una domanda precisa: rivolgiti a ",
+    "Hai un’esigenza concreta? Raccontala a ",
+    "Per orientarti tra le opzioni disponibili, comincia da "
+  ];
+  const actionLines = {
+    "ospitalità": [
+      "e chiedi la proposta aggiornata, gli orari e le modalità di prenotazione.",
+      "per capire cosa offre il locale e verificare disponibilità prima della visita.",
+      "per informazioni pratiche su proposta, accoglienza ed eventuali iniziative.",
+      "e chiarisci in anticipo orari, disponibilità e dettagli utili per la tua visita.",
+      "per conoscere le opzioni disponibili e organizzare al meglio il tuo momento.",
+      "e verifica direttamente quali servizi e occasioni sono attualmente proposti.",
+      "per una risposta aggiornata su visita, prenotazioni e informazioni utili.",
+      "e chiedi conferma dei dettagli prima di organizzare la tua uscita."
+    ],
+    "salone": [
+      "per verificare i servizi effettivamente offerti e concordare un appuntamento.",
+      "e chiedi quali trattamenti sono disponibili, con quali tempi e modalità.",
+      "per confrontarti sul risultato che cerchi e verificare come prenotare.",
+      "e chiarisci in anticipo servizi, disponibilità e tempi dell’appuntamento.",
+      "per conoscere le opzioni proposte e scegliere in base alle tue esigenze.",
+      "e descrivi il risultato che hai in mente: i dettagli vanno concordati direttamente.",
+      "per informazioni aggiornate su servizi, appuntamenti e modalità di accesso.",
+      "e chiedi conferma dei servizi disponibili prima di organizzare la visita."
+    ],
+    "pasticceria": [
+      "per conoscere le specialità disponibili e verificare eventuali ordini su richiesta.",
+      "e chiedi quali prodotti sono disponibili e con quanto anticipo prenotare.",
+      "per informarti sulla proposta del giorno, sulle preparazioni e sugli ordini.",
+      "e verifica disponibilità e tempi prima di organizzare una ricorrenza o un ritiro.",
+      "per conoscere l’assortimento aggiornato senza dare per scontato ciò che è disponibile.",
+      "e racconta l’occasione: il laboratorio potrà indicarti le opzioni da confermare.",
+      "per informazioni pratiche su prodotti, prenotazioni e modalità di ritiro.",
+      "e chiedi conferma delle specialità e delle disponibilità del momento."
+    ],
+    "officina": [
+      "per descrivere il problema e chiedere quali interventi e tempi sono possibili.",
+      "e concorda una valutazione prima di programmare la manutenzione o la riparazione.",
+      "per informazioni su lavorazioni, disponibilità e preventivo dell’intervento.",
+      "e spiega cosa serve al veicolo, così da verificare il servizio più adatto.",
+      "per chiarire tempi e modalità prima di fissare un appuntamento in officina.",
+      "e chiedi una valutazione dei lavori necessari e dei relativi costi.",
+      "per concordare il prossimo passo in base al problema e alla disponibilità.",
+      "e verifica direttamente quali interventi vengono eseguiti e con quali tempi."
+    ],
+    "sport": [
+      "per conoscere attività, corsi e modalità di accesso attualmente disponibili.",
+      "e chiedi informazioni su orari, iscrizioni e percorsi adatti al tuo obiettivo.",
+      "per capire quali attività sono proposte e come partecipare.",
+      "e verifica disponibilità, calendario e modalità di prova o iscrizione.",
+      "per trovare informazioni aggiornate prima di organizzare il tuo percorso.",
+      "e confrontati sulle opzioni disponibili e sui requisiti per iniziare.",
+      "per conoscere le proposte e scegliere come fare il primo passo.",
+      "e chiedi conferma di corsi, orari e modalità di accesso."
+    ],
+    "edilizia": [
+      "per presentare il progetto e chiedere un confronto su lavorazioni e preventivo.",
+      "e descrivi l’intervento: tempi, fattibilità e costi vanno valutati sul caso concreto.",
+      "per capire quali lavorazioni possono essere prese in considerazione.",
+      "e concorda una valutazione prima di pianificare tempi e fasi del lavoro.",
+      "per discutere le esigenze del progetto e richiedere informazioni sui prossimi passi.",
+      "e chiarisci obiettivi e vincoli per ottenere indicazioni pertinenti.",
+      "per richiedere un confronto sul lavoro da realizzare e sulle modalità operative.",
+      "e chiedi una valutazione specifica, senza affidarti a stime generiche."
+    ],
+    "impianti": [
+      "per descrivere l’impianto e verificare assistenza, interventi e disponibilità.",
+      "e chiedi se il servizio richiesto rientra nelle attività svolte.",
+      "per chiarire esigenze tecniche, tempi e possibilità di sopralluogo.",
+      "e concorda una valutazione prima di pianificare installazione o manutenzione.",
+      "per informazioni sulle soluzioni effettivamente disponibili per il tuo caso.",
+      "e spiega il problema per verificare modalità e tempi di intervento.",
+      "per discutere la richiesta e capire quale sia il prossimo passo utile.",
+      "e chiedi conferma delle competenze e dei servizi pertinenti al tuo impianto."
+    ],
+    "pulizie": [
+      "per descrivere gli ambienti e chiedere quali interventi e frequenze sono possibili.",
+      "e verifica i servizi disponibili e richiedi un preventivo in base alle necessità.",
+      "per chiarire superfici, esigenze e modalità del servizio prima di concordare il lavoro.",
+      "e spiega cosa occorre: la proposta va definita in base agli spazi da trattare.",
+      "per informazioni pratiche su disponibilità, interventi e preventivi.",
+      "e chiedi una valutazione delle necessità prima di fissare tempi e modalità.",
+      "per capire quali soluzioni possono essere valutate per i tuoi ambienti.",
+      "e concorda direttamente i dettagli del servizio più adatto alla richiesta."
+    ],
+    "verde": [
+      "per chiarire quali interventi sul verde sono disponibili e in quali tempi.",
+      "e descrivi lo spazio da curare per chiedere indicazioni e un eventuale preventivo.",
+      "per informazioni su manutenzione, lavorazioni e disponibilità.",
+      "e concorda una valutazione in base alle caratteristiche dell’area.",
+      "per capire quali attività possono essere proposte per il tuo spazio esterno.",
+      "e verifica direttamente tempi e modalità prima di programmare il lavoro.",
+      "per discutere la richiesta e definire i dettagli dell’intervento.",
+      "e chiedi conferma dei servizi disponibili per le esigenze del tuo spazio."
+    ],
+    "default": [
+      "per capire quali servizi sono effettivamente disponibili e come procedere.",
+      "e descrivi la tua esigenza: potrai verificare direttamente opzioni e modalità.",
+      "per ottenere informazioni pertinenti e chiarire i prossimi passi.",
+      "e chiedi conferma di servizi, tempi e disponibilità prima di prendere accordi.",
+      "per confrontarti sulla richiesta e capire quali possibilità valutare.",
+      "e verifica direttamente i dettagli utili prima di decidere.",
+      "per conoscere le opzioni disponibili e capire se rispondono alla tua necessità.",
+      "e chiedi indicazioni aggiornate, senza dare per scontate informazioni non confermate."
+    ]
+  };
+  const opener = openers[hash % openers.length];
+  const actions = actionLines[sector.kind] || actionLines.default;
+  const tailored = opener + business + (municipality ? " a " + municipality : "") + " " +
+    actions[Math.floor(hash / 13) % actions.length];
+  return curatedCopy[slug] || tailored + " " + localClosers[Math.floor(hash / 101) % localClosers.length];
 }
 function rewrite(html, business, sector, phone, email, address, context = "", municipality = "", phoneCandidate = "", emailCandidate = "") {
   const title = esc(business);
