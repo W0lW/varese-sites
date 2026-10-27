@@ -330,7 +330,10 @@ function generatedDescription(business, sector, context = "", slug = "", municip
   let hash = 0;
   for (const char of (slug || business)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
   const curatedCopy = {
-    "barber-garage": "Taglio uomo e cura della barba in un barbershop dal carattere industriale. Barber Garage si trova in via Giacomo Matteotti 13, Busto Arsizio: chiama per concordare un appuntamento e confermare i servizi disponibili."
+    "barber-garage": "Barber Garage è una barberia in Via Matteotti 13, a Busto Arsizio. Le fonti locali indicano taglio uomo e cura della barba: chiama per confermare i servizi disponibili e concordare un appuntamento.",
+    "alternativa-bar": "Alternativa Bar è un bar e gelateria in Via Antonio Maria Ceriani 39 a Uboldo. Le fonti locali citano colazioni, brioche, caffè, gelato artigianale e aperitivi; chiama per verificare orari e proposta del giorno.",
+    "b-b-douglas-house-bike-hotel": "Douglas House è indicato come B&B e Bike Hotel a Varese. Per disponibilità, dotazioni per biciclette, tariffe e prenotazione, verifica direttamente con la struttura.",
+    "autofficina-autoriparazioni-la-piana": "Autofficina Autoriparazioni La Piana si trova in Via Copelli 4 a Luino e risulta dedicata alla manutenzione e riparazione di autoveicoli. Chiama per descrivere il problema, concordare una valutazione e chiedere tempi e preventivo."
   };
   const chosen = curatedCopy[slug] || pool[hash % pool.length];
   const place = String(municipality || "").trim();
@@ -779,7 +782,9 @@ const verifiedContacts = {
   "carpe-diem-parrucchieri": { phone: "3519908483", address: "Via Severo Piatti, 9, 21100 Varese (VA)" },
   "beauty-diffusion-snc": { phone: "0332223588", email: "deboracarcano79@gmail.com", address: "Via Daniele Manin, 30, 21100 Varese (VA)", website: "https://www.beautydiffusion.it" },
   "bergamo-srl": { phone: "0332262356", email: "andrea@bergamosrl.com", address: "Via Stromboli, 16, 21100 Varese (VA)" },
-  "officina-caroleo": { phone: "0332333064", address: "Via Valle Venosta, 9, 21100 Varese (VA)" }
+  "officina-caroleo": { phone: "0332333064", address: "Via Valle Venosta, 9, 21100 Varese (VA)" },
+  "alternativa-bar": { phone: "3337976866", email: "gattoartu2004@libero.it", address: "Via Antonio Maria Ceriani, 39, 21040 Uboldo (VA)" },
+  "autofficina-autoriparazioni-la-piana": { phone: "0332531521", email: "lapiana24@libero.it", address: "Via Copelli, 4, 21016 Luino (VA)" }
 };
 
 // Use the audited CSV first: it contains corrected phones, addresses and template decisions.
