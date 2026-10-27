@@ -96,3 +96,77 @@ jobs:
               raise SystemExit(f'Validation failed: {len(errors)} issue(s)')
           print('Validation passed.')
           PY
+
+      - name: Generate QA reports and preview bundle
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import csv, re, json, zipfile
+          from pathlib import Path
+          root = Path('.')
+          pages = sorted(p for p in (root / 'sites').glob('*/index.html') if p.is_file())
+          manifest_path = root / 'varese_sites_missing_manifest.json'
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          by_slug = {x.get('slug'): x for x in manifest if x.get('slug')}
+          qa = []
+          dist = {}
+          leftovers = [
+              'Add to bag', 'Add to cart', 'Shop No. 9', 'Discovery set',
+              '50 ml — €290', 'Bergamot', 'Iris', 'Vanilla', 'Oud',
+              'No phones on the counter', 'Drop the needle', 'Put your hand on the record',
+              'lunar', 'moon resort', 'vinyl records'
+          ]
+          for page in pages:
+              html = page.read_text(encoding='utf-8', errors='replace')
+              title = (re.search(r'<title[^>]*>(.*?)</title>', html, re.I | re.S) or [None, ''])[1]
+              h1 = (re.search(r'<h1[^>]*>(.*?)</h1>', html, re.I | re.S) or [None, ''])[1]
+              template = (re.search(r'<html\b[^>]*data-template-3d="([^"]+)"', html, re.I) or [None, ''])[1]
+              plain = re.sub(r'<[^>]+>', ' ', html)
+              plain = re.sub(r'\s+', ' ', plain)
+              found = [x for x in leftovers if x.lower() in plain.lower()]
+              tel_count = len(re.findall(r'href=["\']tel:', html, re.I))
+              mail_count = len(re.findall(r'href=["\']mailto:', html, re.I))
+              contact_section = bool(re.search(r'id=["\']contatti["\']', html, re.I))
+              record = by_slug.get(page.parent.name, {})
+              qa.append({
+                  'slug': page.parent.name,
+                  'attivita_manifest': record.get('attivita', record.get('nome', record.get('name',''))),
+                  'template_3d': template or '',
+                  'titolo': re.sub(r'<[^>]+>', '', title).strip(),
+                  'h1': re.sub(r'<[^>]+>', '', h1).strip(),
+                  'lang_it': bool(re.search(r'<html\b[^>]*lang="it"', html, re.I)),
+                  'sezione_contatti': contact_section,
+                  'link_telefono': tel_count,
+                  'link_email': mail_count,
+                  'possibili_residui_demo': ' | '.join(found),
+                  'stato_verifica': 'CONTROLLO VISIVO NECESSARIO' if found else 'QA AUTOMATICO BASE'
+              })
+              dist[template or 'MISSING'] = dist.get(template or 'MISSING', 0) + 1
+          with open('qa-rebuild.csv','w',encoding='utf-8-sig',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=list(qa[0].keys()))
+              w.writeheader(); w.writerows(qa)
+          with open('distribuzione-template.csv','w',encoding='utf-8-sig',newline='') as f:
+              w=csv.writer(f); w.writerow(['template_3d','numero_pagine'])
+              w.writerows(sorted(dist.items(),key=lambda x:(-x[1],x[0])))
+          with zipfile.ZipFile('preview-rebuilt-pages.zip','w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+              for page in pages:
+                  z.write(page, page.as_posix())
+              z.write('qa-rebuild.csv')
+              z.write('distribuzione-template.csv')
+          print(f'QA report rows: {len(qa)}')
+          print(f'Potential demo-copy flags: {sum(bool(x["possibili_residui_demo"]) for x in qa)}')
+          print(f'Pages with contacts section: {sum(x["sezione_contatti"] for x in qa)}')
+          print(f'Pages with phone links: {sum(x["link_telefono"] > 0 for x in qa)}')
+          print(f'Pages with email links: {sum(x["link_email"] > 0 for x in qa)}')
+          PY
+
+      - name: Upload rebuilt preview and QA reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: varese-sites-rebuilt-preview-and-qa
+          path: |
+            preview-rebuilt-pages.zip
+            qa-rebuild.csv
+            distribuzione-template.csv
+          if-no-files-found: error
+          retention-days: 14
