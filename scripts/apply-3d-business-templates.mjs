@@ -79,6 +79,61 @@ function removeSectionById(html, id) {
 function getTextLinks(html) {
   return [...html.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)].map(m => ({ href: m[1], text: m[2].replace(/<[^>]+>/g, "").trim() }));
 }
+const businessCategoryDefinitions = {
+  bar_cafe: { kind: "bar e caffetteria", copyType: "bar_cafe", nav: ["La proposta", "Il locale", "Contatti"], cta: "Contatta il locale", description: "Bar, caffetteria e momenti da condividere: verifica direttamente proposta, orari e disponibilità." },
+  restaurant: { kind: "ristorazione", copyType: "restaurant", nav: ["Cucina", "Il locale", "Contatti"], cta: "Chiedi un tavolo", description: "Un'attività di ristorazione da conoscere attraverso la proposta del locale; menu e disponibilità vanno confermati direttamente." },
+  pizzeria: { kind: "pizzeria", copyType: "pizzeria", nav: ["Pizza", "Il locale", "Contatti"], cta: "Chiedi un tavolo", description: "Pizzeria e proposta da scoprire direttamente: contatta il locale per menu aggiornato, orari e prenotazioni." },
+  bakery: { kind: "panetteria e pasticceria", copyType: "bakery", nav: ["Specialità", "Laboratorio", "Contatti"], cta: "Chiedi le specialità", description: "Prodotti da forno, pasticceria e specialità da conoscere direttamente con il laboratorio." },
+  food_retail: { kind: "negozio alimentare", copyType: "food_retail", nav: ["Prodotti", "Negozio", "Contatti"], cta: "Chiedi disponibilità", description: "Un punto vendita alimentare: chiedi informazioni su assortimento, disponibilità e orari aggiornati." },
+  hair: { kind: "parrucchiere", copyType: "hair", nav: ["Servizi", "Stile", "Contatti"], cta: "Prenota un appuntamento", description: "Taglio, piega e cura dei capelli: contatta il salone per confermare servizi e appuntamenti." },
+  salon_beauty: { kind: "salone e benessere", copyType: "salon_beauty", nav: ["Servizi", "Trattamenti", "Contatti"], cta: "Chiedi un appuntamento", description: "Servizi dedicati alla cura della persona: chiedi direttamente quali trattamenti sono disponibili." },
+  beauty: { kind: "centro estetico", copyType: "beauty", nav: ["Trattamenti", "Benessere", "Contatti"], cta: "Chiedi un appuntamento", description: "Trattamenti estetici e benessere: contatta il centro per conoscere la proposta e le disponibilità." },
+  tattoo: { kind: "studio tattoo", copyType: "tattoo", nav: ["Stili", "Lo studio", "Contatti"], cta: "Richiedi informazioni", description: "Uno spazio dedicato ai tatuaggi e ai progetti grafici: confrontati con lo studio su stile, appuntamenti e disponibilità." },
+  automotive: { kind: "servizi auto", copyType: "automotive", nav: ["Interventi", "Servizi", "Contatti"], cta: "Chiedi una valutazione", description: "Servizi legati ai veicoli: descrivi la tua esigenza e verifica direttamente gli interventi disponibili." },
+  hospitality: { kind: "ospitalità", copyType: "hospitality", nav: ["Soggiorno", "La struttura", "Contatti"], cta: "Verifica disponibilità", description: "Informazioni su soggiorni, accoglienza e servizi: disponibilità e condizioni vanno confermate direttamente." },
+  real_estate: { kind: "servizi immobiliari", copyType: "real_estate", nav: ["Immobili", "Servizi", "Contatti"], cta: "Chiedi informazioni", description: "Servizi immobiliari e supporto nella ricerca o gestione degli immobili: contatta l'agenzia per dettagli aggiornati." },
+  legal_professional: { kind: "servizi professionali", copyType: "legal_professional", nav: ["Servizi", "Lo studio", "Contatti"], cta: "Richiedi informazioni", description: "Servizi professionali: descrivi la tua necessità e verifica direttamente competenze, modalità e disponibilità." },
+  construction_trades: { kind: "lavori e installazioni", copyType: "construction_trades", nav: ["Lavorazioni", "Progetti", "Contatti"], cta: "Richiedi un preventivo", description: "Lavorazioni tecniche e interventi su misura: racconta il progetto e chiedi una valutazione sul caso concreto." },
+  industrial_services: { kind: "forniture e servizi industriali", copyType: "industrial_services", nav: ["Soluzioni", "Attività", "Contatti"], cta: "Richiedi informazioni", description: "Forniture e servizi per esigenze tecniche e produttive: contatta l'azienda per verificare prodotti e disponibilità." },
+  retail_design: { kind: "negozio specializzato", copyType: "retail_design", nav: ["Prodotti", "Il negozio", "Contatti"], cta: "Chiedi disponibilità", description: "Un negozio specializzato da conoscere attraverso la sua proposta: chiedi direttamente assortimento, servizi e orari." },
+  art_craft: { kind: "arte e artigianato", copyType: "art_craft", nav: ["Collezione", "Lavorazioni", "Contatti"], cta: "Chiedi informazioni", description: "Arte, oggetti e lavorazioni da approfondire con chi se ne occupa: contatta l'attività per dettagli e disponibilità." },
+  optical: { kind: "ottica", copyType: "optical", nav: ["Occhiali", "Servizi ottici", "Contatti"], cta: "Chiedi informazioni", description: "Occhiali e servizi ottici: contatta il punto vendita per informazioni su prodotti, servizi e disponibilità." },
+  health: { kind: "salute e benessere", copyType: "health", nav: ["Servizi", "Lo studio", "Contatti"], cta: "Richiedi informazioni", description: "Servizi legati alla salute e al benessere: chiedi direttamente informazioni pertinenti alla tua esigenza." },
+  pet_supply: { kind: "articoli per animali", copyType: "pet_supply", nav: ["Prodotti", "Il punto vendita", "Contatti"], cta: "Chiedi informazioni", description: "Articoli e soluzioni per gli animali: verifica direttamente assortimento, disponibilità e servizi." },
+  florist_garden: { kind: "fiori e giardinaggio", copyType: "florist_garden", nav: ["Proposte", "Verde", "Contatti"], cta: "Chiedi informazioni", description: "Fiori, piante e cura del verde: contatta l'attività per conoscere proposte e servizi disponibili." },
+  fitness: { kind: "sport e fitness", copyType: "fitness", nav: ["Attività", "Spazi", "Contatti"], cta: "Chiedi informazioni", description: "Attività sportive e percorsi di movimento: verifica corsi, orari e modalità di accesso." },
+  education_culture: { kind: "cultura e formazione", copyType: "education_culture", nav: ["Attività", "Incontri", "Contatti"], cta: "Scopri le attività", description: "Attività culturali, formative e iniziative da conoscere attraverso il programma aggiornato dell'organizzazione." },
+  travel: { kind: "viaggi e mobilità", copyType: "travel", nav: ["Proposte", "Servizi", "Contatti"], cta: "Richiedi informazioni", description: "Servizi di viaggio e mobilità: contatta l'attività per verificare itinerari, disponibilità o modalità operative." },
+  creative_services: { kind: "servizi creativi", copyType: "creative_services", nav: ["Progetti", "Lo studio", "Contatti"], cta: "Parliamone", description: "Progetti creativi e servizi su misura: racconta l'idea e chiedi informazioni sulle possibilità." },
+  cleaning_services: { kind: "pulizie e lavanderia", copyType: "cleaning_services", nav: ["Servizi", "Lavorazioni", "Contatti"], cta: "Richiedi informazioni", description: "Servizi di pulizia, lavaggio o cura degli ambienti: chiedi una proposta in base alle necessità concrete." },
+  logistics_business: { kind: "servizi alle imprese", copyType: "logistics_business", nav: ["Servizi", "Attività", "Contatti"], cta: "Richiedi informazioni", description: "Supporto operativo e servizi per attività professionali: contatta l'azienda per capire quali soluzioni sono disponibili." },
+  needs_review: { kind: "attività locale", copyType: "needs_review", nav: ["Informazioni", "Attività", "Contatti"], cta: "Richiedi informazioni", description: "Per non attribuire servizi non verificati, chiedi direttamente all'attività informazioni aggiornate su ciò che offre." }
+};
+
+const businessCategoryCodes = {
+  bc: "bar_cafe", rd: "retail_design", ba: "bakery", ha: "hair", re: "restaurant", au: "automotive", ho: "hospitality",
+  be: "beauty", ct: "construction_trades", fg: "florist_garden", cl: "cleaning_services", lp: "legal_professional",
+  sb: "salon_beauty", ac: "art_craft", op: "optical", tr: "travel", ri: "real_estate", fi: "fitness", ta: "tattoo",
+  cs: "creative_services", ec: "education_culture", he: "health", pz: "pizzeria", ps: "pet_supply", fr: "food_retail",
+  "??": "needs_review", is: "industrial_services", lb: "logistics_business"
+};
+
+const businessCategoryOverrides = new Map();
+const businessCategoryPath = path.join(root, "audit-business-categories.json.gz.b64");
+if (fs.existsSync(businessCategoryPath)) {
+  const encoded = fs.readFileSync(businessCategoryPath, "utf8").trim();
+  for (const [slug, code] of JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString("utf8"))) {
+    if (slug) businessCategoryOverrides.set(slug, businessCategoryCodes[code] || "needs_review");
+  }
+}
+const businessCategorySources = new Map();
+const businessCategorySourcesPath = path.join(root, "audit-category-sources.csv");
+if (fs.existsSync(businessCategorySourcesPath)) {
+  for (const item of parseCsv(fs.readFileSync(businessCategorySourcesPath, "utf8"))) {
+    if (item.slug) businessCategorySources.set(item.slug, item);
+  }
+}
+
 function pick(slug, title, desc, manifestSector = "") {
   const category = String(manifestSector || "").toLocaleLowerCase("it");
   // Trust the manifest's sector before fuzzy matching names: e.g. "restaurant" contains "restaur"
