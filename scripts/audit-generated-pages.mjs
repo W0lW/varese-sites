@@ -33,6 +33,19 @@ function stripNonContent(html) {
     .replace(/&(?:amp|nbsp|lt|gt|quot|#39);/gi, " ");
 }
 
+function phoneDigits(value) {
+  return String(value || "").replace(/\\D/g, "");
+}
+function phoneMatchesHtml(html, phone) {
+  const expected = phoneDigits(phone);
+  if (!expected) return true;
+  const telLinks = [...String(html || "").matchAll(/href=["']tel:([^"']+)["']/gi)]
+    .map(match => phoneDigits(match[1]));
+  // Allow international prefixes and formatting differences, but require the complete national number.
+  const national = expected.replace(/^0039/, "").replace(/^39(?=0|3)/, "");
+  return telLinks.some(value => value === expected || value.endsWith(national) || expected.endsWith(value));
+}
+
 function parseCsv(text) {
   const rows = []; let row = [], cell = "", quoted = false;
   const input = String(text || "").replace(/^\uFEFF/, "");
@@ -205,7 +218,7 @@ function inspectPage(file) {
     inferAuditCategoryKey(categoryText, [record?.nome, extraRecord?.nome, extraRecord?.titolo_pagina, title, h1].filter(Boolean).join(" "), template);
   if (!categoryKey || categoryKey === "needs_review") findings.push({ code: "BUSINESS_CATEGORY_NEEDS_REVIEW", sample: "Category inferred from limited business data; manual review recommended" });
   if (record) {
-    if (record.telefono && !html.includes(record.telefono)) findings.push({ code: "MANIFEST_PHONE_MISSING", sample: record.telefono });
+    if (record.telefono && !phoneMatchesHtml(html, record.telefono)) findings.push({ code: "MANIFEST_PHONE_MISSING", sample: record.telefono });
     if (record.email && !html.includes(record.email)) findings.push({ code: "MANIFEST_EMAIL_MISSING", sample: record.email });
     if (record.indirizzo && !html.includes(record.indirizzo)) findings.push({ code: "MANIFEST_ADDRESS_MISSING", sample: record.indirizzo });
     if (record.template_id_3d && template !== record.template_id_3d) findings.push({ code: "AUDITED_TEMPLATE_MISMATCH", sample: "expected " + record.template_id_3d + ", got " + (template || "(missing)") });
@@ -286,7 +299,7 @@ function inspectPage(file) {
     category_source: categorySource.source_url || "",
     category_reason: categorySource.reason || (categoryKey === "needs_review" ? "needs_review" : "nome/settore auditato"),
     data_source: record ? "manifest" : (extraRecord ? "fuori_manifest_da_verificare" : "pagina_senza_record_audit"),
-    phone_from_manifest: record?.telefono || "", phone_present: Boolean(record?.telefono && html.includes(record.telefono)),
+    phone_from_manifest: record?.telefono || "", phone_present: Boolean(record?.telefono && phoneMatchesHtml(html, record.telefono)),
     email_from_manifest: record?.email || "", email_present: Boolean(record?.email && html.includes(record.email)),
     address_from_manifest: record?.indirizzo || "", address_present: Boolean(record?.indirizzo && html.includes(record.indirizzo)),
     phone_candidate: candidate?.telefono_snippet_da_verificare || "",
