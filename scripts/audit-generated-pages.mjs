@@ -24,9 +24,12 @@ const rules = [
 
 function stripNonContent(html) {
   return html
-    .replace(/<!--[\s\S]*?-->/g, " ")
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ");
+    .replace(/<!--[\\s\\S]*?-->/g, " ")
+    .replace(/<script\\b[^>]*>[\\s\\S]*?<\\/script>/gi, " ")
+    .replace(/<style\\b[^>]*>[\\s\\S]*?<\\/style>/gi, " ")
+    // Audit visible copy, not aria-labels, asset URLs, class names or other markup attributes.
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&(?:amp|nbsp|lt|gt|quot|#39);/gi, " ");
 }
 
 function inspectPage(file) {
@@ -40,6 +43,9 @@ function inspectPage(file) {
   if (!template) findings.push({ code: "MISSING_3D_TEMPLATE", sample: "(missing data-template-3d)" });
   if (!/id=["']business-page-cleanup["']/i.test(html)) {
     findings.push({ code: "MISSING_BUSINESS_CHROME_CLEANUP", sample: "Template switcher / demo card cleanup missing" });
+  }
+  if (/<section\\b(?=[^>]*\\bid=["'](?:club|catalogue)["'])[^>]*>/i.test(html)) {
+    findings.push({ code: "UNRELATED_COMMERCE_SECTION", sample: "Fictional catalogue or paid membership section remains in the page source" });
   }
   if (!title.trim()) findings.push({ code: "MISSING_TITLE", sample: "(missing title)" });
   if (!/<link\b[^>]*rel=["']stylesheet["'][^>]*href=["'][^"']+["']/i.test(html)) {
