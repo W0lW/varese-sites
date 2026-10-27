@@ -225,6 +225,8 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
   out = out.replace(/src="\.\.\/\.\.\/assets\//g, 'src="/varese-sites/Template%203D/assets/');
   out = out.replace(/href="\.\.\/assets\//g, 'href="/varese-sites/Template%203D/assets/');
   out = out.replace(/src="\.\.\/assets\//g, 'src="/varese-sites/Template%203D/assets/');
+  // Use paths relative to each /sites/<slug>/ page: works on both project Pages and root Pages.
+  out = out.replace(/(["'=])\/varese-sites\/Template%203D\/assets\//g, '$1../../Template%203D/assets/');
 
   // Last-resort cleanup for known fictional demo content that must never reach a business page.
   // Keep unknown content for the QA gate to flag rather than guessing at a replacement.
