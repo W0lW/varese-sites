@@ -188,7 +188,7 @@ function generatedDescription(business, sector, context = "", slug = "", municip
   ];
   return chosen + " " + localClosers[hash % localClosers.length];
 }
-function rewrite(html, business, sector, phone, email, address, context = "", municipality = "") {
+function rewrite(html, business, sector, phone, email, address, context = "", municipality = "", phoneCandidate = "", emailCandidate = "") {
   const title = esc(business);
   let out = html.replace(/<html lang="en">/i, '<html lang="it">');
   out = out.replace(/<title>[\s\S]*?<\/title>/i, '<title>' + title + ' — ' + sector.kind + '</title>');
@@ -348,12 +348,16 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
   out = out.replace(/<a class="btn btn-ghost" href="#shop"[^>]*>[\s\S]*?<\/a>/i, '<a class="btn btn-ghost" href="#contatti" data-magnetic>' + esc(sector.cta) + '</a>');
   out = out.replace(/<a class="btn btn-text" href="#bergamot"[^>]*>[\s\S]*?<\/a>/i, '<a class="btn btn-text" href="#contatti">' + esc(sector.nav[2]) + '</a>');
 
-  const mapQuery = encodeURIComponent(address ? address : business + " Varese");
+  const mapQuery = encodeURIComponent(address || (business + (municipality ? " " + municipality : "")));
   const contactHtml = '<section class="note" id="contatti" data-stop="7" data-side="left"><p class="eyebrow">Contatti</p><h2>Parliamo <em>con te.</em></h2><p>' + esc(sector.description) + '</p><div class="actions">' +
-    (phone ? '<a class="btn btn-solid" href="tel:' + esc(String(phone).replace(/[^0-9+]/g, "")) + '">Chiama ' + esc(phone) + '</a>' : '<span class="btn btn-ghost" aria-label="Numero telefonico non disponibile nei dati verificati">Numero non disponibile</span>') +
-    (email ? '<a class="btn btn-ghost" href="mailto:' + esc(email) + '">Scrivi</a>' : '') +
+    (phone ? '<a class="btn btn-solid" href="tel:' + esc(String(phone).split(/[;|]/)[0].replace(/[^0-9+]/g, "")) + '">Chiama ' + esc(phone) + '</a>' :
+      phoneCandidate ? '<a class="btn btn-solid" href="tel:' + esc(String(phoneCandidate).split(/[;|]/)[0].replace(/[^0-9+]/g, "")) + '">Numero da verificare: ' + esc(phoneCandidate) + '</a>' :
+      '<span class="btn btn-ghost" aria-label="Numero telefonico non disponibile nei dati verificati">Numero non disponibile</span>') +
+    (email ? '<a class="btn btn-ghost" href="mailto:' + esc(email) + '">Scrivi ' + esc(email) + '</a>' :
+      emailCandidate ? '<a class="btn btn-ghost" href="mailto:' + esc(emailCandidate) + '">Email da verificare: ' + esc(emailCandidate) + '</a>' : '') +
     '<a class="btn btn-ghost" href="https://www.google.com/maps/search/?api=1&query=' + mapQuery + '" target="_blank" rel="noopener noreferrer">Indicazioni stradali</a>' +
-    '</div>' + (address ? '<p>' + esc(address) + '</p>' : '<p class="contact-note">Indirizzo da verificare prima della pubblicazione definitiva.</p>') + '</section>';
+    '</div>' + (address ? '<p>' + esc(address) + '</p>' : '<p class="contact-note">Indirizzo da verificare prima della pubblicazione definitiva.</p>') +
+    ((!phone && phoneCandidate) || (!email && emailCandidate) ? '<p class="contact-note">I contatti contrassegnati come da verificare provengono da snippet web e vanno confermati prima della pubblicazione definitiva.</p>' : '') + '</section>';
   if (!out.includes('id="contatti"')) {
     if (/<footer\b/i.test(out)) out = out.replace(/<footer\b/i, contactHtml + '\n<footer');
     else out = out.replace(/<\/body>/i, contactHtml + '\n</body>');
@@ -432,6 +436,26 @@ if (fs.existsSync(manifestCsvPath)) {
   for (const item of JSON.parse(fs.readFileSync(manifestPath, "utf8"))) if (item.slug) manifestRecords.set(item.slug, item);
 }
 
+// The workbook audit separates 86 pages outside the prospect manifest and 268 web-snippet contact candidates.
+// Keep those records distinct: out-of-manifest businesses are still regenerated, but not silently promoted to prospects.
+const extraPagesPath = path.join(root, "audit-extra-pages.csv");
+if (fs.existsSync(extraPagesPath)) {
+  for (const item of parseCsv(fs.readFileSync(extraPagesPath, "utf8"))) {
+    if (!item.slug || manifestRecords.has(item.slug)) continue;
+    manifestRecords.set(item.slug, {
+      slug: item.slug, nome: item.nome || "", comune: item.comune || "", settore: item.settore || "",
+      telefono: "", email: "", indirizzo: "", template_id_3d: "", audit_provenienza: "fuori_manifest_da_verificare"
+    });
+  }
+}
+const candidateContacts = new Map();
+const candidateContactsPath = path.join(root, "audit-contact-candidates.csv");
+if (fs.existsSync(candidateContactsPath)) {
+  for (const item of parseCsv(fs.readFileSync(candidateContactsPath, "utf8"))) {
+    if (item.slug) candidateContacts.set(item.slug, item);
+  }
+}
+
 const sitesDir = path.join(root, "sites");
 const siteDirs = fs.readdirSync(sitesDir, { withFileTypes: true }).filter(d => d.isDirectory());
 let done = 0;
@@ -461,16 +485,19 @@ for (const dir of siteDirs) {
   const discoveredEmail = (links.find(x => /^mailto:/i.test(x.href)) || {}).href?.replace(/^mailto:/i, "") || "";
   const discoveredAddress = (oldHtml.match(/(?:Via|Viale|Piazza|P.zza|Corso|Largo|Strada|Vicolo|Piazzale)\s+[^<\n]{4,100}/i) || [])[0] || "";
   const verified = verifiedContacts[dir.name] || {};
-  const phone = verified.phone || record.telefono || discoveredPhone;
-  const email = verified.email || record.email || discoveredEmail;
-  const address = verified.address || record.indirizzo || discoveredAddress;
+  const phone = verified.phone || record.telefono || "";
+  const email = verified.email || record.email || "";
+  const address = verified.address || record.indirizzo || "";
+  const candidate = candidateContacts.get(dir.name) || {};
+  const phoneCandidate = phone ? "" : String(candidate.telefono_snippet_da_verificare || "");
+  const emailCandidate = email ? "" : String(candidate.email_snippet_da_verificare || "");
   const templatePath = path.join(builtExamples, sector.id, "index.html");
   if (!fs.existsSync(templatePath)) {
     failures.push(dir.name + " -> template mancante: " + sector.id);
     continue;
   }
   const templateHtml = fs.readFileSync(templatePath, "utf8");
-  let html = rewrite(templateHtml, titleText, sector, phone, email, address, sectorText, String(record.comune || ""));
+  let html = rewrite(templateHtml, titleText, sector, phone, email, address, sectorText, String(record.comune || ""), phoneCandidate, emailCandidate);
   // Remove any old preview-link remnants if a template contained them.
   html = html.replace(/<section[^>]*class=["'][^"']*template-preview[^"']*["'][^>]*>[\s\S]*?<\/section>/gi, "");
   html = html.replace(/<html([^>]*?)lang=["']en["']/i, '<html$1lang="it"');
