@@ -171,7 +171,16 @@ function generatedDescription(business, sector, context = "", slug = "", municip
     ] : (variants[sector.kind] || variants.default);
   let hash = 0;
   for (const char of (slug || business)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
-  return pool[hash % pool.length];
+  const chosen = pool[hash % pool.length];
+  const place = String(municipality || "").trim();
+  const localClosers = [
+    place ? "A " + place + ", contatta direttamente " + business + " per confermare servizi e disponibilità." : "Contatta direttamente " + business + " per confermare servizi e disponibilità.",
+    place ? "Per chi cerca questo servizio a " + place + ", verifica i dettagli direttamente con " + business + "." : "Verifica i dettagli direttamente con " + business + ".",
+    place ? "Prima di organizzare la visita a " + business + ", a " + place + ", chiedi conferma di orari e modalità." : "Prima della visita, chiedi conferma di orari e modalità direttamente a " + business + ".",
+    place ? "Se ti trovi a " + place + ", usa i contatti di " + business + " per chiarire la richiesta e concordare i prossimi passi." : "Usa i contatti di " + business + " per chiarire la richiesta e concordare i prossimi passi.",
+    place ? "Per informazioni aggiornate su " + business + " a " + place + ", fai riferimento ai contatti riportati in questa pagina." : "Per informazioni aggiornate, fai riferimento ai contatti riportati in questa pagina."
+  ];
+  return chosen + " " + localClosers[hash % localClosers.length];
 }
 function rewrite(html, business, sector, phone, email, address, context = "", municipality = "") {
   const title = esc(business);
@@ -331,7 +340,10 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
     (email ? '<a class="btn btn-ghost" href="mailto:' + esc(email) + '">Scrivi</a>' : '') +
     '<a class="btn btn-ghost" href="https://www.google.com/maps/search/?api=1&query=' + mapQuery + '" target="_blank" rel="noopener noreferrer">Indicazioni stradali</a>' +
     '</div>' + (address ? '<p>' + esc(address) + '</p>' : '<p class="contact-note">Indirizzo da verificare prima della pubblicazione definitiva.</p>') + '</section>';
-  if (!out.includes('id="contatti"')) out = out.replace(/<footer\b/i, contactHtml + '\n<footer');
+  if (!out.includes('id="contatti"')) {
+    if (/<footer\b/i.test(out)) out = out.replace(/<footer\b/i, contactHtml + '\n<footer');
+    else out = out.replace(/<\/body>/i, contactHtml + '\n</body>');
+  }
   out = out.replace(/href="\.\.\/\.\.\/assets\//g, 'href="/varese-sites/Template%203D/assets/');
   out = out.replace(/src="\.\.\/\.\.\/assets\//g, 'src="/varese-sites/Template%203D/assets/');
   out = out.replace(/href="\.\.\/assets\//g, 'href="/varese-sites/Template%203D/assets/');
