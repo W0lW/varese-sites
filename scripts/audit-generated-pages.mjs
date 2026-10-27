@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { gunzipSync, inflateSync, inflateRawSync, brotliDecompressSync } from "node:zlib";
 
 const root = process.cwd();
 const sitesDir = path.join(root, "sites");
@@ -58,6 +59,126 @@ if (fs.existsSync(manifestCsv)) {
   }
 }
 
+const extraPageRecords = new Map();
+const extraPagesCsv = path.join(root, "audit-extra-pages.csv");
+if (fs.existsSync(extraPagesCsv)) for (const r of parseCsv(fs.readFileSync(extraPagesCsv, "utf8"))) if (r.slug) extraPageRecords.set(r.slug, r);
+const candidateContacts = new Map();
+const candidateCsv = path.join(root, "audit-contact-candidates.csv");
+if (fs.existsSync(candidateCsv)) for (const r of parseCsv(fs.readFileSync(candidateCsv, "utf8"))) if (r.slug) candidateContacts.set(r.slug, r);
+const compressedPhoneCandidatesPath = path.join(root, "audit-phone-candidates.json.gz.b64");
+if (fs.existsSync(compressedPhoneCandidatesPath)) {
+  const encoded = fs.readFileSync(compressedPhoneCandidatesPath, "utf8").trim();
+  const candidates = JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString("utf8"));
+  for (const item of candidates) {
+    if (!item.s || !item.p) continue;
+    const existing = candidateContacts.get(item.s) || {};
+    if (existing.telefono_snippet_da_verificare) continue;
+    candidateContacts.set(item.s, { ...existing, slug: item.s, telefono_snippet_da_verificare: item.p, fonte_contatto_web: existing.fonte_contatto_web || item.u || "", source_url: item.u || "", provenance: "Ricerca web — contatto da verificare" });
+  }
+}
+
+const compressedEmailCandidatesPath = path.join(root, "audit-email-candidates.json.gz.b64");
+if (fs.existsSync(compressedEmailCandidatesPath)) {
+  const encoded = fs.readFileSync(compressedEmailCandidatesPath, "utf8").trim();
+  const candidates = JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString("utf8"));
+  for (const item of candidates) {
+    if (!item.s || !item.e) continue;
+    const existing = candidateContacts.get(item.s) || {};
+    if (existing.email_snippet_da_verificare) continue;
+    candidateContacts.set(item.s, { ...existing, slug: item.s, email_snippet_da_verificare: item.e, email_source_url: item.u || "", provenance: existing.provenance || "Ricerca web — contatto da verificare" });
+  }
+}
+
+const verifiedContactOverrides = {
+  "carpe-diem-parrucchieri": { phone: "3519908483" },
+  "beauty-diffusion-snc": { phone: "0332223588", email: "deboracarcano79@gmail.com" },
+  "bergamo-srl": { phone: "0332262356", email: "andrea@bergamosrl.com" },
+  "officina-caroleo": { phone: "0332333064" }
+};
+
+const businessCategoryCodes = {
+  bc: "bar_cafe", rd: "retail_design", ba: "bakery", ha: "hair", re: "restaurant", au: "automotive", ho: "hospitality",
+  be: "beauty", ct: "construction_trades", fg: "florist_garden", cl: "cleaning_services", lp: "legal_professional",
+  sb: "salon_beauty", ac: "art_craft", op: "optical", tr: "travel", ri: "real_estate", fi: "fitness", ta: "tattoo",
+  cs: "creative_services", ec: "education_culture", he: "health", pz: "pizzeria", ps: "pet_supply", fr: "food_retail",
+  "??": "needs_review", is: "industrial_services", lb: "logistics_business"
+};
+const businessCategoryLetterCodes = {
+  a: "bar_cafe", b: "retail_design", c: "bakery", d: "hair", e: "restaurant", f: "automotive", g: "hospitality",
+  h: "beauty", i: "construction_trades", j: "florist_garden", k: "cleaning_services", l: "legal_professional",
+  m: "salon_beauty", n: "art_craft", o: "optical", p: "travel", q: "real_estate", r: "fitness", s: "tattoo",
+  t: "creative_services", u: "education_culture", v: "health", w: "pizzeria", x: "pet_supply", y: "food_retail",
+  z: "needs_review", A: "industrial_services", B: "logistics_business"
+};
+const businessCategoryOverrides = new Map();
+const businessCategoryPath = path.join(root, "audit-business-categories.json.gz.b64");
+if (fs.existsSync(businessCategoryPath)) {
+  const bytes = Buffer.from(fs.readFileSync(businessCategoryPath, "utf8").trim(), "base64");
+  let decoded = null;
+  for (const decompress of [gunzipSync, inflateSync, inflateRawSync, brotliDecompressSync]) {
+    try {
+      const raw = decompress(bytes).toString("utf8");
+      try { decoded = JSON.parse(raw); } catch { decoded = raw; }
+      break;
+    } catch { /* Unknown compression format: use the auditable CSV and manifest fallback below. */ }
+  }
+  if (Array.isArray(decoded)) {
+    for (const [slug, code] of decoded) {
+      if (slug) businessCategoryOverrides.set(slug, businessCategoryCodes[code] || businessCategoryLetterCodes[code] || String(code || ""));
+    }
+  } else if (typeof decoded === "string") {
+    const slugs = fs.readdirSync(sitesDir, { withFileTypes: true })
+      .filter(entry => entry.isDirectory()).map(entry => entry.name).sort();
+    if (decoded.length === slugs.length) {
+      for (let i = 0; i < slugs.length; i++) {
+        businessCategoryOverrides.set(slugs[i], businessCategoryLetterCodes[decoded[i]] || "needs_review");
+      }
+    }
+  }
+}
+const businessCategorySources = new Map();
+const businessCategorySourcesPath = path.join(root, "audit-category-sources.csv");
+if (fs.existsSync(businessCategorySourcesPath)) {
+  for (const item of parseCsv(fs.readFileSync(businessCategorySourcesPath, "utf8"))) {
+    if (item.slug) businessCategorySources.set(item.slug, item);
+  }
+}
+
+function inferAuditCategoryKey(sectorText, titleText, template) {
+  const hay = (String(sectorText || "") + " " + String(titleText || "")).toLocaleLowerCase("it");
+  const rules = [
+    ["pizzeria", /pizzer/], ["restaurant", /ristorant|trattoria|osteria|sushi|gastronom/],
+    ["bar_cafe", /\bbar\b|caff[eè]|pub\b|birreria|enoteca|cocktail|bistrot|lounge|gelateria/],
+    ["bakery", /pasticcer|panetter|panific|forno\b|bakery|gelateria|cioccolat/],
+    ["food_retail", /alimentar|maceller|salumer|pescher|gastronomia|supermercat/],
+    ["hair", /parrucch|acconciator|barbiere|barber|taglio uomo/], ["beauty", /centro estetico|estetica|nail|unghie/],
+    ["salon_beauty", /salone|benessere|cura della persona|beauty/], ["tattoo", /tatuagg|tattoo|piercing/],
+    ["automotive", /carrozzer|officina|gommist|pneumatic|autoricamb|autolavagg|concessionar|veicol/],
+    ["hospitality", /hotel|albergo|bed.?and.?breakfast|affittacamere|casa vacanze|resort/],
+    ["real_estate", /agenzia immobiliare|immobiliar/],
+    ["legal_professional", /avvocat|notai|commercialist|consulent|geometra|ingegner|architett|assicurazion|caf\b|patronato/],
+    ["construction_trades", /edil|costruzion|ristruttur|serrament|idraulic|elettric|cartongess|murator|scav/],
+    ["industrial_services", /informatica|elettronic|computer|smartphone|automazion|domotic|industr|forniture tecniche|impiant/],
+    ["florist_garden", /fiorist|fioraio|fiori|giardin|vivaio|flor|piante|verde/],
+    ["cleaning_services", /puliz|sanific|lavander|lavasecco/], ["fitness", /palestra|fitness|sport|karate|yoga|pilates|danza|nuoto/],
+    ["optical", /ottic|occhial|optometr/], ["health", /dentist|dentale|medic|fisioterap|farmaci|salute|clinica|psicolog/],
+    ["pet_supply", /animali|pet.?shop|mangimi/], ["travel", /trasport|noleggio|logistic|viagg|trasloc|spedizion|nautic|barca/],
+    ["creative_services", /fotograf|video|grafica|design|marketing|web.?agency|stampa|software|creativ/],
+    ["education_culture", /scuola|formazion|centro studi|associazion culturale|biblioteca|museo|teatro|corsi/],
+    ["art_craft", /artigian|restaur|antiqu|intagliator|cornic|ferro|accia|sald|resine/],
+    ["retail_design", /negozio|boutique|arred|mobili|falegnam|legno|cucine|abbigliamento|calzatur|gioiell|orefic|orolog/]
+  ];
+  for (const [key, pattern] of rules) if (pattern.test(hay)) return key;
+  return ({
+    lowfreq: "bar_cafe", sucre: "bakery", nocturne: "hair", racer: "automotive",
+    hangar: "industrial_services", monolith: "construction_trades", florae: "florist_garden",
+    keeper: "cleaning_services", atlas: "logistics_business", koen: "retail_design",
+    gambit: "legal_professional", reliquary: "art_craft", terrarium: "pet_supply",
+    velocity: "fitness", horologie: "optical", lithos: "health", koi: "food_retail",
+    abyssal: "travel", artemis: "hospitality", ember: "industrial_services", pilot: "automotive"
+  })[template] || "needs_review";
+}
+
 function inspectPage(file) {
   const html = fs.readFileSync(file, "utf8");
   const slug = path.basename(path.dirname(file));
@@ -75,6 +196,14 @@ function inspectPage(file) {
   }
   if (!title.trim()) findings.push({ code: "MISSING_TITLE", sample: "(missing title)" });
   const record = manifestRecords.get(slug);
+  const extraRecord = extraPageRecords.get(slug);
+  const candidate = candidateContacts.get(slug);
+  const categorySource = businessCategorySources.get(slug) || {};
+  const categoryText = record?.settore || extraRecord?.settore || "";
+  const auditedOverride = businessCategoryOverrides.get(slug) || "";
+  const categoryKey = (auditedOverride && auditedOverride !== "needs_review" ? auditedOverride : "") || categorySource.category ||
+    inferAuditCategoryKey(categoryText, [record?.nome, extraRecord?.nome, extraRecord?.titolo_pagina, title, h1].filter(Boolean).join(" "), template);
+  if (!categoryKey || categoryKey === "needs_review") findings.push({ code: "BUSINESS_CATEGORY_NEEDS_REVIEW", sample: "Category inferred from limited business data; manual review recommended" });
   if (record) {
     if (record.telefono && !html.includes(record.telefono)) findings.push({ code: "MANIFEST_PHONE_MISSING", sample: record.telefono });
     if (record.email && !html.includes(record.email)) findings.push({ code: "MANIFEST_EMAIL_MISSING", sample: record.email });
@@ -121,11 +250,52 @@ function inspectPage(file) {
   }
 
   const visible = stripNonContent(html);
+  if (extraRecord && extraRecord.nome && !html.includes(extraRecord.nome) && !html.includes(extraRecord.nome.replace(/&/g, "&amp;"))) {
+    findings.push({ code: "OUT_OF_MANIFEST_NAME_MISSING", sample: extraRecord.nome });
+  }
+  if (candidate) {
+    const curated = verifiedContactOverrides[slug] || {};
+    const digits = value => String(value || "").replace(/\D/g, "");
+    const curatedPhoneDigits = digits(curated.phone);
+    const candidatePhoneDigits = digits(candidate.telefono_snippet_da_verificare);
+    const displayedTelDigits = [...html.matchAll(/href=["']tel:([^"']+)["']/gi)].map(m => digits(m[1]));
+    const curatedPhoneIsDisplayed = Boolean(curatedPhoneDigits && displayedTelDigits.some(value =>
+      value.endsWith(curatedPhoneDigits) || (candidatePhoneDigits && value.endsWith(candidatePhoneDigits))
+    ));
+    const curatedEmailIsDisplayed = Boolean(curated.email && html.toLocaleLowerCase("it").includes(curated.email.toLocaleLowerCase("it")));
+    if (candidate.telefono_snippet_da_verificare && !(record && record.telefono) &&
+        !curatedPhoneIsDisplayed &&
+        (!visible.includes(candidate.telefono_snippet_da_verificare) || !/Numero da verificare/i.test(visible))) {
+      findings.push({ code: "WEB_PHONE_CANDIDATE_NOT_LABELLED", sample: candidate.telefono_snippet_da_verificare });
+    }
+    if (candidate.email_snippet_da_verificare && !(record && record.email) &&
+        !curatedEmailIsDisplayed &&
+        (!visible.includes(candidate.email_snippet_da_verificare) || !/Email da verificare/i.test(visible))) {
+      findings.push({ code: "WEB_EMAIL_CANDIDATE_NOT_LABELLED", sample: candidate.email_snippet_da_verificare });
+    }
+  }
   for (const [code, re] of rules) {
     const match = visible.match(re);
     if (match) findings.push({ code, sample: visible.slice(Math.max(0, match.index - 45), Math.min(visible.length, match.index + match[0].length + 45)).replace(/\s+/g, " ").slice(0, 160) });
   }
-  return { slug, findings };
+  const h1 = (html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/i) || [""])[0].replace(/<[^>]+>/g, " ").replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim();
+  const intro = (html.match(/<p\b[^>]*class=["'][^"']*\b(?:sub|lead|lede)\b[^"']*["'][^>]*>[\s\S]*?<\/p>/i) || [""])[0].replace(/<[^>]+>/g, " ").replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim();
+  return {
+    slug, findings, title: title.replace(/<[^>]+>/g, "").replace(/&amp;/gi, "&").trim(), h1, template, intro,
+    category_key: categoryKey, category_review_required: categoryKey === "needs_review",
+    category_source: categorySource.source_url || "",
+    category_reason: categorySource.reason || (categoryKey === "needs_review" ? "needs_review" : "nome/settore auditato"),
+    data_source: record ? "manifest" : (extraRecord ? "fuori_manifest_da_verificare" : "pagina_senza_record_audit"),
+    phone_from_manifest: record?.telefono || "", phone_present: Boolean(record?.telefono && html.includes(record.telefono)),
+    email_from_manifest: record?.email || "", email_present: Boolean(record?.email && html.includes(record.email)),
+    address_from_manifest: record?.indirizzo || "", address_present: Boolean(record?.indirizzo && html.includes(record.indirizzo)),
+    phone_candidate: candidate?.telefono_snippet_da_verificare || "",
+    phone_candidate_source: candidate?.source_url || candidate?.fonte_contatto_web || "",
+    phone_candidate_labelled: Boolean(candidate?.telefono_snippet_da_verificare && visible.includes(candidate.telefono_snippet_da_verificare) && /Numero da verificare/i.test(visible)),
+    email_candidate: candidate?.email_snippet_da_verificare || "",
+    email_candidate_source: candidate?.email_source_url || candidate?.fonte_contatto_web || "",
+    email_candidate_labelled: Boolean(candidate?.email_snippet_da_verificare && visible.includes(candidate.email_snippet_da_verificare) && /Email da verificare/i.test(visible))
+  };
 }
 
 const pages = fs.readdirSync(sitesDir, { withFileTypes: true })
@@ -135,6 +305,18 @@ const pages = fs.readdirSync(sitesDir, { withFileTypes: true })
   .sort();
 
 const results = pages.map(inspectPage);
+// Repeated introductions are a defect: every business page needs its own generated presentation.
+const introOwners = new Map();
+for (const result of results) {
+  const normalizedIntro = String(result.intro || "").replace(/\s+/g, " ").trim().toLocaleLowerCase("it");
+  if (!normalizedIntro) continue;
+  const firstSlug = introOwners.get(normalizedIntro);
+  if (firstSlug) {
+    result.findings.push({ code: "DUPLICATE_BUSINESS_INTRO", sample: "Same presentation as " + firstSlug });
+  } else {
+    introOwners.set(normalizedIntro, result.slug);
+  }
+}
 const findingCounts = {};
 const flagged = [];
 for (const result of results) {
@@ -147,7 +329,19 @@ const report = {
   pages_scanned: pages.length,
   pages_flagged: flagged.length,
   pages_passed: pages.length - flagged.length,
+  manifest_rows: manifestRecords.size,
+  out_of_manifest_audit_rows: extraPageRecords.size,
+  contact_candidate_rows: candidateContacts.size,
+  category_mapped_pages: results.filter(r => r.category_key).length,
+  pages_needing_category_review: results.filter(r => r.category_review_required).length,
+  category_review_slugs: results.filter(r => r.category_review_required).map(r => r.slug),
+  manifest_phone_rows: results.filter(r => r.phone_from_manifest).length,
+  manifest_email_rows: results.filter(r => r.email_from_manifest).length,
+  manifest_address_rows: results.filter(r => r.address_from_manifest).length,
+  labelled_phone_candidates: results.filter(r => r.phone_candidate_labelled).length,
+  labelled_email_candidates: results.filter(r => r.email_candidate_labelled).length,
   finding_counts: findingCounts,
+  pages: results.map(({ findings, ...page }) => page),
   flagged_pages: flagged.map(({ slug, findings }) => ({ slug, findings })),
 };
 const reportPath = path.join(root, "qa-generated-pages-report.json");
@@ -157,6 +351,9 @@ console.log("Generated page QA");
 console.log("Pages scanned: " + report.pages_scanned);
 console.log("Pages with findings: " + report.pages_flagged);
 console.log("Pages passing: " + report.pages_passed);
+console.log("Manifest rows: " + report.manifest_rows + "; out-of-manifest audit rows: " + report.out_of_manifest_audit_rows);
+console.log("Pages with manifest phone/email/address: " + report.manifest_phone_rows + "/" + report.manifest_email_rows + "/" + report.manifest_address_rows);
+console.log("Web contact candidates labelled as unverified: phone " + report.labelled_phone_candidates + ", email " + report.labelled_email_candidates);
 for (const [code, count] of Object.entries(findingCounts).sort((a, b) => b[1] - a[1])) {
   console.log("  " + code + ": " + count + " page(s)");
 }

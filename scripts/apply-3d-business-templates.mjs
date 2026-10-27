@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { gunzipSync, inflateSync, inflateRawSync, brotliDecompressSync } from "node:zlib";
 
 const root = process.cwd();
 const builtExamples = path.join(root, "template 3D", "Dioramas", "dist", "examples");
@@ -78,6 +79,127 @@ function removeSectionById(html, id) {
 function getTextLinks(html) {
   return [...html.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)].map(m => ({ href: m[1], text: m[2].replace(/<[^>]+>/g, "").trim() }));
 }
+const businessCategoryDefinitions = {
+  bar_cafe: { kind: "bar e caffetteria", copyType: "bar_cafe", nav: ["La proposta", "Il locale", "Contatti"], cta: "Contatta il locale", description: "Bar, caffetteria e momenti da condividere: verifica direttamente proposta, orari e disponibilità." },
+  restaurant: { kind: "ristorazione", copyType: "restaurant", nav: ["Cucina", "Il locale", "Contatti"], cta: "Chiedi un tavolo", description: "Un'attività di ristorazione da conoscere attraverso la proposta del locale; menu e disponibilità vanno confermati direttamente." },
+  pizzeria: { kind: "pizzeria", copyType: "pizzeria", nav: ["Pizza", "Il locale", "Contatti"], cta: "Chiedi un tavolo", description: "Pizzeria e proposta da scoprire direttamente: contatta il locale per menu aggiornato, orari e prenotazioni." },
+  bakery: { kind: "panetteria e pasticceria", copyType: "bakery", nav: ["Specialità", "Laboratorio", "Contatti"], cta: "Chiedi le specialità", description: "Prodotti da forno, pasticceria e specialità da conoscere direttamente con il laboratorio." },
+  food_retail: { kind: "negozio alimentare", copyType: "food_retail", nav: ["Prodotti", "Negozio", "Contatti"], cta: "Chiedi disponibilità", description: "Un punto vendita alimentare: chiedi informazioni su assortimento, disponibilità e orari aggiornati." },
+  hair: { kind: "parrucchiere", copyType: "hair", nav: ["Servizi", "Stile", "Contatti"], cta: "Prenota un appuntamento", description: "Taglio, piega e cura dei capelli: contatta il salone per confermare servizi e appuntamenti." },
+  salon_beauty: { kind: "salone e benessere", copyType: "salon_beauty", nav: ["Servizi", "Trattamenti", "Contatti"], cta: "Chiedi un appuntamento", description: "Servizi dedicati alla cura della persona: chiedi direttamente quali trattamenti sono disponibili." },
+  beauty: { kind: "centro estetico", copyType: "beauty", nav: ["Trattamenti", "Benessere", "Contatti"], cta: "Chiedi un appuntamento", description: "Trattamenti estetici e benessere: contatta il centro per conoscere la proposta e le disponibilità." },
+  tattoo: { kind: "studio tattoo", copyType: "tattoo", nav: ["Stili", "Lo studio", "Contatti"], cta: "Richiedi informazioni", description: "Uno spazio dedicato ai tatuaggi e ai progetti grafici: confrontati con lo studio su stile, appuntamenti e disponibilità." },
+  automotive: { kind: "servizi auto", copyType: "automotive", nav: ["Interventi", "Servizi", "Contatti"], cta: "Chiedi una valutazione", description: "Servizi legati ai veicoli: descrivi la tua esigenza e verifica direttamente gli interventi disponibili." },
+  hospitality: { kind: "ospitalità", copyType: "hospitality", nav: ["Soggiorno", "La struttura", "Contatti"], cta: "Verifica disponibilità", description: "Informazioni su soggiorni, accoglienza e servizi: disponibilità e condizioni vanno confermate direttamente." },
+  real_estate: { kind: "servizi immobiliari", copyType: "real_estate", nav: ["Immobili", "Servizi", "Contatti"], cta: "Chiedi informazioni", description: "Servizi immobiliari e supporto nella ricerca o gestione degli immobili: contatta l'agenzia per dettagli aggiornati." },
+  legal_professional: { kind: "servizi professionali", copyType: "legal_professional", nav: ["Servizi", "Lo studio", "Contatti"], cta: "Richiedi informazioni", description: "Servizi professionali: descrivi la tua necessità e verifica direttamente competenze, modalità e disponibilità." },
+  construction_trades: { kind: "lavori e installazioni", copyType: "construction_trades", nav: ["Lavorazioni", "Progetti", "Contatti"], cta: "Richiedi un preventivo", description: "Lavorazioni tecniche e interventi su misura: racconta il progetto e chiedi una valutazione sul caso concreto." },
+  industrial_services: { kind: "forniture e servizi industriali", copyType: "industrial_services", nav: ["Soluzioni", "Attività", "Contatti"], cta: "Richiedi informazioni", description: "Forniture e servizi per esigenze tecniche e produttive: contatta l'azienda per verificare prodotti e disponibilità." },
+  retail_design: { kind: "negozio specializzato", copyType: "retail_design", nav: ["Prodotti", "Il negozio", "Contatti"], cta: "Chiedi disponibilità", description: "Un negozio specializzato da conoscere attraverso la sua proposta: chiedi direttamente assortimento, servizi e orari." },
+  art_craft: { kind: "arte e artigianato", copyType: "art_craft", nav: ["Collezione", "Lavorazioni", "Contatti"], cta: "Chiedi informazioni", description: "Arte, oggetti e lavorazioni da approfondire con chi se ne occupa: contatta l'attività per dettagli e disponibilità." },
+  optical: { kind: "ottica", copyType: "optical", nav: ["Occhiali", "Servizi ottici", "Contatti"], cta: "Chiedi informazioni", description: "Occhiali e servizi ottici: contatta il punto vendita per informazioni su prodotti, servizi e disponibilità." },
+  health: { kind: "salute e benessere", copyType: "health", nav: ["Servizi", "Lo studio", "Contatti"], cta: "Richiedi informazioni", description: "Servizi legati alla salute e al benessere: chiedi direttamente informazioni pertinenti alla tua esigenza." },
+  pet_supply: { kind: "articoli per animali", copyType: "pet_supply", nav: ["Prodotti", "Il punto vendita", "Contatti"], cta: "Chiedi informazioni", description: "Articoli e soluzioni per gli animali: verifica direttamente assortimento, disponibilità e servizi." },
+  florist_garden: { kind: "fiori e giardinaggio", copyType: "florist_garden", nav: ["Proposte", "Verde", "Contatti"], cta: "Chiedi informazioni", description: "Fiori, piante e cura del verde: contatta l'attività per conoscere proposte e servizi disponibili." },
+  fitness: { kind: "sport e fitness", copyType: "fitness", nav: ["Attività", "Spazi", "Contatti"], cta: "Chiedi informazioni", description: "Attività sportive e percorsi di movimento: verifica corsi, orari e modalità di accesso." },
+  education_culture: { kind: "cultura e formazione", copyType: "education_culture", nav: ["Attività", "Incontri", "Contatti"], cta: "Scopri le attività", description: "Attività culturali, formative e iniziative da conoscere attraverso il programma aggiornato dell'organizzazione." },
+  travel: { kind: "viaggi e mobilità", copyType: "travel", nav: ["Proposte", "Servizi", "Contatti"], cta: "Richiedi informazioni", description: "Servizi di viaggio e mobilità: contatta l'attività per verificare itinerari, disponibilità o modalità operative." },
+  creative_services: { kind: "servizi creativi", copyType: "creative_services", nav: ["Progetti", "Lo studio", "Contatti"], cta: "Parliamone", description: "Progetti creativi e servizi su misura: racconta l'idea e chiedi informazioni sulle possibilità." },
+  cleaning_services: { kind: "pulizie e lavanderia", copyType: "cleaning_services", nav: ["Servizi", "Lavorazioni", "Contatti"], cta: "Richiedi informazioni", description: "Servizi di pulizia, lavaggio o cura degli ambienti: chiedi una proposta in base alle necessità concrete." },
+  logistics_business: { kind: "servizi alle imprese", copyType: "logistics_business", nav: ["Servizi", "Attività", "Contatti"], cta: "Richiedi informazioni", description: "Supporto operativo e servizi per attività professionali: contatta l'azienda per capire quali soluzioni sono disponibili." },
+  needs_review: { kind: "attività locale", copyType: "needs_review", nav: ["Informazioni", "Attività", "Contatti"], cta: "Richiedi informazioni", description: "Per non attribuire servizi non verificati, chiedi direttamente all'attività informazioni aggiornate su ciò che offre." }
+};
+
+const businessCategoryCodes = {
+  bc: "bar_cafe", rd: "retail_design", ba: "bakery", ha: "hair", re: "restaurant", au: "automotive", ho: "hospitality",
+  be: "beauty", ct: "construction_trades", fg: "florist_garden", cl: "cleaning_services", lp: "legal_professional",
+  sb: "salon_beauty", ac: "art_craft", op: "optical", tr: "travel", ri: "real_estate", fi: "fitness", ta: "tattoo",
+  cs: "creative_services", ec: "education_culture", he: "health", pz: "pizzeria", ps: "pet_supply", fr: "food_retail",
+  "??": "needs_review", is: "industrial_services", lb: "logistics_business"
+};
+
+const businessCategoryLetterCodes = {
+  a: "bar_cafe", b: "retail_design", c: "bakery", d: "hair", e: "restaurant", f: "automotive", g: "hospitality",
+  h: "beauty", i: "construction_trades", j: "florist_garden", k: "cleaning_services", l: "legal_professional",
+  m: "salon_beauty", n: "art_craft", o: "optical", p: "travel", q: "real_estate", r: "fitness", s: "tattoo",
+  t: "creative_services", u: "education_culture", v: "health", w: "pizzeria", x: "pet_supply", y: "food_retail",
+  z: "needs_review", A: "industrial_services", B: "logistics_business"
+};
+const businessCategoryOverrides = new Map();
+const businessCategoryPath = path.join(root, "audit-business-categories.json.gz.b64");
+if (fs.existsSync(businessCategoryPath)) {
+  const encoded = fs.readFileSync(businessCategoryPath, "utf8").trim();
+  const raw = gunzipSync(Buffer.from(encoded, "base64")).toString("utf8");
+  let decoded;
+  try { decoded = JSON.parse(raw); } catch { decoded = raw; }
+  if (Array.isArray(decoded)) {
+    for (const [slug, code] of decoded) {
+      if (slug) businessCategoryOverrides.set(slug, businessCategoryCodes[code] || (businessCategoryDefinitions[code] ? code : "needs_review"));
+    }
+  } else if (typeof decoded === "string") {
+    const slugs = fs.readdirSync(path.join(root, "sites"), { withFileTypes: true })
+      .filter(entry => entry.isDirectory()).map(entry => entry.name).sort();
+    if (decoded.length !== slugs.length) {
+      throw new Error("Per-site category map length mismatch: " + decoded.length + " codes for " + slugs.length + " site directories");
+    }
+    for (let i = 0; i < slugs.length; i++) {
+      businessCategoryOverrides.set(slugs[i], businessCategoryLetterCodes[decoded[i]] || "needs_review");
+    }
+  } else {
+    throw new Error("Unsupported per-site category map format");
+  }
+}
+const businessCategorySources = new Map();
+const businessCategorySourcesPath = path.join(root, "audit-category-sources.csv");
+if (fs.existsSync(businessCategorySourcesPath)) {
+  for (const item of parseCsv(fs.readFileSync(businessCategorySourcesPath, "utf8"))) {
+    if (item.slug) businessCategorySources.set(item.slug, item);
+  }
+}
+
+function inferBusinessCategoryKey(slug, title, desc, manifestSector = "", templateId = "") {
+  const hay = (String(manifestSector || "") + " " + String(title || "") + " " + String(desc || "") + " " + String(slug || "")).toLocaleLowerCase("it");
+  const rules = [
+    ["pizzeria", /pizzer/],
+    ["restaurant", /ristorant|trattoria|osteria|sushi|tavola calda|gastronom/],
+    ["bar_cafe", /\bbar\b|caff[eè]|pub\b|birreria|enoteca|cocktail|bistrot|lounge|gelateria/],
+    ["bakery", /pasticcer|panetter|panific|forno\b|bakery|gelateria|cioccolat|confetter/],
+    ["food_retail", /alimentar|maceller|salumer|pescher|gastronomia|negozio aliment|supermercat/],
+    ["hair", /parrucch|acconciator|barbiere|barber|taglio uomo|hair salon/],
+    ["beauty", /centro estetico|estetica|nail|unghie|trattamenti estetici/],
+    ["salon_beauty", /salone|benessere|cura della persona|beauty/],
+    ["tattoo", /tatuagg|tattoo|piercing/],
+    ["automotive", /carrozzer|officina|gommist|pneumatic|autoricamb|meccanica auto|autolavagg|concessionar|moto\b/],
+    ["hospitality", /hotel|albergo|bed.?and.?breakfast|b.?b\b|affittacamere|casa vacanze|resort|agriturism/],
+    ["real_estate", /agenzia immobiliare|immobiliar|compravendita immobili/],
+    ["legal_professional", /avvocat|notai|commercialist|consulent|studio professionale|geometra|ingegner|architett|amministrazion|assicurazion|caf\b|patronato/],
+    ["construction_trades", /edil|costruzion|ristruttur|serrament|idraulic|elettricista|termoidraulic|cartongess|impiantista|murator|scav/],
+    ["industrial_services", /informatica|elettronic|computer|smartphone|automazion|domotic|industr|macchinari|forniture tecniche|impiant/],
+    ["florist_garden", /fiorist|fioraio|fiori|giardin|vivaio|vivai|flor|piante|verde/],
+    ["cleaning_services", /puliz|sanific|igienizz|lavander|lavasecco|facility/],
+    ["fitness", /palestra|fitness|sport|karate|yoga|pilates|danza|ballo|nuoto|ciclismo|biciclett/],
+    ["optical", /ottic|occhial|optometr/],
+    ["health", /dentist|dentale|medic|fisioterap|farmaci|salute|odontoiatr|clinica|psicolog|veterinar/],
+    ["pet_supply", /animali|pet.?shop|mangimi|articoli per animali/],
+    ["florist_garden", /agricol|florovivais/],
+    ["travel", /trasport|noleggio|logistic|viagg|trasloc|spedizion|autobus|agenzia viaggi|nautic|barca|marin/],
+    ["creative_services", /fotograf|video|grafica|design|comunicazion|marketing|web.?agency|stampa|tipograf|software|creativ/],
+    ["education_culture", /scuola|formazion|centro studi|associazion culturale|biblioteca|museo|teatro|corsi/],
+    ["art_craft", /artigian|restaur|antiqu|intagliator|cornic|ferro|accia|sald|resine|lavorazion/],
+    ["retail_design", /negozio|boutique|arred|mobili|falegnam|legno|cucine|casa|abbigliamento|calzatur|gioiell|orefic|orolog/]
+  ];
+  for (const [key, pattern] of rules) if (pattern.test(hay) && businessCategoryDefinitions[key]) return key;
+  const templateFallback = {
+    sucre: "bakery", lowfreq: "bar_cafe", nocturne: "hair", racer: "automotive",
+    hangar: "industrial_services", monolith: "construction_trades", florae: "florist_garden",
+    keeper: "cleaning_services", atlas: "logistics_business", koen: "retail_design",
+    gambit: "legal_professional", reliquary: "art_craft", terrarium: "pet_supply",
+    velocity: "fitness", horologie: "optical", lithos: "health", koi: "food_retail",
+    abyssal: "travel", artemis: "hospitality", ember: "industrial_services", pilot: "automotive"
+  };
+  return templateFallback[templateId] || "needs_review";
+}
+
 function pick(slug, title, desc, manifestSector = "") {
   const category = String(manifestSector || "").toLocaleLowerCase("it");
   // Trust the manifest's sector before fuzzy matching names: e.g. "restaurant" contains "restaur"
@@ -110,6 +232,39 @@ function pick(slug, title, desc, manifestSector = "") {
 }
 function replaceAll(html, pairs) {
   for (const [from, to] of pairs) html = html.split(from).join(to);
+  return html;
+}
+function replaceVisibleCopy(html, pairs) {
+  // One text-only pass for case variants; never alter selectors, URLs, attributes or scripts.
+  const tokens = /<script\b[\s\S]*?<\/script>|<style\b[\s\S]*?<\/style>|<[^>]+>|[^<]+/gi;
+  const replacements = pairs.map(([from, to]) => [
+    new RegExp(from.replace(/[-/\\^$*+?.()|[\]{}]/g, ch => String.fromCharCode(92) + ch), "gi"),
+    to
+  ]);
+  return html.replace(tokens, token => {
+    if (token.startsWith("<")) return token;
+    let text = token;
+    for (const [pattern, replacement] of replacements) text = text.replace(pattern, replacement);
+    return text;
+  });
+}
+function removeSectionsContainingDemoCards(html) {
+  const tokens = /<\/?section\b[^>]*>/gi;
+  const stack = [];
+  const removals = [];
+  let match;
+  const cardCopy = /Join Sleeve|Most kept|Every LF pressing|Liner notes written at the counter|10% off anything on the wall|First pick of the test pressings|Your request played before 21:00|¥\s*[0-9,]+\s*\/\s*month|SLEEVE/i;
+  while ((match = tokens.exec(html))) {
+    if (/^<\s*section\b/i.test(match[0])) stack.push({ start: match.index, contentStart: tokens.lastIndex });
+    else if (stack.length) {
+      const section = stack.pop();
+      const body = html.slice(section.contentStart, match.index).replace(/<script\b[\s\S]*?<\/script>|<style\b[\s\S]*?<\/style>|<[^>]+>/gi, " ");
+      if (cardCopy.test(body)) removals.push([section.start, tokens.lastIndex]);
+    }
+  }
+  // Remove outermost matching ranges once, from the end of the document backward.
+  const filtered = removals.filter(([start, end]) => !removals.some(([a, b]) => a < start && b >= end));
+  for (const [start, end] of filtered.sort((a, b) => b[0] - a[0])) html = html.slice(0, start) + html.slice(end);
   return html;
 }
 function generatedDescription(business, sector, context = "", slug = "", municipality = "") {
@@ -175,7 +330,7 @@ function generatedDescription(business, sector, context = "", slug = "", municip
   let hash = 0;
   for (const char of (slug || business)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
   const curatedCopy = {
-    "barber-garage": "Tagli uomo, sfumature e cura della barba in un barbershop dal carattere industriale. Barber Garage si trova in via Giacomo Matteotti 13, Busto Arsizio: chiama per concordare un appuntamento e confermare i servizi disponibili."
+    "barber-garage": "Taglio uomo e cura della barba in un barbershop dal carattere industriale. Barber Garage si trova in via Giacomo Matteotti 13, Busto Arsizio: chiama per concordare un appuntamento e confermare i servizi disponibili."
   };
   const chosen = curatedCopy[slug] || pool[hash % pool.length];
   const place = String(municipality || "").trim();
@@ -186,7 +341,167 @@ function generatedDescription(business, sector, context = "", slug = "", municip
     place ? "Se ti trovi a " + place + ", usa i contatti di " + business + " per chiarire la richiesta e concordare i prossimi passi." : "Usa i contatti di " + business + " per chiarire la richiesta e concordare i prossimi passi.",
     place ? "Per informazioni aggiornate su " + business + " a " + place + ", fai riferimento ai contatti riportati in questa pagina." : "Per informazioni aggiornate, fai riferimento ai contatti riportati in questa pagina."
   ];
-  return chosen + " " + localClosers[hash % localClosers.length];
+  const openers = [
+    "Una buona scelta comincia da dettagli chiari: ",
+    "Prima di decidere, vale la pena conoscere meglio ",
+    "Ogni richiesta ha il suo contesto: parti da ",
+    "Per capire quale soluzione fa al caso tuo, contatta ",
+    "Un confronto diretto evita supposizioni: chiedi a ",
+    "Quando contano tempi e disponibilità, il punto di partenza è ",
+    "Il primo passo è capire cosa serve davvero: parla con ",
+    "Le informazioni più utili arrivano dal contatto diretto con ",
+    "Per organizzarti senza sorprese, verifica i dettagli con ",
+    "Una scelta fatta bene parte da una domanda precisa: rivolgiti a ",
+    "Hai un’esigenza concreta? Raccontala a ",
+    "Per orientarti tra le opzioni disponibili, comincia da "
+  ];
+  const actionLines = {
+    "ospitalità": [
+      "e chiedi la proposta aggiornata, gli orari e le modalità di prenotazione.",
+      "per capire cosa offre il locale e verificare disponibilità prima della visita.",
+      "per informazioni pratiche su proposta, accoglienza ed eventuali iniziative.",
+      "e chiarisci in anticipo orari, disponibilità e dettagli utili per la tua visita.",
+      "per conoscere le opzioni disponibili e organizzare al meglio il tuo momento.",
+      "e verifica direttamente quali servizi e occasioni sono attualmente proposti.",
+      "per una risposta aggiornata su visita, prenotazioni e informazioni utili.",
+      "e chiedi conferma dei dettagli prima di organizzare la tua uscita."
+    ],
+    "salone": [
+      "per verificare i servizi effettivamente offerti e concordare un appuntamento.",
+      "e chiedi quali trattamenti sono disponibili, con quali tempi e modalità.",
+      "per confrontarti sul risultato che cerchi e verificare come prenotare.",
+      "e chiarisci in anticipo servizi, disponibilità e tempi dell’appuntamento.",
+      "per conoscere le opzioni proposte e scegliere in base alle tue esigenze.",
+      "e descrivi il risultato che hai in mente: i dettagli vanno concordati direttamente.",
+      "per informazioni aggiornate su servizi, appuntamenti e modalità di accesso.",
+      "e chiedi conferma dei servizi disponibili prima di organizzare la visita."
+    ],
+    "pasticceria": [
+      "per conoscere le specialità disponibili e verificare eventuali ordini su richiesta.",
+      "e chiedi quali prodotti sono disponibili e con quanto anticipo prenotare.",
+      "per informarti sulla proposta del giorno, sulle preparazioni e sugli ordini.",
+      "e verifica disponibilità e tempi prima di organizzare una ricorrenza o un ritiro.",
+      "per conoscere l’assortimento aggiornato senza dare per scontato ciò che è disponibile.",
+      "e racconta l’occasione: il laboratorio potrà indicarti le opzioni da confermare.",
+      "per informazioni pratiche su prodotti, prenotazioni e modalità di ritiro.",
+      "e chiedi conferma delle specialità e delle disponibilità del momento."
+    ],
+    "officina": [
+      "per descrivere il problema e chiedere quali interventi e tempi sono possibili.",
+      "e concorda una valutazione prima di programmare la manutenzione o la riparazione.",
+      "per informazioni su lavorazioni, disponibilità e preventivo dell’intervento.",
+      "e spiega cosa serve al veicolo, così da verificare il servizio più adatto.",
+      "per chiarire tempi e modalità prima di fissare un appuntamento in officina.",
+      "e chiedi una valutazione dei lavori necessari e dei relativi costi.",
+      "per concordare il prossimo passo in base al problema e alla disponibilità.",
+      "e verifica direttamente quali interventi vengono eseguiti e con quali tempi."
+    ],
+    "sport": [
+      "per conoscere attività, corsi e modalità di accesso attualmente disponibili.",
+      "e chiedi informazioni su orari, iscrizioni e percorsi adatti al tuo obiettivo.",
+      "per capire quali attività sono proposte e come partecipare.",
+      "e verifica disponibilità, calendario e modalità di prova o iscrizione.",
+      "per trovare informazioni aggiornate prima di organizzare il tuo percorso.",
+      "e confrontati sulle opzioni disponibili e sui requisiti per iniziare.",
+      "per conoscere le proposte e scegliere come fare il primo passo.",
+      "e chiedi conferma di corsi, orari e modalità di accesso."
+    ],
+    "edilizia": [
+      "per presentare il progetto e chiedere un confronto su lavorazioni e preventivo.",
+      "e descrivi l’intervento: tempi, fattibilità e costi vanno valutati sul caso concreto.",
+      "per capire quali lavorazioni possono essere prese in considerazione.",
+      "e concorda una valutazione prima di pianificare tempi e fasi del lavoro.",
+      "per discutere le esigenze del progetto e richiedere informazioni sui prossimi passi.",
+      "e chiarisci obiettivi e vincoli per ottenere indicazioni pertinenti.",
+      "per richiedere un confronto sul lavoro da realizzare e sulle modalità operative.",
+      "e chiedi una valutazione specifica, senza affidarti a stime generiche."
+    ],
+    "impianti": [
+      "per descrivere l’impianto e verificare assistenza, interventi e disponibilità.",
+      "e chiedi se il servizio richiesto rientra nelle attività svolte.",
+      "per chiarire esigenze tecniche, tempi e possibilità di sopralluogo.",
+      "e concorda una valutazione prima di pianificare installazione o manutenzione.",
+      "per informazioni sulle soluzioni effettivamente disponibili per il tuo caso.",
+      "e spiega il problema per verificare modalità e tempi di intervento.",
+      "per discutere la richiesta e capire quale sia il prossimo passo utile.",
+      "e chiedi conferma delle competenze e dei servizi pertinenti al tuo impianto."
+    ],
+    "pulizie": [
+      "per descrivere gli ambienti e chiedere quali interventi e frequenze sono possibili.",
+      "e verifica i servizi disponibili e richiedi un preventivo in base alle necessità.",
+      "per chiarire superfici, esigenze e modalità del servizio prima di concordare il lavoro.",
+      "e spiega cosa occorre: la proposta va definita in base agli spazi da trattare.",
+      "per informazioni pratiche su disponibilità, interventi e preventivi.",
+      "e chiedi una valutazione delle necessità prima di fissare tempi e modalità.",
+      "per capire quali soluzioni possono essere valutate per i tuoi ambienti.",
+      "e concorda direttamente i dettagli del servizio più adatto alla richiesta."
+    ],
+    "verde": [
+      "per chiarire quali interventi sul verde sono disponibili e in quali tempi.",
+      "e descrivi lo spazio da curare per chiedere indicazioni e un eventuale preventivo.",
+      "per informazioni su manutenzione, lavorazioni e disponibilità.",
+      "e concorda una valutazione in base alle caratteristiche dell’area.",
+      "per capire quali attività possono essere proposte per il tuo spazio esterno.",
+      "e verifica direttamente tempi e modalità prima di programmare il lavoro.",
+      "per discutere la richiesta e definire i dettagli dell’intervento.",
+      "e chiedi conferma dei servizi disponibili per le esigenze del tuo spazio."
+    ],
+    "default": [
+      "per capire quali servizi sono effettivamente disponibili e come procedere.",
+      "e descrivi la tua esigenza: potrai verificare direttamente opzioni e modalità.",
+      "per ottenere informazioni pertinenti e chiarire i prossimi passi.",
+      "e chiedi conferma di servizi, tempi e disponibilità prima di prendere accordi.",
+      "per confrontarti sulla richiesta e capire quali possibilità valutare.",
+      "e verifica direttamente i dettagli utili prima di decidere.",
+      "per conoscere le opzioni disponibili e capire se rispondono alla tua necessità.",
+      "e chiedi indicazioni aggiornate, senza dare per scontate informazioni non confermate."
+    ]
+  };
+  const categoryActionLines = {
+    bar_cafe: ["per conoscere la proposta del locale e verificare orari e disponibilità.", "per chiedere informazioni su caffetteria, aperitivi ed eventuali iniziative.", "per confermare cosa viene proposto e organizzare la visita.", "per chiarire orari, servizio e disponibilità prima di passare.", "per sapere quali opzioni sono disponibili nel momento in cui vuoi venire."],
+    restaurant: ["per conoscere il menu aggiornato, gli orari e la disponibilità dei tavoli.", "per chiedere informazioni sulla proposta in cucina e sulle prenotazioni.", "per organizzare pranzo o cena, verificando direttamente menu e orari.", "per sapere quali opzioni sono disponibili e concordare un tavolo.", "per confermare la proposta del locale prima di organizzare la visita."],
+    pizzeria: ["per verificare menu, orari e disponibilità dei tavoli.", "per chiedere quali pizze e opzioni sono disponibili e come prenotare.", "per organizzare una pausa o una cena, confermando direttamente i dettagli.", "per conoscere la proposta aggiornata e concordare un eventuale ritiro.", "per verificare orari, menu e modalità di ordinazione."],
+    bakery: ["per sapere quali prodotti da forno e specialità sono disponibili.", "per chiedere informazioni su assortimento, ordini e tempi di ritiro.", "per conoscere la proposta del laboratorio e le eventuali prenotazioni.", "per verificare disponibilità di prodotti e preparazioni per le occasioni speciali.", "per concordare un ordine o chiedere quali specialità sono presenti."],
+    food_retail: ["per chiedere informazioni sull'assortimento e sulla disponibilità dei prodotti.", "per conoscere meglio la proposta del punto vendita e gli orari aggiornati.", "per verificare se è disponibile ciò che stai cercando.", "per chiarire disponibilità, modalità di acquisto e informazioni pratiche.", "per chiedere dettagli sui prodotti e sull'organizzazione del punto vendita."],
+    hair: ["per verificare i servizi per capelli disponibili e concordare un appuntamento.", "per parlare del taglio o dello stile che hai in mente e chiedere come prenotare.", "per chiarire servizi, tempi e disponibilità prima di fissare la visita.", "per conoscere le opzioni del salone e concordare un appuntamento.", "per descrivere il risultato che cerchi e chiedere quali servizi sono disponibili."],
+    salon_beauty: ["per conoscere i servizi per il look e la cura personale attualmente disponibili.", "per chiedere quali trattamenti propone il salone e come prenotare.", "per confrontarti sulle opzioni disponibili e concordare un appuntamento.", "per chiarire servizi, tempi e modalità prima della visita.", "per capire quale proposta risponde meglio alle tue esigenze di cura personale."],
+    beauty: ["per conoscere i trattamenti disponibili e le modalità di prenotazione.", "per chiedere informazioni sui servizi estetici e sui tempi degli appuntamenti.", "per confrontarti sulle opzioni proposte dal centro e verificare la disponibilità.", "per chiarire quali trattamenti sono offerti e come accedere al servizio.", "per organizzare un appuntamento dopo aver confermato i dettagli del trattamento."],
+    tattoo: ["per condividere l'idea del tatuaggio e chiedere informazioni su stile e appuntamenti.", "per conoscere il processo di consulenza e verificare le disponibilità dello studio.", "per discutere il progetto che hai in mente e concordare un confronto con l'artista.", "per chiedere informazioni su stili, tempi e modalità di prenotazione.", "per presentare la tua idea e chiarire direttamente i dettagli del progetto."],
+    automotive: ["per descrivere il veicolo e verificare quali servizi sono disponibili.", "per chiedere informazioni su assistenza, lavorazioni o servizi per il tuo mezzo.", "per chiarire la necessità e concordare il prossimo passo con l'attività.", "per conoscere le opzioni disponibili per veicoli, manutenzione o accessori.", "per verificare tempi, modalità e disponibilità del servizio richiesto."],
+    hospitality: ["per verificare disponibilità, condizioni del soggiorno e servizi della struttura.", "per chiedere informazioni su camere, date e modalità di prenotazione.", "per organizzare il soggiorno e confermare direttamente tutti i dettagli.", "per conoscere le opzioni di accoglienza e le disponibilità aggiornate.", "per chiarire condizioni, servizi e orari prima di prenotare."],
+    real_estate: ["per chiedere informazioni su immobili, ricerca e servizi dell'agenzia.", "per descrivere ciò che cerchi e verificare le opportunità disponibili.", "per approfondire una proposta immobiliare e concordare un confronto.", "per chiarire esigenze, documentazione e prossimi passi con l'agenzia.", "per conoscere i servizi immobiliari e le possibilità pertinenti alla tua richiesta."],
+    legal_professional: ["per spiegare la richiesta e verificare servizi, competenze e modalità.", "per chiarire quali informazioni servono e come procedere con lo studio.", "per chiedere dettagli sul servizio professionale pertinente al tuo caso.", "per verificare modalità di accesso, tempi e informazioni necessarie.", "per concordare un primo confronto e capire i prossimi passaggi."],
+    construction_trades: ["per descrivere il lavoro e chiedere una valutazione o un preventivo.", "per verificare quali lavorazioni sono disponibili e se serve un sopralluogo.", "per chiarire materiali, tempi e modalità in base al progetto concreto.", "per concordare un confronto sull'intervento e sulle esigenze del cantiere.", "per richiedere informazioni pratiche prima di programmare il lavoro."],
+    industrial_services: ["per conoscere forniture, componenti e soluzioni tecniche disponibili.", "per descrivere l'esigenza produttiva e verificare le opzioni dell'azienda.", "per chiedere dettagli su lavorazioni, disponibilità e modalità operative.", "per confrontare la richiesta con i servizi e le forniture proposte.", "per chiarire specifiche tecniche e prossimi passaggi con il fornitore."],
+    retail_design: ["per chiedere informazioni su prodotti, assortimento e disponibilità.", "per capire se il negozio dispone della soluzione che stai cercando.", "per conoscere la proposta aggiornata e le modalità di acquisto o assistenza.", "per chiarire caratteristiche, disponibilità e servizi del punto vendita.", "per verificare direttamente assortimento, orari e informazioni utili."],
+    art_craft: ["per conoscere lavorazioni, oggetti e servizi disponibili.", "per chiedere informazioni su una cornice, un oggetto o una lavorazione specifica.", "per approfondire la proposta e concordare un confronto con l'attività.", "per verificare disponibilità, possibilità di intervento e modalità di richiesta.", "per parlare dell'oggetto o del progetto e capire quali opzioni sono possibili."],
+    optical: ["per chiedere informazioni su occhiali, prodotti e servizi ottici.", "per verificare disponibilità, assistenza e modalità di appuntamento.", "per conoscere i servizi del punto vendita e chiarire la tua esigenza visiva.", "per chiedere dettagli su prodotti e servizi prima di passare in negozio.", "per confermare orari e modalità per il servizio di cui hai bisogno."],
+    health: ["per chiedere informazioni sui servizi e sulle modalità di accesso.", "per verificare disponibilità, appuntamenti e indicazioni pratiche.", "per chiarire quale servizio è pertinente alla tua esigenza e come accedervi.", "per conoscere le modalità di contatto e gli eventuali tempi di attesa.", "per chiedere dettagli aggiornati direttamente allo studio o al centro."],
+    pet_supply: ["per conoscere prodotti e servizi disponibili per gli animali.", "per chiedere informazioni su assortimento, disponibilità e necessità specifiche.", "per verificare se il punto vendita offre ciò che serve al tuo animale.", "per chiarire prodotti e servizi e organizzare la visita.", "per ottenere informazioni aggiornate sulla proposta del negozio."],
+    florist_garden: ["per chiedere informazioni su fiori, piante e composizioni disponibili.", "per conoscere le proposte stagionali e concordare eventuali ordini.", "per verificare servizi per il verde e modalità di richiesta.", "per parlare di una composizione o di uno spazio esterno da curare.", "per conoscere assortimento, disponibilità e dettagli pratici."],
+    fitness: ["per conoscere attività, corsi e modalità di accesso.", "per chiedere informazioni su orari, iscrizioni e percorsi disponibili.", "per verificare calendario, disponibilità e possibilità di prova.", "per capire quali attività rispondono al tuo obiettivo e come iniziare.", "per concordare un primo contatto e chiarire le modalità di partecipazione."],
+    education_culture: ["per conoscere attività, iniziative e calendario aggiornato.", "per chiedere informazioni su corsi, incontri o progetti in programma.", "per verificare come partecipare e quali attività sono attualmente attive.", "per approfondire il programma e chiarire le modalità di accesso.", "per conoscere le iniziative e i prossimi appuntamenti dell'organizzazione."],
+    travel: ["per verificare servizi di viaggio, trasporto o noleggio pertinenti alla richiesta.", "per chiedere informazioni su disponibilità, orari e modalità operative.", "per chiarire date, destinazioni o esigenze di mobilità prima di organizzarti.", "per conoscere le opzioni disponibili e confermare i dettagli del servizio.", "per verificare direttamente tempi, condizioni e disponibilità."],
+    creative_services: ["per descrivere il progetto e capire quali servizi creativi possono essere utili.", "per chiedere informazioni su produzione, progettazione e modalità di lavoro.", "per condividere l'idea e verificare quali opzioni sono disponibili.", "per chiarire obiettivi, tempi e prossimi passaggi del progetto.", "per confrontarti sui dettagli e valutare come dare forma alla richiesta."],
+    cleaning_services: ["per descrivere gli spazi o i capi da trattare e chiedere una proposta.", "per verificare servizi, frequenze e disponibilità in base alle necessità.", "per chiarire modalità, tempi e costi del servizio richiesto.", "per conoscere le opzioni disponibili per pulizia, lavaggio o cura degli ambienti.", "per concordare i dettagli del lavoro o del servizio di lavanderia."],
+    logistics_business: ["per conoscere servizi operativi e modalità di collaborazione.", "per descrivere la necessità aziendale e verificare le soluzioni disponibili.", "per chiedere informazioni su processi, tempi e capacità operative.", "per chiarire le specifiche della richiesta e i prossimi passaggi.", "per verificare direttamente quali servizi possono rispondere all'esigenza."],
+    needs_review: ["per chiedere informazioni precise sull'attività e sui servizi effettivamente offerti.", "per verificare direttamente di cosa si occupa l'attività e quali informazioni può fornire.", "per chiarire la richiesta senza dare per scontati servizi non confermati.", "per conoscere i servizi reali e i dettagli pratici prima di prendere accordi.", "per confermare direttamente la proposta e le modalità di contatto."]
+  };
+  const opener = openers[hash % openers.length];
+  const actions = categoryActionLines[sector.copyType] || actionLines[sector.kind] || actionLines.default;
+  const tailored = opener + business + (municipality ? " a " + municipality : "") + " " +
+    actions[Math.floor(hash / 13) % actions.length];
+  const endings = [
+    "Prima di organizzare la visita o il lavoro, conferma sempre i dettagli aggiornati.",
+    "Per evitare equivoci, concorda direttamente tempi e modalità.",
+    "Le disponibilità possono cambiare: chiedi conferma prima di prendere accordi.",
+    "Un contatto diretto è il modo migliore per chiarire ogni dettaglio pratico.",
+    "Valuta la proposta in base alle tue esigenze e alle informazioni confermate.",
+    "Prima di decidere, verifica direttamente costi, orari o modalità pertinenti alla richiesta.",
+    "Le informazioni specifiche vanno confermate con l’attività prima di procedere.",
+    "Per un quadro preciso, fai riferimento ai contatti riportati in questa pagina."
+  ];
+  return curatedCopy[slug] || tailored + " " + endings[Math.floor(hash / 101) % endings.length];
 }
 function rewrite(html, business, sector, phone, email, address, context = "", municipality = "", phoneCandidate = "", emailCandidate = "") {
   const title = esc(business);
@@ -402,13 +717,57 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
     .replace(/555\s*014\s*\d{3,}/gi, "Telefono da verificare")
     .replace(/example\.com/gi, "");
 
+  // Final visible-copy pass catches capitalization variants in the original demos without
+  // rewriting class names, asset paths, inline JS or CSS.
+  out = replaceVisibleCopy(out, [
+    ["Listening bar & record label · Shimokitazawa, Tokyo", "Locale · Bar e ristorazione"],
+    ["Sound off", "Audio disattivato"], ["Sound on", "Audio attivo"],
+    ["Audio off", "Audio disattivato"], ["Audio on", "Audio attivo"],
+    ["Drop the needle", sector.nav[0]], ["Record club", sector.nav[2]],
+    ["Pre-order the LP", sector.cta], ["Newsletter", "Aggiornamenti"],
+    ["Subscribe", "Contatti"], ["Join Sleeve", sector.cta],
+    ["Most kept", "Più richiesto"], ["Every LF pressing, mailed flat", "Una proposta da scoprire direttamente in negozio"],
+    ["Liner notes written at the counter", "Informazioni e consigli direttamente in negozio"],
+    ["10% off anything on the wall", "Chiedi informazioni sulle proposte disponibili"],
+    ["First pick of the test pressings", "Scopri le proposte disponibili"],
+    ["Your request played before 21:00", "Contatta l’attività per concordare la richiesta"],
+    ["The bar", sector.nav[1]], ["Catalogue", sector.nav[0]], ["The shop", "L’attività"],
+    ["Order this box", sector.cta], ["Fill it for me", "Scopri la proposta"],
+    ["Untie & start again", "Ricomincia"], ["Listening bar & record label", "Locale · Bar e ristorazione"]
+  ]);
+  out = removeSectionsContainingDemoCards(out);
   // Remove the collection/template switcher from every business page. It belongs only
   // on the 3D showcase, never on a customer's public website.
   const businessChrome = '<style id="business-page-cleanup">.tw-nav,.tw-nav-home,.tw-nav-step,.tw-nav-count{display:none!important;visibility:hidden!important;pointer-events:none!important}';
-  // Remove complete nested demo-only sections; first-close regexes left fictional cards visible.
-  for (const sectionId of ["pressing", "catalogue", "club", "shop", "membership", "program", "apply", "waitlist", "subscribe", "book", "price", "collection", "coffret", "calibre", "finishing", "nursery", "craft"]) {
+  // Remove only the demo-specific commerce/story sections for the chosen template.
+  // Section IDs are not globally interchangeable: for Reliquary, "collection" is the hero and contains its H1.
+  const demoSectionsByTemplate = {
+    lowfreq: ["pressing", "catalogue", "club"],
+    nocturne: ["shop"],
+    terrarium: ["shop"],
+    reliquary: ["membership"],
+    hangar: ["program", "apply"],
+    racer: ["waitlist"],
+    florae: ["subscribe"],
+    atlas: ["book"],
+    artemis: ["price"],
+    sucre: ["coffret"],
+    horologie: ["collection", "calibre", "finishing"],
+    koen: ["nursery", "craft"]
+  };
+  const removedSections = demoSectionsByTemplate[sector.id] || [];
+  for (const sectionId of removedSections) {
     out = removeSectionById(out, sectionId);
+    out = out.replaceAll('href="#' + sectionId + '"', 'href="#contatti"').replaceAll("href='#" + sectionId + "'", 'href="#contatti"');
   }
+  // Translate navigation labels whose matching demo-only section was removed.
+  out = out.replace(/\bPressing\b/gi, sector.nav[0]);
+  out = out.replace(/\bCatalogue\b/gi, sector.nav[1]);
+  out = out.replace(/\bMembership\b/gi, sector.nav[2]);
+  out = out.replace(/\bCollection\b/gi, sector.nav[0]);
+  out = out.replace(/\bNight hours\b/gi, sector.nav[1]);
+  out = out.replace(/\bCoffrets?\b/gi, sector.nav[0]);
+  out = out.replace(/\bBook a night visit\b/gi, sector.cta);
   out = out.replace(/<head>/i, '<head>\n' + businessChrome +
     '.tw-nav{display:none!important}.pressing .tracks,.pressing .buy,.catalogue .sleeves,.club .tiers{display:none!important}' +
     '</style>');
@@ -455,6 +814,40 @@ if (fs.existsSync(candidateContactsPath)) {
     if (item.slug) candidateContacts.set(item.slug, item);
   }
 }
+const compressedPhoneCandidatesPath = path.join(root, "audit-phone-candidates.json.gz.b64");
+if (fs.existsSync(compressedPhoneCandidatesPath)) {
+  const encoded = fs.readFileSync(compressedPhoneCandidatesPath, "utf8").trim();
+  const candidates = JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString("utf8"));
+  for (const item of candidates) {
+    if (!item.s || !item.p) continue;
+    const existing = candidateContacts.get(item.s) || {};
+    if (existing.telefono_snippet_da_verificare) continue;
+    candidateContacts.set(item.s, {
+      ...existing, slug: item.s,
+      telefono_snippet_da_verificare: item.p,
+      fonte_contatto_web: existing.fonte_contatto_web || item.u || "",
+      source_url: item.u || "",
+      provenance: "Ricerca web — contatto da verificare"
+    });
+  }
+}
+
+const compressedEmailCandidatesPath = path.join(root, "audit-email-candidates.json.gz.b64");
+if (fs.existsSync(compressedEmailCandidatesPath)) {
+  const encoded = fs.readFileSync(compressedEmailCandidatesPath, "utf8").trim();
+  const candidates = JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString("utf8"));
+  for (const item of candidates) {
+    if (!item.s || !item.e) continue;
+    const existing = candidateContacts.get(item.s) || {};
+    if (existing.email_snippet_da_verificare) continue;
+    candidateContacts.set(item.s, {
+      ...existing, slug: item.s,
+      email_snippet_da_verificare: item.e,
+      email_source_url: item.u || "",
+      provenance: existing.provenance || "Ricerca web — contatto da verificare"
+    });
+  }
+}
 
 const sitesDir = path.join(root, "sites");
 const siteDirs = fs.readdirSync(sitesDir, { withFileTypes: true }).filter(d => d.isDirectory());
@@ -476,8 +869,22 @@ for (const dir of siteDirs) {
   const eyebrow = (oldHtml.match(/class=["'][^"']*eyebrow[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>/i) || [])[1] || "";
   const manifestSector = String(record.settore || "");
   const sectorText = manifestSector + " " + (oldHtml.match(/<h1[^>]*>[\s\S]*?<\/h1>/i) || [""])[0] + " " + eyebrow + " " + description;
-  const sector = { ...pick(dir.name, titleText, sectorText, manifestSector) };
-  // Keep sector-appropriate Italian copy, but use the audited 3D concept for this exact business.
+  let sector = { ...pick(dir.name, titleText, sectorText, manifestSector) };
+  const categorySource = businessCategorySources.get(dir.name) || {};
+  const sourceCategory = businessCategoryDefinitions[categorySource.category] ? categorySource.category : "";
+  const auditedOverride = businessCategoryOverrides.get(dir.name) || "";
+  const categoryKey = (auditedOverride && auditedOverride !== "needs_review" ? auditedOverride : "") || sourceCategory ||
+    inferBusinessCategoryKey(dir.name, titleText, sectorText, manifestSector, sector.id);
+  const categoryDefinition = businessCategoryDefinitions[categoryKey];
+  if (categoryDefinition) {
+    const categorySource = businessCategorySources.get(dir.name) || {};
+    sector = {
+      ...sector, ...categoryDefinition, id: sector.id, categoryKey,
+      categorySource: categorySource.source_url || "",
+      categoryReason: categorySource.reason || (categoryKey === "needs_review" ? "needs_review" : "business-name-or-sector-audit")
+    };
+  }
+  // Keep the audited 3D concept for this exact business, while tailoring the content to its own activity.
   const auditedTemplateId = record.template_id_3d || "";
   if (auditedTemplateId && /^[a-z0-9-]+$/.test(auditedTemplateId)) sector.id = auditedTemplateId;
   const links = getTextLinks(oldHtml);
@@ -504,6 +911,14 @@ for (const dir of siteDirs) {
   html = html.replace(/<html(?![^>]*\blang=)/i, '<html lang="it"');
   // Keep the actual chosen template identifiable for the catalog and audits.
   html = html.replace(/<html([^>]*)>/i, (m, attrs) => '<html' + attrs.replace(/\sdata-template-3d=["'][^"']*["']/i, "") + ' data-template-3d="' + sector.id + '">');
+  if (!/<title\b[^>]*>[\s\S]*?<\/title>/i.test(html)) {
+    html = html.replace(/<head\b[^>]*>/i, '$&<title>' + titleText + ' — ' + sector.kind + '</title>');
+  }
+  if (!/<h1\b[^>]*>[\s\S]*?<\/h1>/i.test(html)) {
+    const fallbackHeading = '<h1 class="business-title">' + esc(titleText) + '</h1>';
+    if (/<main\b[^>]*>/i.test(html)) html = html.replace(/<main\b[^>]*>/i, '$&' + fallbackHeading);
+    else html = html.replace(/<body\b[^>]*>/i, '$&' + fallbackHeading);
+  }
   fs.writeFileSync(file, html);
   done++;
 }
