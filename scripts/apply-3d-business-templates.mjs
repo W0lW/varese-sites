@@ -872,7 +872,8 @@ for (const dir of siteDirs) {
   let sector = { ...pick(dir.name, titleText, sectorText, manifestSector) };
   const categorySource = businessCategorySources.get(dir.name) || {};
   const sourceCategory = businessCategoryDefinitions[categorySource.category] ? categorySource.category : "";
-  const categoryKey = businessCategoryOverrides.get(dir.name) || sourceCategory ||
+  const auditedOverride = businessCategoryOverrides.get(dir.name) || "";
+  const categoryKey = (auditedOverride && auditedOverride !== "needs_review" ? auditedOverride : "") || sourceCategory ||
     inferBusinessCategoryKey(dir.name, titleText, sectorText, manifestSector, sector.id);
   const categoryDefinition = businessCategoryDefinitions[categoryKey];
   if (categoryDefinition) {
