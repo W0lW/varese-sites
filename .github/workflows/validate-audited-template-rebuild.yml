@@ -56,7 +56,7 @@ jobs:
         shell: bash
         run: |
           python3 - <<'PY'
-          import json, re
+          import csv, json, re
           from pathlib import Path
 
           root = Path('.')
