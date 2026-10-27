@@ -96,19 +96,35 @@ const verifiedContactOverrides = {
   "officina-caroleo": { phone: "0332333064" }
 };
 
-const businessCategoryCodes = {
-  bc: "bar_cafe", rd: "retail_design", ba: "bakery", ha: "hair", re: "restaurant", au: "automotive", ho: "hospitality",
-  be: "beauty", ct: "construction_trades", fg: "florist_garden", cl: "cleaning_services", lp: "legal_professional",
-  sb: "salon_beauty", ac: "art_craft", op: "optical", tr: "travel", ri: "real_estate", fi: "fitness", ta: "tattoo",
-  cs: "creative_services", ec: "education_culture", he: "health", pz: "pizzeria", ps: "pet_supply", fr: "food_retail",
-  "??": "needs_review", is: "industrial_services", lb: "logistics_business"
+const businessCategoryLetterCodes = {
+  a: "bar_cafe", b: "retail_design", c: "bakery", d: "hair", e: "restaurant", f: "automotive", g: "hospitality",
+  h: "beauty", i: "construction_trades", j: "florist_garden", k: "cleaning_services", l: "legal_professional",
+  m: "salon_beauty", n: "art_craft", o: "optical", p: "travel", q: "real_estate", r: "fitness", s: "tattoo",
+  t: "creative_services", u: "education_culture", v: "health", w: "pizzeria", x: "pet_supply", y: "food_retail",
+  z: "needs_review", A: "industrial_services", B: "logistics_business"
 };
 const businessCategoryOverrides = new Map();
 const businessCategoryPath = path.join(root, "audit-business-categories.json.gz.b64");
 if (fs.existsSync(businessCategoryPath)) {
   const encoded = fs.readFileSync(businessCategoryPath, "utf8").trim();
-  for (const [slug, code] of JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString("utf8"))) {
-    if (slug) businessCategoryOverrides.set(slug, businessCategoryCodes[code] || "needs_review");
+  const raw = gunzipSync(Buffer.from(encoded, "base64")).toString("utf8");
+  let decoded;
+  try { decoded = JSON.parse(raw); } catch { decoded = raw; }
+  if (Array.isArray(decoded)) {
+    for (const [slug, code] of decoded) {
+      if (slug) businessCategoryOverrides.set(slug, businessCategoryCodes[code] || "needs_review");
+    }
+  } else if (typeof decoded === "string") {
+    const slugs = fs.readdirSync(sitesDir, { withFileTypes: true })
+      .filter(entry => entry.isDirectory()).map(entry => entry.name).sort();
+    if (decoded.length !== slugs.length) {
+      throw new Error("Per-site category map length mismatch: " + decoded.length + " codes for " + slugs.length + " site directories");
+    }
+    for (let i = 0; i < slugs.length; i++) {
+      businessCategoryOverrides.set(slugs[i], businessCategoryLetterCodes[decoded[i]] || "needs_review");
+    }
+  } else {
+    throw new Error("Unsupported per-site category map format");
   }
 }
 const businessCategorySources = new Map();
