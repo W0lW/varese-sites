@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const builtExamples = path.join(root, "template 3D", "Dioramas", "dist", "examples");
+const builtExamples = path.join(root, "template 3D", "Dioramas", "examples");
 
 const sectors = [
   // Regole ordinate: prima i settori specifici, poi le categorie più ampie.
@@ -184,6 +184,17 @@ const verifiedContacts = {
   "officina-caroleo": { phone: "0332333064", address: "Via Valle Venosta, 9, 21100 Varese (VA)" }
 };
 
+// Prefer the slug-specific, audited template assignment from the corrected manifest.
+const manifestTemplates = new Map();
+const manifestPath = path.join(root, "varese_sites_missing_manifest.json");
+if (fs.existsSync(manifestPath)) {
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  for (const item of manifest) {
+    const templateId = item.template_id_3d || "";
+    if (item.slug && /^[a-z0-9-]+$/.test(templateId)) manifestTemplates.set(item.slug, templateId);
+  }
+}
+
 const sitesDir = path.join(root, "sites");
 const siteDirs = fs.readdirSync(sitesDir, { withFileTypes: true }).filter(d => d.isDirectory());
 let done = 0;
@@ -202,6 +213,9 @@ for (const dir of siteDirs) {
   const eyebrow = (oldHtml.match(/class=["'][^"']*eyebrow[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>/i) || [])[1] || "";
   const sectorText = (oldHtml.match(/<h1[^>]*>[\s\S]*?<\/h1>/i) || [""])[0] + " " + eyebrow + " " + description;
   const sector = pick(dir.name, titleText, sectorText);
+  // Keep sector-appropriate Italian copy, but use the audited 3D concept for this exact business.
+  const auditedTemplateId = manifestTemplates.get(dir.name);
+  if (auditedTemplateId) sector.id = auditedTemplateId;
   const links = getTextLinks(oldHtml);
   const discoveredPhone = (links.find(x => /^tel:/i.test(x.href)) || {}).href?.replace(/^tel:/i, "") || "";
   const discoveredEmail = (links.find(x => /^mailto:/i.test(x.href)) || {}).href?.replace(/^mailto:/i, "") || "";
