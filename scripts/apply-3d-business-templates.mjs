@@ -257,8 +257,22 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
 
   // Normalize every remaining visible section, not only the first hero paragraph.
   // Template demo stories often live in repeated .lede/.byline elements or styled headings.
+  const detailCopy = sector.kind === "ospitalità"
+    ? [
+      "Per menu, eventi e iniziative, chiedi direttamente al locale: le informazioni possono cambiare.",
+      "Vuoi organizzare una visita o una serata? Contatta il locale e verifica in anticipo orari e disponibilità.",
+      "La proposta aggiornata e gli eventuali servizi su prenotazione vanno confermati direttamente con l’attività.",
+      "Per occasioni speciali o richieste specifiche, parla con il personale prima della visita."
+    ]
+    : [
+      "Contatta direttamente l’attività per verificare servizi, modalità e disponibilità aggiornate.",
+      "Ogni richiesta può avere esigenze diverse: descrivi la tua e chiedi un confronto prima di procedere.",
+      "Per dettagli pratici, tempi o appuntamenti, usa i riferimenti presenti nella sezione contatti.",
+      "Le informazioni specifiche vanno confermate con l’attività prima di prendere accordi."
+    ];
+  let detailIndex = 0;
   out = out.replace(/<p\b([^>]*\bclass=["'][^"']*\b(?:sub|lead|lede|byline|fine)\b[^"']*["'][^>]*)>[\s\S]*?<\/p>/gi,
-    (_, attrs) => '<p' + attrs + '>' + esc(businessDescription) + '</p>');
+    (_, attrs) => '<p' + attrs + '>' + esc(detailCopy[detailIndex++ % detailCopy.length]) + '</p>');
   // Decorative Japanese copy and demo-specific secondary headings are not business content.
   out = out.replace(/<(p|span|div)\b([^>]*\bclass=["'][^"']*\bjp\b[^"']*["'][^>]*)>[\s\S]*?<\/\1>/gi, '');
   let h2Index = 0;
