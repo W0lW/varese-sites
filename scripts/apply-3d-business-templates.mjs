@@ -42,7 +42,33 @@ function attr(html, re) { return (html.match(re) || [])[1] || ""; }
 function getTextLinks(html) {
   return [...html.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)].map(m => ({ href: m[1], text: m[2].replace(/<[^>]+>/g, "").trim() }));
 }
-function pick(slug, title, desc) {
+function pick(slug, title, desc, manifestSector = "") {
+  const category = String(manifestSector || "").toLocaleLowerCase("it");
+  // Trust the manifest's sector before fuzzy matching names: e.g. "restaurant" contains "restaur"
+  // and must not be misclassified as a restoration/craft business.
+  const explicitRules = [
+    { match: /pasticcer|patisserie|gelateri|panetter|panific|bakery|cake|cioccolat|confetter|dolce.?salato/, id: "sucre" },
+    { match: /parrucch|acconciatur|barbiere|barber|centro estetico|estetica|nail|unghie|profumer|capelli/, id: "nocturne" },
+    { match: /carrozzer|officina|gommist|pneumatic|autoricamb|autotecn|meccanica|riparazione auto|moto/, id: "racer" },
+    { match: /impiant|elettric|termoidraul|idraulic|caldaia|climatizz|fotovoltaic|domotic/, id: "hangar" },
+    { match: /edilizia|impresa edile|costruzion|scav|serrament|ristruttur|murator|cartongess/, id: "monolith" },
+    { match: /puliz|igien|sanific|multiserviz|facility/, id: "keeper" },
+    { match: /giardin|fiorista|fioraio|vivaio|verde|piante|garden|paesagg/, id: "florae" },
+    { match: /bar, cocktail|cocktail bar|ristorant|pizzer|trattoria|osteria|enoteca|birreria|pub|sushi|piadiner|caff[eè]|bistrot|lounge|discotec|ristoro/, id: "lowfreq" },
+    { match: /hotel|albergo|bed.?and.?breakfast|casa vacanze|affittacamere|resort|ospitalit/, id: "artemis" },
+    { match: /consulent|studio professionale|commercialist|notai|avvocat|ingegner|architett|amministrazion|assicurazion|finanz|agenzia immobiliare/, id: "gambit" },
+    { match: /gioiell|orefic|preziosi|orolog|ottic|occhial|dentist|dentale|medic|fisioterap|farmaci|salute|odontoiatr|clinica/, id: "lithos" },
+    { match: /agricol|animali|veterinar|pet.?shop|agriturism|biolog/, id: "terrarium" },
+    { match: /trasport|noleggio|logistic|viagg|magazzin|trasloc|spedizion/, id: "atlas" },
+    { match: /legno|falegnam|arred|mobili|cucine|interior/, id: "koen" },
+    { match: /arte|restaur|antiqu|intagliator|cornic|tatuagg|artigian|ferro|accia|sald|resine|lavorazion/, id: "reliquary" }
+  ];
+  for (const rule of explicitRules) {
+    if (rule.match.test(category)) {
+      const chosen = sectors.find(x => x.id === rule.id);
+      if (chosen) return chosen;
+    }
+  }
   const hay = slug + " " + title + " " + desc;
   return sectors.find(x => x.match.test(hay)) || fallback;
 }
@@ -240,7 +266,7 @@ for (const dir of siteDirs) {
   const eyebrow = (oldHtml.match(/class=["'][^"']*eyebrow[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>/i) || [])[1] || "";
   const manifestSector = String(record.settore || "");
   const sectorText = manifestSector + " " + (oldHtml.match(/<h1[^>]*>[\s\S]*?<\/h1>/i) || [""])[0] + " " + eyebrow + " " + description;
-  const sector = { ...pick(dir.name, titleText, sectorText) };
+  const sector = { ...pick(dir.name, titleText, sectorText, manifestSector) };
   // Keep sector-appropriate Italian copy, but use the audited 3D concept for this exact business.
   const auditedTemplateId = record.template_id_3d || "";
   if (auditedTemplateId && /^[a-z0-9-]+$/.test(auditedTemplateId)) sector.id = auditedTemplateId;
