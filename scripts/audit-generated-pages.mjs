@@ -44,7 +44,7 @@ function inspectPage(file) {
   if (!/id=["']business-page-cleanup["']/i.test(html)) {
     findings.push({ code: "MISSING_BUSINESS_CHROME_CLEANUP", sample: "Template switcher / demo card cleanup missing" });
   }
-  if (/<section\\b(?=[^>]*\\bid=["'](?:club|catalogue)["'])[^>]*>/i.test(html)) {
+  if (/<section\b(?=[^>]*\bid=["'](?:club|catalogue)["'])[^>]*>/i.test(html)) {
     findings.push({ code: "UNRELATED_COMMERCE_SECTION", sample: "Fictional catalogue or paid membership section remains in the page source" });
   }
   if (!title.trim()) findings.push({ code: "MISSING_TITLE", sample: "(missing title)" });
@@ -128,6 +128,9 @@ for (const [code, count] of Object.entries(findingCounts).sort((a, b) => b[1] - 
   console.log("  " + code + ": " + count + " page(s)");
 }
 console.log("Detailed report: qa-generated-pages-report.json");
+for (const item of flagged.slice(0, 20)) {
+  console.log("  SAMPLE " + item.slug + ": " + item.findings.map(f => f.code + "=" + f.sample).join(" | "));
+}
 
 if (flagged.length) {
   console.error("QA FAILED: demo residue or structural problems detected; publication must stop until the findings are corrected.");
