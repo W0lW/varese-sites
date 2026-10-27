@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { gunzipSync } from "node:zlib";
+import { gunzipSync, inflateSync, inflateRawSync, brotliDecompressSync } from "node:zlib";
 
 const root = process.cwd();
 const builtExamples = path.join(root, "template 3D", "Dioramas", "dist", "examples");
@@ -120,10 +120,31 @@ const businessCategoryCodes = {
 
 const businessCategoryOverrides = new Map();
 const businessCategoryPath = path.join(root, "audit-business-categories.json.gz.b64");
+const categorySourcesPathForFallback = path.join(root, "audit-category-sources.csv");
 if (fs.existsSync(businessCategoryPath)) {
   const encoded = fs.readFileSync(businessCategoryPath, "utf8").trim();
-  for (const [slug, code] of JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString("utf8"))) {
-    if (slug) businessCategoryOverrides.set(slug, businessCategoryCodes[code] || "needs_review");
+  const bytes = Buffer.from(encoded, "base64");
+  let decoded = null;
+  for (const decompress of [gunzipSync, inflateSync, inflateRawSync, brotliDecompressSync]) {
+    try {
+      decoded = JSON.parse(decompress(bytes).toString("utf8"));
+      break;
+    } catch { /* Try the other supported compression formats before using the CSV fallback. */ }
+  }
+  if (Array.isArray(decoded)) {
+    for (const [slug, code] of decoded) {
+      if (slug) businessCategoryOverrides.set(slug, businessCategoryCodes[code] || (businessCategoryDefinitions[code] ? code : "needs_review"));
+    }
+  } else {
+    console.warn("Could not decode audit-business-categories.json.gz.b64; using audited category source CSV where available.");
+  }
+}
+if (!businessCategoryOverrides.size && fs.existsSync(categorySourcesPathForFallback)) {
+  for (const item of parseCsv(fs.readFileSync(categorySourcesPathForFallback, "utf8"))) {
+    if (item.slug && item.category) {
+      const key = businessCategoryCodes[item.category] || item.category;
+      businessCategoryOverrides.set(item.slug, businessCategoryDefinitions[key] ? key : "needs_review");
+    }
   }
 }
 const businessCategorySources = new Map();
