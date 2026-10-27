@@ -58,6 +58,13 @@ if (fs.existsSync(manifestCsv)) {
   }
 }
 
+const extraPageRecords = new Map();
+const extraPagesCsv = path.join(root, "audit-extra-pages.csv");
+if (fs.existsSync(extraPagesCsv)) for (const r of parseCsv(fs.readFileSync(extraPagesCsv, "utf8"))) if (r.slug) extraPageRecords.set(r.slug, r);
+const candidateContacts = new Map();
+const candidateCsv = path.join(root, "audit-contact-candidates.csv");
+if (fs.existsSync(candidateCsv)) for (const r of parseCsv(fs.readFileSync(candidateCsv, "utf8"))) if (r.slug) candidateContacts.set(r.slug, r);
+
 function inspectPage(file) {
   const html = fs.readFileSync(file, "utf8");
   const slug = path.basename(path.dirname(file));
@@ -75,6 +82,8 @@ function inspectPage(file) {
   }
   if (!title.trim()) findings.push({ code: "MISSING_TITLE", sample: "(missing title)" });
   const record = manifestRecords.get(slug);
+  const extraRecord = extraPageRecords.get(slug);
+  const candidate = candidateContacts.get(slug);
   if (record) {
     if (record.telefono && !html.includes(record.telefono)) findings.push({ code: "MANIFEST_PHONE_MISSING", sample: record.telefono });
     if (record.email && !html.includes(record.email)) findings.push({ code: "MANIFEST_EMAIL_MISSING", sample: record.email });
@@ -121,6 +130,17 @@ function inspectPage(file) {
   }
 
   const visible = stripNonContent(html);
+  if (extraRecord && extraRecord.nome && !html.includes(extraRecord.nome) && !html.includes(extraRecord.nome.replace(/&/g, "&amp;"))) {
+    findings.push({ code: "OUT_OF_MANIFEST_NAME_MISSING", sample: extraRecord.nome });
+  }
+  if (candidate && !(record && record.telefono)) {
+    if (candidate.telefono_snippet_da_verificare && (!visible.includes(candidate.telefono_snippet_da_verificare) || !/Numero da verificare/i.test(visible))) {
+      findings.push({ code: "WEB_PHONE_CANDIDATE_NOT_LABELLED", sample: candidate.telefono_snippet_da_verificare });
+    }
+    if (candidate.email_snippet_da_verificare && (!visible.includes(candidate.email_snippet_da_verificare) || !/Email da verificare/i.test(visible))) {
+      findings.push({ code: "WEB_EMAIL_CANDIDATE_NOT_LABELLED", sample: candidate.email_snippet_da_verificare });
+    }
+  }
   for (const [code, re] of rules) {
     const match = visible.match(re);
     if (match) findings.push({ code, sample: visible.slice(Math.max(0, match.index - 45), Math.min(visible.length, match.index + match[0].length + 45)).replace(/\s+/g, " ").slice(0, 160) });
