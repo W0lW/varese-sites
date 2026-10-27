@@ -111,37 +111,32 @@ function pick(slug, title, desc, manifestSector = "") {
 }
 function replaceAll(html, pairs) {
   // Replace authored copy case-insensitively without touching HTML attributes, CSS or JS.
-  // Text-node replacement also avoids breaking selectors/data attributes such as "sound-label".
-  const tokens = /<script\\b[\\s\\S]*?<\\/script>|<style\\b[\\s\\S]*?<\\/style>|<[^>]+>|[^<]+/gi;
+  const tokens = /<script\b[\s\S]*?<\/script>|<style\b[\s\S]*?<\/style>|<[^>]+>|[^<]+/gi;
   return html.replace(tokens, token => {
     if (token.startsWith("<")) return token;
     let text = token;
     for (const [from, to] of pairs) {
-      const escaped = from.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\function replaceAll(html, pairs) {
-  for (const [from, to] of pairs) html = html.split(from).join(to);
-  return html;
-}");
+      const escaped = from.replace(/[-/\\^$*+?.()|[\]{}]/g, ch => String.fromCharCode(92) + ch);
       text = text.replace(new RegExp(escaped, "gi"), to);
     }
     return text;
   });
 }
 function removeSectionsContainingDemoCards(html) {
-  const tokens = /<\\/?section\\b[^>]*>/gi;
+  const tokens = /<\/?section\b[^>]*>/gi;
   const stack = [];
   const removals = [];
   let match;
-  const cardCopy = /Join Sleeve|Most kept|Every LF pressing|Liner notes written at the counter|10% off anything on the wall|First pick of the test pressings|Your request played before 21:00|¥\\s*[0-9,]+\\s*\\/\\s*month|SLEEVE/i;
+  const cardCopy = /Join Sleeve|Most kept|Every LF pressing|Liner notes written at the counter|10% off anything on the wall|First pick of the test pressings|Your request played before 21:00|¥\s*[0-9,]+\s*\/\s*month|SLEEVE/i;
   while ((match = tokens.exec(html))) {
-    if (/^<\\s*section\\b/i.test(match[0])) stack.push({ start: match.index, contentStart: tokens.lastIndex, end: -1 });
+    if (/^<\s*section\b/i.test(match[0])) stack.push({ start: match.index, contentStart: tokens.lastIndex });
     else if (stack.length) {
       const section = stack.pop();
-      section.end = tokens.lastIndex;
-      const body = html.slice(section.contentStart, match.index).replace(/<script\\b[\\s\\S]*?<\\/script>|<style\\b[\\s\\S]*?<\\/style>|<[^>]+>/gi, " ");
-      if (cardCopy.test(body)) removals.push([section.start, section.end]);
+      const body = html.slice(section.contentStart, match.index).replace(/<script\b[\s\S]*?<\/script>|<style\b[\s\S]*?<\/style>|<[^>]+>/gi, " ");
+      if (cardCopy.test(body)) removals.push([section.start, tokens.lastIndex]);
     }
   }
-  // Remove outermost matching ranges first and never splice overlapping nested ranges twice.
+  // Remove outermost matching ranges once, from the end of the document backward.
   const filtered = removals.filter(([start, end]) => !removals.some(([a, b]) => a < start && b >= end));
   for (const [start, end] of filtered.sort((a, b) => b[0] - a[0])) html = html.slice(0, start) + html.slice(end);
   return html;
@@ -455,10 +450,6 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
     ["Untie & start again", "Ricomincia"], ["Listening bar & record label", "Locale · Bar e ristorazione"]
   ]);
   out = removeSectionsContainingDemoCards(out);
-  for (const sectionId of (demoSectionsByTemplate[sector.id] || [])) {
-    out = removeSectionById(out, sectionId);
-  }
-
   // Remove the collection/template switcher from every business page. It belongs only
   // on the 3D showcase, never on a customer's public website.
   const businessChrome = '<style id="business-page-cleanup">.tw-nav,.tw-nav-home,.tw-nav-step,.tw-nav-count{display:none!important;visibility:hidden!important;pointer-events:none!important}';
