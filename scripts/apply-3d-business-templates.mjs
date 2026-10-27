@@ -201,7 +201,7 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
     ["Trees looking for their next hundred years.", "Cura, stile e attenzione per ogni cliente."],
     ["The tree,", "Il tuo stile,"], ["undressed.", "senza compromessi."],
     ["Lighter than air.", "Leggerezza e precisione."], ["Storing the light.", "Valorizza il tuo look."],
-    ["Sound", "Audio"], ["Sound off", "Disattiva audio"], ["Scroll to", "Scorri per"],
+    ["Sound off", "Audio disattivato"], ["Sound on", "Audio attivo"], ["Sound", "Audio"], ["Audio off", "Audio disattivato"], ["Scroll to", "Scorri per"],
     ["Discover", "Scopri"], ["Explore", "Esplora"], ["Learn more", "Scopri di più"], ["Subscribe", "Contatti"], ["Newsletter", "Aggiornamenti"],
     ["Contact", "Contatti"], ["Services", "Servizi"], ["About", "Chi siamo"],
     ["The experience", "L’esperienza"], ["The details", "I dettagli"], ["Made to order", "Su misura"],
@@ -341,18 +341,13 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
   // Remove the collection/template switcher from every business page. It belongs only
   // on the 3D showcase, never on a customer's public website.
   const businessChrome = '<style id="business-page-cleanup">.tw-nav,.tw-nav-home,.tw-nav-step,.tw-nav-count{display:none!important;visibility:hidden!important;pointer-events:none!important}';
-  if (sector.kind === "ospitalità") {
-    // Remove the fictional vinyl catalogue and paid membership plans from real venue pages.
-    out = out.replace(/<section\b[^>]*\bid=["']club["'][^>]*>[\s\S]*?<\/section>/i, '');
-    out = out.replace(/<section\b[^>]*\bid=["']catalogue["'][^>]*>[\s\S]*?<\/section>/i, '');
-    out = out.replace(/<head>/i, '<head>\n' + businessChrome +
-      '#pressing .tracks,#pressing .buy,.pressing .stock{display:none!important}' +
-      '</style>');
-  } else {
-    out = out.replace(/<head>/i, '<head>\n' + businessChrome +
-      '.tw-nav{display:none!important}.pressing .tracks,.pressing .buy,.catalogue .sleeves,.club .tiers{display:none!important}' +
-      '</style>');
-  }
+  // The original showcase's catalogue and paid club contain fictional products/prices.
+  // They are not factual services for any of the local businesses, so remove them.
+  out = out.replace(/<section\b[^>]*\bid=["']club["'][^>]*>[\s\S]*?<\/section>/i, '');
+  out = out.replace(/<section\b[^>]*\bid=["']catalogue["'][^>]*>[\s\S]*?<\/section>/i, '');
+  out = out.replace(/<head>/i, '<head>\n' + businessChrome +
+    '.tw-nav{display:none!important}.pressing .tracks,.pressing .buy,.catalogue .sleeves,.club .tiers{display:none!important}' +
+    '</style>');
   return out;
 }
 
