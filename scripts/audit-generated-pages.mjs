@@ -37,13 +37,16 @@ function phoneDigits(value) {
   return String(value || "").replace(/\D/g, "");
 }
 function phoneMatchesHtml(html, phone) {
-  const expected = phoneDigits(phone);
-  if (!expected) return true;
+  const expectedNumbers = String(phone || "").split(/[;,\\n]+/).map(phoneDigits).filter(Boolean);
+  if (!expectedNumbers.length) return true;
   const telLinks = [...String(html || "").matchAll(/href=["']tel:([^"']+)["']/gi)]
     .map(match => phoneDigits(match[1]));
-  // Allow international prefixes and formatting differences, but require the complete national number.
-  const national = expected.replace(/^0039/, "").replace(/^39(?=0|3)/, "");
-  return telLinks.some(value => value === expected || value.endsWith(national) || expected.endsWith(value));
+  // Manifest entries may contain multiple numbers separated by semicolons.
+  // Match each complete number independently, allowing Italian international prefixes and formatting.
+  return expectedNumbers.some(expected => {
+    const national = expected.replace(/^0039/, "").replace(/^39(?=0|3)/, "");
+    return telLinks.some(value => value === expected || value.endsWith(national) || expected.endsWith(value));
+  });
 }
 
 function parseCsv(text) {
