@@ -133,11 +133,13 @@ function inspectPage(file) {
   if (extraRecord && extraRecord.nome && !html.includes(extraRecord.nome) && !html.includes(extraRecord.nome.replace(/&/g, "&amp;"))) {
     findings.push({ code: "OUT_OF_MANIFEST_NAME_MISSING", sample: extraRecord.nome });
   }
-  if (candidate && !(record && record.telefono)) {
-    if (candidate.telefono_snippet_da_verificare && (!visible.includes(candidate.telefono_snippet_da_verificare) || !/Numero da verificare/i.test(visible))) {
+  if (candidate) {
+    if (candidate.telefono_snippet_da_verificare && !(record && record.telefono) &&
+        (!visible.includes(candidate.telefono_snippet_da_verificare) || !/Numero da verificare/i.test(visible))) {
       findings.push({ code: "WEB_PHONE_CANDIDATE_NOT_LABELLED", sample: candidate.telefono_snippet_da_verificare });
     }
-    if (candidate.email_snippet_da_verificare && (!visible.includes(candidate.email_snippet_da_verificare) || !/Email da verificare/i.test(visible))) {
+    if (candidate.email_snippet_da_verificare && !(record && record.email) &&
+        (!visible.includes(candidate.email_snippet_da_verificare) || !/Email da verificare/i.test(visible))) {
       findings.push({ code: "WEB_EMAIL_CANDIDATE_NOT_LABELLED", sample: candidate.email_snippet_da_verificare });
     }
   }
