@@ -145,7 +145,19 @@ function inspectPage(file) {
     const match = visible.match(re);
     if (match) findings.push({ code, sample: visible.slice(Math.max(0, match.index - 45), Math.min(visible.length, match.index + match[0].length + 45)).replace(/\s+/g, " ").slice(0, 160) });
   }
-  return { slug, findings };
+  const h1 = (html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/i) || [""])[0].replace(/<[^>]+>/g, " ").replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim();
+  const intro = (html.match(/<p\b[^>]*class=["'][^"']*\b(?:sub|lead|lede)\b[^"']*["'][^>]*>[\s\S]*?<\/p>/i) || [""])[0].replace(/<[^>]+>/g, " ").replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim();
+  return {
+    slug, findings, title: title.replace(/<[^>]+>/g, "").replace(/&amp;/gi, "&").trim(), h1, template, intro,
+    data_source: record ? "manifest" : (extraRecord ? "fuori_manifest_da_verificare" : "pagina_senza_record_audit"),
+    phone_from_manifest: record?.telefono || "", phone_present: Boolean(record?.telefono && html.includes(record.telefono)),
+    email_from_manifest: record?.email || "", email_present: Boolean(record?.email && html.includes(record.email)),
+    address_from_manifest: record?.indirizzo || "", address_present: Boolean(record?.indirizzo && html.includes(record.indirizzo)),
+    phone_candidate: candidate?.telefono_snippet_da_verificare || "",
+    phone_candidate_labelled: Boolean(candidate?.telefono_snippet_da_verificare && visible.includes(candidate.telefono_snippet_da_verificare) && /Numero da verificare/i.test(visible)),
+    email_candidate: candidate?.email_snippet_da_verificare || "",
+    email_candidate_labelled: Boolean(candidate?.email_snippet_da_verificare && visible.includes(candidate.email_snippet_da_verificare) && /Email da verificare/i.test(visible))
+  };
 }
 
 const pages = fs.readdirSync(sitesDir, { withFileTypes: true })
@@ -167,7 +179,16 @@ const report = {
   pages_scanned: pages.length,
   pages_flagged: flagged.length,
   pages_passed: pages.length - flagged.length,
+  manifest_rows: manifestRecords.size,
+  out_of_manifest_audit_rows: extraPageRecords.size,
+  contact_candidate_rows: candidateContacts.size,
+  manifest_phone_rows: results.filter(r => r.phone_from_manifest).length,
+  manifest_email_rows: results.filter(r => r.email_from_manifest).length,
+  manifest_address_rows: results.filter(r => r.address_from_manifest).length,
+  labelled_phone_candidates: results.filter(r => r.phone_candidate_labelled).length,
+  labelled_email_candidates: results.filter(r => r.email_candidate_labelled).length,
   finding_counts: findingCounts,
+  pages: results.map(({ findings, ...page }) => page),
   flagged_pages: flagged.map(({ slug, findings }) => ({ slug, findings })),
 };
 const reportPath = path.join(root, "qa-generated-pages-report.json");
@@ -177,6 +198,9 @@ console.log("Generated page QA");
 console.log("Pages scanned: " + report.pages_scanned);
 console.log("Pages with findings: " + report.pages_flagged);
 console.log("Pages passing: " + report.pages_passed);
+console.log("Manifest rows: " + report.manifest_rows + "; out-of-manifest audit rows: " + report.out_of_manifest_audit_rows);
+console.log("Pages with manifest phone/email/address: " + report.manifest_phone_rows + "/" + report.manifest_email_rows + "/" + report.manifest_address_rows);
+console.log("Web contact candidates labelled as unverified: phone " + report.labelled_phone_candidates + ", email " + report.labelled_email_candidates);
 for (const [code, count] of Object.entries(findingCounts).sort((a, b) => b[1] - a[1])) {
   console.log("  " + code + ": " + count + " page(s)");
 }
