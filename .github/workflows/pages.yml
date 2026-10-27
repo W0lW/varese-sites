@@ -3,6 +3,7 @@ name: Deploy static sites to GitHub Pages
 on:
   push:
     branches: ["main"]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -39,6 +40,9 @@ jobs:
       - name: Generate business pages using matched 3D concepts
         run: node scripts/apply-3d-business-templates.mjs
 
+      - name: Audit generated pages for demo residue and structural defects
+        run: node scripts/audit-generated-pages.mjs
+
       - name: Assemble complete site and Template 3D collection
         run: |
           test -f index.html
@@ -47,7 +51,7 @@ jobs:
           test -f sites/index.html
           count=$(find sites -mindepth 2 -maxdepth 2 -type f -name index.html | wc -l)
           echo "Business concept pages: $count"
-          test "$count" -ge 80
+          test "$count" -ge 2000
           mkdir -p _site
           rsync -a --exclude='.git' --exclude='.github' --exclude='template 3D' --exclude='Template 3D' --exclude='node_modules' --exclude='_site' ./ _site/
           mkdir -p "_site/Template 3D"
@@ -66,6 +70,7 @@ jobs:
           path: _site
 
   deploy:
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const builtExamples = path.join(root, "template 3D", "Dioramas", "examples");
+const builtExamples = path.join(root, "template 3D", "Dioramas", "dist", "examples");
 
 const sectors = [
   // Regole ordinate: prima i settori specifici, poi le categorie più ampie.
@@ -18,7 +18,7 @@ const sectors = [
   { id: "gambit", match: /consulent|associat|studio|geom|commercialist|notai|avvocat|ingegner|architett|amministrazion|basaglia|morello|agenzia immobiliare/i, kind: "studio", nav: ["Competenze", "Attività", "Contatti"], cta: "Richiedi un appuntamento", description: "Studio professionale: scopri le competenze e contatta l’attività per un appuntamento informativo." },
   { id: "reliquary", match: /arte|restaur|antiqu|intagliator|cornic|tatuagg|artigian|ferro|accia|sald|resine|lavorazion/i, kind: "artigianato", nav: ["Lavorazioni", "Dettagli", "Contatti"], cta: "Richiedi informazioni", description: "Lavorazioni specialistiche e competenze artigianali: contatta l’attività per informazioni sul tuo progetto." },
   { id: "terrarium", match: /agricol|animali|veterinar|pet.?shop|florovivais|agriturism|biolog/i, kind: "natura", nav: ["Servizi", "Territorio", "Contatti"], cta: "Richiedi informazioni", description: "Servizi legati alla natura e al territorio: contatta l’attività per maggiori informazioni." },
-  { id: "lowfreq", match: /bar|pub|cocktail|enoteca|birreria|ristorant|pizzeria|trattoria|osteria|sushi|caff[eè]|bistrot|lounge|discotec|musica|dj|eventi|club/i, kind: "ospitalità", nav: ["Esperienza", "Proposta", "Contatti"], cta: "Contatta l’attività", description: "Un luogo per incontrarsi e vivere una buona esperienza: consulta le informazioni e contatta l’attività." },
+  { id: "lowfreq", match: /bar\b|pub\b|cocktail|enoteca|birreria|ristorant|pizzeria|trattoria|osteria|sushi|caff[eè]|bistrot|lounge|discotec|musica|dj\b|eventi|club\b/i, kind: "ospitalità", nav: ["Esperienza", "Proposta", "Contatti"], cta: "Contatta l’attività", description: "Un luogo per incontrarsi e vivere una buona esperienza: consulta le informazioni e contatta l’attività." },
   { id: "velocity", match: /palestra|fitness|sport|karate|running|cicl|biciclett|atletica|yoga|pilates|danza|ballo|nuoto/i, kind: "sport", nav: ["Attività", "Percorsi", "Contatti"], cta: "Chiedi informazioni", description: "Attività sportive e percorsi di movimento: contatta l’attività per conoscere le proposte disponibili." },
   { id: "horologie", match: /orolog|gioiell|orefic|prezios|ottic|occhial|riparazione orologi/i, kind: "gioielli e precisione", nav: ["Collezione", "Lavorazioni", "Contatti"], cta: "Richiedi informazioni", description: "Una selezione di prodotti e lavorazioni di precisione: contatta l’attività per informazioni." },
   { id: "lithos", match: /dentist|dentale|medic|fisioterap|farmaci|laboratorio|ottic|salute|odontoiatr|clinica/i, kind: "servizi professionali", nav: ["Servizi", "Approccio", "Contatti"], cta: "Richiedi informazioni", description: "Informazioni sui servizi e sulle modalità di contatto dell’attività. I dettagli specifici vanno confermati con il professionista." },
@@ -27,7 +27,7 @@ const sectors = [
   { id: "hangar", match: /informatica|elettronic|computer|telefonia|smartphone|assistenza pc|riparazione pc|riparazione smartphone/i, kind: "tecnologia e assistenza", nav: ["Servizi", "Riparazioni", "Contatti"], cta: "Richiedi assistenza", description: "Assistenza tecnologica e soluzioni per dispositivi: contatta l’attività per verificare servizi, tempi e disponibilità." },
   { id: "gambit", match: /fotograf|video|grafica|design|comunicazion|marketing|web.?agency|stampa|tipograf|creativ|software/i, kind: "creativo e digitale", nav: ["Progetti", "Servizi", "Contatti"], cta: "Parliamo del progetto", description: "Servizi creativi e digitali: racconta all’attività il tuo progetto e chiedi informazioni sulle soluzioni disponibili." },
   { id: "artemis", match: /hotel|albergo|b.?b\b|bed.?and.?breakfast|casa vacanze|affittacamere|resort|ospitalit|wedding|matrimon/i, kind: "ospitalità", nav: ["Esperienza", "Spazi", "Contatti"], cta: "Richiedi informazioni", description: "Informazioni per organizzare il soggiorno o l’esperienza: contatta direttamente l’attività per disponibilità e dettagli." },
-  { id: "gambit", match: /assicurazion|finanz|caf|patronato|formazion|scuola|agenzia|servizi alle imprese/i, kind: "servizi professionali", nav: ["Servizi", "Competenze", "Contatti"], cta: "Richiedi informazioni", description: "Servizi professionali e supporto su misura: contatta l’attività per informazioni sulle competenze e sulle modalità di accesso." }
+  { id: "gambit", match: /assicurazion|finanz|caf\b|patronato|formazion|scuola|agenzia|servizi alle imprese/i, kind: "servizi professionali", nav: ["Servizi", "Competenze", "Contatti"], cta: "Richiedi informazioni", description: "Servizi professionali e supporto su misura: contatta l’attività per informazioni sulle competenze e sulle modalità di accesso." }
 ];
 const fallback = { id: "gambit", kind: "attività professionale", nav: ["Servizi", "Attività", "Contatti"], cta: "Richiedi informazioni", description: "Scopri i servizi dell’attività e contattala per informazioni. Le informazioni specifiche vanno confermate direttamente con l’attività." };
 
@@ -207,6 +207,19 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
     out = replaceAll(out, [["Bergamot", "Pulizie civili"], ["Iris", "Pulizie uffici"], ["Vanilla", "Trattamenti"], ["Oud", "Sanificazione"], ["50 ml — €290", "Richiedi un preventivo"], ["Shop No. 9", "Richiedi un preventivo"]]);
   }
 
+  // Normalize every remaining visible section, not only the first hero paragraph.
+  // Template demo stories often live in repeated .lede/.byline elements or styled headings.
+  out = out.replace(/<p\b([^>]*\bclass=["'][^"']*\b(?:sub|lead|lede|byline|fine)\b[^"']*["'][^>]*)>[\s\S]*?<\/p>/gi,
+    (_, attrs) => '<p' + attrs + '>' + esc(businessDescription) + '</p>');
+  // Decorative Japanese copy and demo-specific secondary headings are not business content.
+  out = out.replace(/<(p|span|div)\b([^>]*\bclass=["'][^"']*\bjp\b[^"']*["'][^>]*)>[\s\S]*?<\/\1>/gi, '');
+  let h2Index = 0;
+  out = out.replace(/<h2\b([^>]*)>[\s\S]*?<\/h2>/gi, (_, attrs) =>
+    '<h2' + attrs + '>' + esc(sector.nav[h2Index++ % sector.nav.length]) + '</h2>');
+  let h3Index = 0;
+  out = out.replace(/<h3\b([^>]*)>[\s\S]*?<\/h3>/gi, (_, attrs) =>
+    '<h3' + attrs + '>' + esc(sector.nav[h3Index++ % sector.nav.length]) + '</h3>');
+
   // Remove product pricing/cart affordances from the original demo and add real business actions.
   out = out.replace(/<span class="bag"[^>]*>[\s\S]*?<\/span>/gi, '');
   out = out.replace(/<button class="btn [^"]* add"[^>]*>[\s\S]*?<\/button>/gi, '');
@@ -225,6 +238,40 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
   out = out.replace(/src="\.\.\/\.\.\/assets\//g, 'src="/varese-sites/Template%203D/assets/');
   out = out.replace(/href="\.\.\/assets\//g, 'href="/varese-sites/Template%203D/assets/');
   out = out.replace(/src="\.\.\/assets\//g, 'src="/varese-sites/Template%203D/assets/');
+  // Use paths relative to each /sites/<slug>/ page: works on both project Pages and root Pages.
+  out = out.replace(/(["'=])\/varese-sites\/Template%203D\/assets\//g, '$1../../Template%203D/assets/');
+
+  // Last-resort cleanup for known fictional demo content that must never reach a business page.
+  // Keep unknown content for the QA gate to flag rather than guessing at a replacement.
+  out = out
+    .replace(/Maison(?:\s|&nbsp;|&#160;)*Sucre/gi, title)
+    .replace(/maisonsucre\.fr/gi, "")
+    .replace(/44\s+rue\s+du\s+Bac/gi, "")
+    .replace(/75007\s+Paris/gi, "")
+    .replace(/rue\s+du\s+Bac/gi, "")
+    .replace(/Paris\s*7/gi, "")
+    .replace(/bonjour@maisonsucre\.fr/gi, "")
+    .replace(/\+33\s*1\s*45\s*48\s*19\s*62/gi, "")
+    .replace(/your@email\.fr/gi, "email da verificare")
+    .replace(/Odile Marchand|Camille Marchand/gi, title)
+    .replace(/Pistache de Bronte|Citron de Menton|Gariguette/gi, "specialità del laboratorio")
+    .replace(/Today,\s*<em>behind the glass\.<\/em>/gi, "La proposta dell’attività")
+    .replace(/The shop/gi, "L’attività")
+    .replace(/Fill it for me/gi, "Scopri la proposta")
+    .replace(/Untie &amp; start again/gi, "Ricomincia")
+    .replace(/Order this box/gi, "Chiedi informazioni")
+    .replace(/Add to bag(?:\s*[—-]\s*€\s*290)?/gi, sector.cta)
+    .replace(/No\.\s*9 Extrait,?\s*50 ml/gi, title)
+    .replace(/50 ml\s*[—-]\s*€\s*290/gi, sector.cta)
+    .replace(/Made with butter, not margarine\./gi, "")
+    .replace(/Shimokitazawa|Kazu Nomura/gi, title)
+    .replace(/4,800 records on the wall/gi, "una proposta da scoprire")
+    .replace(/record label/gi, "attività")
+    .replace(/bonsai nursery/gi, sector.kind)
+    .replace(/Ōmiya,?\s*Saitama/gi, "")
+    .replace(/oldest maple has seen 180 autumns/gi, sector.description)
+    .replace(/555\s*014\s*\d{3,}/gi, "Telefono da verificare")
+    .replace(/example\.com/gi, "");
   return out;
 }
 
