@@ -175,7 +175,7 @@ function generatedDescription(business, sector, context = "", slug = "", municip
   let hash = 0;
   for (const char of (slug || business)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
   const curatedCopy = {
-    "barber-garage": "Tagli uomo, sfumature e cura della barba in un barbershop dal carattere industriale. Barber Garage si trova in via Giacomo Matteotti 13, Busto Arsizio: chiama per concordare un appuntamento e confermare i servizi disponibili."
+    "barber-garage": "Taglio uomo e cura della barba in un barbershop dal carattere industriale. Barber Garage si trova in via Giacomo Matteotti 13, Busto Arsizio: chiama per concordare un appuntamento e confermare i servizi disponibili."
   };
   const chosen = curatedCopy[slug] || pool[hash % pool.length];
   const place = String(municipality || "").trim();
