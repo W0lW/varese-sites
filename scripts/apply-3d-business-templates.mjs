@@ -405,8 +405,23 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
   // Remove the collection/template switcher from every business page. It belongs only
   // on the 3D showcase, never on a customer's public website.
   const businessChrome = '<style id="business-page-cleanup">.tw-nav,.tw-nav-home,.tw-nav-step,.tw-nav-count{display:none!important;visibility:hidden!important;pointer-events:none!important}';
-  // Remove complete nested demo-only sections; first-close regexes left fictional cards visible.
-  for (const sectionId of ["pressing", "catalogue", "club", "shop", "membership", "program", "apply", "waitlist", "subscribe", "book", "price", "collection", "coffret", "calibre", "finishing", "nursery", "craft"]) {
+  // Remove only the demo-specific commerce/story sections for the chosen template.
+  // Section IDs are not globally interchangeable: for Reliquary, "collection" is the hero and contains its H1.
+  const demoSectionsByTemplate = {
+    lowfreq: ["pressing", "catalogue", "club"],
+    nocturne: ["shop"],
+    terrarium: ["shop"],
+    reliquary: ["membership"],
+    hangar: ["program", "apply"],
+    racer: ["waitlist"],
+    florae: ["subscribe"],
+    atlas: ["book"],
+    artemis: ["price"],
+    sucre: ["coffret"],
+    horologie: ["collection", "calibre", "finishing"],
+    koen: ["nursery", "craft"]
+  };
+  for (const sectionId of (demoSectionsByTemplate[sector.id] || [])) {
     out = removeSectionById(out, sectionId);
   }
   out = out.replace(/<head>/i, '<head>\n' + businessChrome +
