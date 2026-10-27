@@ -118,33 +118,35 @@ const businessCategoryCodes = {
   "??": "needs_review", is: "industrial_services", lb: "logistics_business"
 };
 
+const businessCategoryLetterCodes = {
+  a: "bar_cafe", b: "retail_design", c: "bakery", d: "hair", e: "restaurant", f: "automotive", g: "hospitality",
+  h: "beauty", i: "construction_trades", j: "florist_garden", k: "cleaning_services", l: "legal_professional",
+  m: "salon_beauty", n: "art_craft", o: "optical", p: "travel", q: "real_estate", r: "fitness", s: "tattoo",
+  t: "creative_services", u: "education_culture", v: "health", w: "pizzeria", x: "pet_supply", y: "food_retail",
+  z: "needs_review", A: "industrial_services", B: "logistics_business"
+};
 const businessCategoryOverrides = new Map();
 const businessCategoryPath = path.join(root, "audit-business-categories.json.gz.b64");
-const categorySourcesPathForFallback = path.join(root, "audit-category-sources.csv");
 if (fs.existsSync(businessCategoryPath)) {
   const encoded = fs.readFileSync(businessCategoryPath, "utf8").trim();
-  const bytes = Buffer.from(encoded, "base64");
-  let decoded = null;
-  for (const decompress of [gunzipSync, inflateSync, inflateRawSync, brotliDecompressSync]) {
-    try {
-      decoded = JSON.parse(decompress(bytes).toString("utf8"));
-      break;
-    } catch { /* Try the other supported compression formats before using the CSV fallback. */ }
-  }
+  const raw = gunzipSync(Buffer.from(encoded, "base64")).toString("utf8");
+  let decoded;
+  try { decoded = JSON.parse(raw); } catch { decoded = raw; }
   if (Array.isArray(decoded)) {
     for (const [slug, code] of decoded) {
       if (slug) businessCategoryOverrides.set(slug, businessCategoryCodes[code] || (businessCategoryDefinitions[code] ? code : "needs_review"));
     }
-  } else {
-    console.warn("Could not decode audit-business-categories.json.gz.b64; using audited category source CSV where available.");
-  }
-}
-if (!businessCategoryOverrides.size && fs.existsSync(categorySourcesPathForFallback)) {
-  for (const item of parseCsv(fs.readFileSync(categorySourcesPathForFallback, "utf8"))) {
-    if (item.slug && item.category) {
-      const key = businessCategoryCodes[item.category] || item.category;
-      businessCategoryOverrides.set(item.slug, businessCategoryDefinitions[key] ? key : "needs_review");
+  } else if (typeof decoded === "string") {
+    const slugs = fs.readdirSync(path.join(root, "sites"), { withFileTypes: true })
+      .filter(entry => entry.isDirectory()).map(entry => entry.name).sort();
+    if (decoded.length !== slugs.length) {
+      throw new Error("Per-site category map length mismatch: " + decoded.length + " codes for " + slugs.length + " site directories");
     }
+    for (let i = 0; i < slugs.length; i++) {
+      businessCategoryOverrides.set(slugs[i], businessCategoryLetterCodes[decoded[i]] || "needs_review");
+    }
+  } else {
+    throw new Error("Unsupported per-site category map format");
   }
 }
 const businessCategorySources = new Map();
