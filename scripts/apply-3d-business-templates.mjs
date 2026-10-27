@@ -157,6 +157,49 @@ if (fs.existsSync(businessCategorySourcesPath)) {
   }
 }
 
+function inferBusinessCategoryKey(slug, title, desc, manifestSector = "", templateId = "") {
+  const hay = (String(manifestSector || "") + " " + String(title || "") + " " + String(desc || "") + " " + String(slug || "")).toLocaleLowerCase("it");
+  const rules = [
+    ["pizzeria", /pizzer/],
+    ["restaurant", /ristorant|trattoria|osteria|sushi|tavola calda|gastronom/],
+    ["bar_cafe", /\bbar\b|caff[eè]|pub\b|birreria|enoteca|cocktail|bistrot|lounge|gelateria/],
+    ["bakery", /pasticcer|panetter|panific|forno\b|bakery|gelateria|cioccolat|confetter/],
+    ["food_retail", /alimentar|maceller|salumer|pescher|gastronomia|negozio aliment|supermercat/],
+    ["hair", /parrucch|acconciator|barbiere|barber|taglio uomo|hair salon/],
+    ["beauty", /centro estetico|estetica|nail|unghie|trattamenti estetici/],
+    ["salon_beauty", /salone|benessere|cura della persona|beauty/],
+    ["tattoo", /tatuagg|tattoo|piercing/],
+    ["automotive", /carrozzer|officina|gommist|pneumatic|autoricamb|meccanica auto|autolavagg|concessionar|moto\b/],
+    ["hospitality", /hotel|albergo|bed.?and.?breakfast|b.?b\b|affittacamere|casa vacanze|resort|agriturism/],
+    ["real_estate", /agenzia immobiliare|immobiliar|compravendita immobili/],
+    ["legal_professional", /avvocat|notai|commercialist|consulent|studio professionale|geometra|ingegner|architett|amministrazion|assicurazion|caf\b|patronato/],
+    ["construction_trades", /edil|costruzion|ristruttur|serrament|idraulic|elettricista|termoidraulic|cartongess|impiantista|murator|scav/],
+    ["industrial_services", /informatica|elettronic|computer|smartphone|automazion|domotic|industr|macchinari|forniture tecniche|impiant/],
+    ["florist_garden", /fiorist|fioraio|fiori|giardin|vivaio|vivai|flor|piante|verde/],
+    ["cleaning_services", /puliz|sanific|igienizz|lavander|lavasecco|facility/],
+    ["fitness", /palestra|fitness|sport|karate|yoga|pilates|danza|ballo|nuoto|ciclismo|biciclett/],
+    ["optical", /ottic|occhial|optometr/],
+    ["health", /dentist|dentale|medic|fisioterap|farmaci|salute|odontoiatr|clinica|psicolog|veterinar/],
+    ["pet_supply", /animali|pet.?shop|mangimi|articoli per animali/],
+    ["florist_garden", /agricol|florovivais/],
+    ["travel", /trasport|noleggio|logistic|viagg|trasloc|spedizion|autobus|agenzia viaggi|nautic|barca|marin/],
+    ["creative_services", /fotograf|video|grafica|design|comunicazion|marketing|web.?agency|stampa|tipograf|software|creativ/],
+    ["education_culture", /scuola|formazion|centro studi|associazion culturale|biblioteca|museo|teatro|corsi/],
+    ["art_craft", /artigian|restaur|antiqu|intagliator|cornic|ferro|accia|sald|resine|lavorazion/],
+    ["retail_design", /negozio|boutique|arred|mobili|falegnam|legno|cucine|casa|abbigliamento|calzatur|gioiell|orefic|orolog/]
+  ];
+  for (const [key, pattern] of rules) if (pattern.test(hay) && businessCategoryDefinitions[key]) return key;
+  const templateFallback = {
+    sucre: "bakery", lowfreq: "bar_cafe", nocturne: "hair", racer: "automotive",
+    hangar: "industrial_services", monolith: "construction_trades", florae: "florist_garden",
+    keeper: "cleaning_services", atlas: "logistics_business", koen: "retail_design",
+    gambit: "legal_professional", reliquary: "art_craft", terrarium: "pet_supply",
+    velocity: "fitness", horologie: "optical", lithos: "health", koi: "food_retail",
+    abyssal: "travel", artemis: "hospitality", ember: "industrial_services", pilot: "automotive"
+  };
+  return templateFallback[templateId] || "needs_review";
+}
+
 function pick(slug, title, desc, manifestSector = "") {
   const category = String(manifestSector || "").toLocaleLowerCase("it");
   // Trust the manifest's sector before fuzzy matching names: e.g. "restaurant" contains "restaur"
@@ -827,7 +870,10 @@ for (const dir of siteDirs) {
   const manifestSector = String(record.settore || "");
   const sectorText = manifestSector + " " + (oldHtml.match(/<h1[^>]*>[\s\S]*?<\/h1>/i) || [""])[0] + " " + eyebrow + " " + description;
   let sector = { ...pick(dir.name, titleText, sectorText, manifestSector) };
-  const categoryKey = businessCategoryOverrides.get(dir.name) || "";
+  const categorySource = businessCategorySources.get(dir.name) || {};
+  const sourceCategory = businessCategoryDefinitions[categorySource.category] ? categorySource.category : "";
+  const categoryKey = businessCategoryOverrides.get(dir.name) || sourceCategory ||
+    inferBusinessCategoryKey(dir.name, titleText, sectorText, manifestSector, sector.id);
   const categoryDefinition = businessCategoryDefinitions[categoryKey];
   if (categoryDefinition) {
     const categorySource = businessCategorySources.get(dir.name) || {};
