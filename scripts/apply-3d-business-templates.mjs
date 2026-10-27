@@ -76,27 +76,75 @@ function replaceAll(html, pairs) {
   for (const [from, to] of pairs) html = html.split(from).join(to);
   return html;
 }
-function generatedDescription(business, sector, context = "") {
+function generatedDescription(business, sector, context = "", slug = "") {
   const hay = (business + " " + context).toLocaleLowerCase("it");
-  if (sector.kind === "ospitalità") {
-    if (/pizzer|ristorant|trattoria|osteria|sushi|piadiner|ristoro|cucina/.test(hay)) {
-      return business + " è un indirizzo da scoprire per una pausa a tavola. Contatta il locale per conoscere la proposta, verificare gli orari e chiedere informazioni sulle prenotazioni.";
-    }
-    return business + " è un punto d’incontro per una pausa, un aperitivo o una serata in compagnia. Contatta il locale per verificare orari, proposta e disponibilità.";
-  }
-  if (sector.kind === "salone") return business + " è uno spazio dedicato alla cura personale e allo stile. Contatta il salone per conoscere i servizi disponibili e concordare un appuntamento.";
-  if (sector.kind === "officina") return business + " è un riferimento per informazioni su manutenzione e interventi per il tuo veicolo. Contatta l’attività per descrivere il problema e verificare disponibilità e tempi.";
-  if (sector.kind === "tecnologia e assistenza") return business + " offre un punto di contatto per informazioni su dispositivi e assistenza tecnologica. Contatta l’attività per verificare servizi, tempi e disponibilità.";
-  if (sector.kind === "pasticceria") return business + " propone un’attività legata alla pasticceria e ai prodotti da forno. Contatta il laboratorio per conoscere le specialità disponibili e chiedere informazioni sugli ordini.";
-  if (sector.kind === "sport") return business + " è un punto di riferimento per conoscere attività e percorsi sportivi. Contatta la struttura per ricevere dettagli su corsi, accessi e disponibilità.";
-  if (sector.kind === "edilizia") return business + " si occupa di servizi per l’edilizia e lavori su progetto. Contatta l’attività per descrivere l’intervento e richiedere informazioni o un preventivo.";
-  return business + ": " + sector.description;
+  const variants = {
+    ospitalità: [
+      `${business}: il posto giusto per staccare dalla routine, incontrarsi e godersi il momento. Scrivi o chiama per conoscere la proposta aggiornata e verificare gli orari.`,
+      `Una pausa veloce o una serata senza fretta? ${business} è da scoprire dal vivo. Contatta il locale per menu, eventi e disponibilità, senza affidarti a informazioni non confermate.`,
+      `A fare la differenza sono l’atmosfera e le persone con cui la condividi. Per ${business}, chiedi direttamente dettagli su aperitivi, servizio e iniziative in programma.`,
+      `Per un caffè, un aperitivo o un’occasione da condividere, ${business} è un indirizzo da tenere presente. Contatta il locale per organizzare la visita.`,
+      `Il prossimo momento da ricordare può iniziare da qui: scopri ${business} e chiedi informazioni aggiornate su proposta, orari e prenotazioni.`
+    ],
+    salone: [
+      `${business}: uno spazio in cui valorizzare il tuo stile, con attenzione ai dettagli e alla persona. Contatta il salone per servizi e appuntamenti.`,
+      `Un nuovo taglio, un colore diverso o semplicemente un momento per te: chiedi a ${business} quali servizi sono disponibili e prenota direttamente.`,
+      `Lo stile si costruisce nei dettagli. Parla con ${business} per capire quali trattamenti e soluzioni sono adatti alle tue esigenze.`,
+      `Dai forma alla prossima idea per i tuoi capelli: contatta ${business}, verifica i servizi offerti e concorda un appuntamento.`,
+      `${business} è il punto di partenza per prenderti cura del tuo look. Scrivi o chiama per informazioni e disponibilità.`
+    ],
+    pasticceria: [
+      `Profumi di forno, voglia di qualcosa di buono e occasioni da festeggiare: contatta ${business} per scoprire le specialità del laboratorio e gli ordini disponibili.`,
+      `Per una colazione speciale, un dolce da condividere o una ricorrenza, chiedi a ${business} quali prodotti e preparazioni sono disponibili.`,
+      `${business} porta al centro il piacere dei prodotti da forno e della pasticceria. Contatta il laboratorio per assortimento, prenotazioni e richieste su misura.`,
+      `Ogni occasione merita il suo dolce: parla con ${business} per conoscere la proposta del giorno e organizzare eventuali ordini.`,
+      `Cerchi qualcosa di buono da portare in tavola? Scopri la proposta di ${business} e verifica direttamente disponibilità e specialità.`
+    ],
+    officina: [
+      `Un rumore insolito o la manutenzione da programmare? Descrivi l’esigenza a ${business} e chiedi informazioni su interventi, tempi e disponibilità.`,
+      `${business} è un contatto da cui partire per prenderti cura del veicolo. Spiega il problema e richiedi indicazioni sul servizio più adatto.`,
+      `Dalla verifica del problema al prossimo intervento, il primo passo è un confronto chiaro: contatta ${business} per informazioni e appuntamenti.`,
+      `Per manutenzione e riparazioni, racconta a ${business} cosa ti serve e chiedi una valutazione prima di fissare l’intervento.`,
+      `Il veicolo ha bisogno di attenzione? Contatta ${business} per conoscere le lavorazioni disponibili e concordare quando passare.`
+    ],
+    sport: [
+      `Trova il tuo ritmo e scegli il prossimo obiettivo: contatta ${business} per conoscere attività, corsi e modalità di accesso.`,
+      `Che tu voglia iniziare o migliorare, chiedi a ${business} quali percorsi e attività sono attualmente disponibili.`,
+      `Il prossimo traguardo comincia con una domanda: parla con ${business} per informazioni su allenamenti, lezioni e iscrizioni.`,
+      `${business} può essere il punto di partenza per rimetterti in movimento. Verifica direttamente attività, orari e disponibilità.`,
+      `Più movimento, un obiettivo alla volta: contatta ${business} per capire quale proposta è adatta alle tue esigenze.`
+    ],
+    edilizia: [
+      `Ogni intervento parte da un’esigenza concreta. Descrivi il tuo progetto a ${business} e chiedi informazioni su lavorazioni e preventivi.`,
+      `Dall’idea al cantiere, chiarire obiettivi e vincoli è il primo passo: contatta ${business} per valutare il lavoro da realizzare.`,
+      `${business}: racconta il progetto, condividi le necessità e richiedi un confronto sulle lavorazioni possibili.`,
+      `Per una ristrutturazione o un lavoro da pianificare, chiedi a ${business} informazioni e una valutazione dell’intervento.`,
+      `Hai un progetto da mettere a terra? Contatta ${business} per parlare delle esigenze, dei tempi e del preventivo.`
+    ],
+    default: [
+      `Dietro ogni esigenza c’è una soluzione da valutare. Racconta a ${business} cosa ti serve e chiedi informazioni sui servizi disponibili.`,
+      `Il modo migliore per iniziare è un confronto diretto: contatta ${business}, spiega il tuo obiettivo e verifica le opzioni possibili.`,
+      `${business}: un punto di partenza per dare forma alla tua richiesta. Scrivi o chiama per chiarire servizi, modalità e disponibilità.`,
+      `Hai una richiesta specifica? Parla con ${business} per ricevere informazioni pertinenti e capire come procedere.`,
+      `Ogni progetto ha esigenze diverse. Contatta ${business} per descrivere la tua situazione e approfondire i servizi offerti.`
+    ]
+  };
+  const pool = /pizzer|ristorant|trattoria|osteria|sushi|piadiner|ristoro|cucina/.test(hay)
+    ? [
+      `A tavola, ogni dettaglio contribuisce all’esperienza. Contatta ${business} per conoscere menu, orari e modalità di prenotazione.`,
+      `Per una pausa pranzo o una cena da condividere, chiedi a ${business} la proposta aggiornata e verifica la disponibilità dei tavoli.`,
+      `La prossima occasione per stare a tavola comincia da qui: scopri ${business} e chiedi direttamente informazioni su cucina e prenotazioni.`,
+      `${business} è un indirizzo da valutare per il tuo prossimo momento a tavola. Menu e disponibilità vanno confermati direttamente con il locale.`
+    ] : (variants[sector.kind] || variants.default);
+  let hash = 0;
+  for (const char of (slug || business)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  return pool[hash % pool.length];
 }
 function rewrite(html, business, sector, phone, email, address, context = "") {
   const title = esc(business);
   let out = html.replace(/<html lang="en">/i, '<html lang="it">');
   out = out.replace(/<title>[\s\S]*?<\/title>/i, '<title>' + title + ' — ' + sector.kind + '</title>');
-  const businessDescription = generatedDescription(business, sector, context);
+  const businessDescription = generatedDescription(business, sector, context, business.toLocaleLowerCase('it').replace(/[^a-z0-9]+/g, '-'));
   out = out.replace(/<meta name="description" content="[^"]*">/i, '<meta name="description" content="' + esc(businessDescription) + '">');
   // Replace the visible hero headline and lead with business-specific Italian copy,
   // while keeping the template's 3D scene, layout, animation and interaction code.
@@ -153,7 +201,7 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
     ["Trees looking for their next hundred years.", "Cura, stile e attenzione per ogni cliente."],
     ["The tree,", "Il tuo stile,"], ["undressed.", "senza compromessi."],
     ["Lighter than air.", "Leggerezza e precisione."], ["Storing the light.", "Valorizza il tuo look."],
-    ["Sound", "Audio"], ["Sound off", "Disattiva audio"], ["Scroll to", "Scorri per"],
+    ["Sound off", "Audio disattivato"], ["Sound on", "Audio attivo"], ["Sound", "Audio"], ["Audio off", "Audio disattivato"], ["Scroll to", "Scorri per"],
     ["Discover", "Scopri"], ["Explore", "Esplora"], ["Learn more", "Scopri di più"], ["Subscribe", "Contatti"], ["Newsletter", "Aggiornamenti"],
     ["Contact", "Contatti"], ["Services", "Servizi"], ["About", "Chi siamo"],
     ["The experience", "L’esperienza"], ["The details", "I dettagli"], ["Made to order", "Su misura"],
@@ -209,8 +257,25 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
 
   // Normalize every remaining visible section, not only the first hero paragraph.
   // Template demo stories often live in repeated .lede/.byline elements or styled headings.
+  const detailCopy = sector.kind === "ospitalità"
+    ? [
+      "Per menu, eventi e iniziative, chiedi direttamente al locale: le informazioni possono cambiare.",
+      "Vuoi organizzare una visita o una serata? Contatta il locale e verifica in anticipo orari e disponibilità.",
+      "La proposta aggiornata e gli eventuali servizi su prenotazione vanno confermati direttamente con l’attività.",
+      "Per occasioni speciali o richieste specifiche, parla con il personale prima della visita."
+    ]
+    : [
+      "Contatta direttamente l’attività per verificare servizi, modalità e disponibilità aggiornate.",
+      "Ogni richiesta può avere esigenze diverse: descrivi la tua e chiedi un confronto prima di procedere.",
+      "Per dettagli pratici, tempi o appuntamenti, usa i riferimenti presenti nella sezione contatti.",
+      "Le informazioni specifiche vanno confermate con l’attività prima di prendere accordi."
+    ];
+  let detailIndex = 0;
   out = out.replace(/<p\b([^>]*\bclass=["'][^"']*\b(?:sub|lead|lede|byline|fine)\b[^"']*["'][^>]*)>[\s\S]*?<\/p>/gi,
-    (_, attrs) => '<p' + attrs + '>' + esc(businessDescription) + '</p>');
+    (_, attrs) => {
+      const copy = detailIndex++ === 0 ? businessDescription : detailCopy[(detailIndex - 2) % detailCopy.length];
+      return '<p' + attrs + '>' + esc(copy) + '</p>';
+    });
   // Decorative Japanese copy and demo-specific secondary headings are not business content.
   out = out.replace(/<(p|span|div)\b([^>]*\bclass=["'][^"']*\bjp\b[^"']*["'][^>]*)>[\s\S]*?<\/\1>/gi, '');
   let h2Index = 0;
@@ -272,6 +337,17 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
     .replace(/oldest maple has seen 180 autumns/gi, sector.description)
     .replace(/555\s*014\s*\d{3,}/gi, "Telefono da verificare")
     .replace(/example\.com/gi, "");
+
+  // Remove the collection/template switcher from every business page. It belongs only
+  // on the 3D showcase, never on a customer's public website.
+  const businessChrome = '<style id="business-page-cleanup">.tw-nav,.tw-nav-home,.tw-nav-step,.tw-nav-count{display:none!important;visibility:hidden!important;pointer-events:none!important}';
+  // The original showcase's catalogue and paid club contain fictional products/prices.
+  // They are not factual services for any of the local businesses, so remove them.
+  out = out.replace(/<section\b[^>]*\bid=["']club["'][^>]*>[\s\S]*?<\/section>/i, '');
+  out = out.replace(/<section\b[^>]*\bid=["']catalogue["'][^>]*>[\s\S]*?<\/section>/i, '');
+  out = out.replace(/<head>/i, '<head>\n' + businessChrome +
+    '.tw-nav{display:none!important}.pressing .tracks,.pressing .buy,.catalogue .sleeves,.club .tiers{display:none!important}' +
+    '</style>');
   return out;
 }
 

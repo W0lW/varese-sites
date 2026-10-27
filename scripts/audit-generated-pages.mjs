@@ -18,6 +18,8 @@ const rules = [
   ["DEMO_SHOP_COPY", /Add to bag(?:\s*[—-]\s*€\s*290)?|No\.\s*9 Extrait|50 ml\s*[—-]\s*€\s*290|Made with butter, not margarine/i],
   ["ENGLISH_DEMO_UI", /(?:^|[>])\s*(?:Subscribe|Fill it for me|Untie &amp; start again|Today,\s*<em>|The shop|Order this box)\s*(?:<|$)/i],
   ["SAMPLE_ADDRESS_OR_CONTACT", /(?:555\s*014\s*\d{3,}|example\.com|your@email\.fr)/i],
+  ["FICTIONAL_MEMBERSHIP_OR_PRODUCT_CARD", /(?:Join Sleeve|MOST KEPT|Every LF pressing|Liner notes written at the counter|10% off anything on the wall|¥\s*[0-9,]+\s*\/\s*month|SLEEVE)/i],
+  ["UNTRANSLATED_DEMO_CONTROL", /(?:Listening bar & record label|Shimokitazawa|Sound off|Audio off|Subscribe|Newsletter|Drop the needle|The bar|Record club|Pre-order the LP)/i],
 ];
 
 function stripNonContent(html) {
@@ -36,6 +38,9 @@ function inspectPage(file) {
   const title = (html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || "";
   if (lang.toLowerCase() !== "it") findings.push({ code: "LANG_NOT_IT", sample: lang || "(missing)" });
   if (!template) findings.push({ code: "MISSING_3D_TEMPLATE", sample: "(missing data-template-3d)" });
+  if (!/id=["']business-page-cleanup["']/i.test(html)) {
+    findings.push({ code: "MISSING_BUSINESS_CHROME_CLEANUP", sample: "Template switcher / demo card cleanup missing" });
+  }
   if (!title.trim()) findings.push({ code: "MISSING_TITLE", sample: "(missing title)" });
   if (!/<link\b[^>]*rel=["']stylesheet["'][^>]*href=["'][^"']+["']/i.test(html)) {
     findings.push({ code: "MISSING_3D_STYLESHEET", sample: "No linked stylesheet found" });
