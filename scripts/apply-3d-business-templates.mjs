@@ -424,7 +424,7 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
   const removedSections = demoSectionsByTemplate[sector.id] || [];
   for (const sectionId of removedSections) {
     out = removeSectionById(out, sectionId);
-    out = out.replace(new RegExp('href=["\\']#' + sectionId + '["\\']', 'gi'), 'href="#contatti"');
+    out = out.replaceAll('href="#' + sectionId + '"', 'href="#contatti"').replaceAll("href='#" + sectionId + "'", 'href="#contatti"');
   }
   // Translate navigation labels whose matching demo-only section was removed.
   out = out.replace(/\bPressing\b/gi, sector.nav[0]);
