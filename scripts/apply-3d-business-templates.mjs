@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const builtExamples = path.join(root, "template 3D", "Dioramas", "examples");
+const builtExamples = path.join(root, "template 3D", "Dioramas", "dist", "examples");
 
 const sectors = [
   // Regole ordinate: prima i settori specifici, poi le categorie più ampie.
