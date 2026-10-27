@@ -1,0 +1,176 @@
+name: Validate audited 3D template rebuild
+
+on:
+  push:
+    branches:
+      - work/audit-driven-template-rebuild
+    paths:
+      - 'scripts/apply-3d-business-templates.mjs'
+      - 'varese_sites_missing_manifest.json'
+      - 'template 3D/Dioramas/examples/**'
+      - '.github/workflows/validate-audited-template-rebuild.yml'
+  pull_request:
+    paths:
+      - 'scripts/apply-3d-business-templates.mjs'
+      - 'varese_sites_missing_manifest.json'
+      - 'template 3D/Dioramas/examples/**'
+      - '.github/workflows/validate-audited-template-rebuild.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Confirm source templates exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d "template 3D/Dioramas/examples"
+          test -f "varese_sites_missing_manifest.json"
+          test -f "scripts/apply-3d-business-templates.mjs"
+
+      - name: Rebuild business pages using audited assignments
+        run: node scripts/apply-3d-business-templates.mjs
+
+      - name: Validate rebuilt pages and template IDs
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, re
+          from pathlib import Path
+
+          root = Path('.')
+          sites = root / 'sites'
+          examples = root / 'template 3D' / 'Dioramas' / 'examples'
+          pages = sorted(p for p in sites.glob('*/index.html') if p.is_file())
+          if not pages:
+              raise SystemExit('No business pages found')
+          errors = []
+          distribution = {}
+          for page in pages:
+              html = page.read_text(encoding='utf-8')
+              match = re.search(r'<html\b[^>]*data-template-3d="([^"]+)"', html, re.I)
+              if not match:
+                  errors.append(f'{page}: missing data-template-3d')
+                  continue
+              template_id = match.group(1)
+              distribution[template_id] = distribution.get(template_id, 0) + 1
+              if not (examples / template_id / 'index.html').is_file():
+                  errors.append(f'{page}: template source missing: {template_id}')
+              if not re.search(r'<html\b[^>]*lang="it"', html, re.I):
+                  errors.append(f'{page}: html lang is not Italian')
+              if '<title>' not in html.lower() or '<h1' not in html.lower():
+                  errors.append(f'{page}: missing title or H1')
+          manifest_path = root / 'varese_sites_missing_manifest.json'
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          manifest_ids = {x.get('slug'): x.get('template_id_3d') for x in manifest if x.get('slug')}
+          mismatches = []
+          for page in pages:
+              expected = manifest_ids.get(page.parent.name)
+              if expected:
+                  html = page.read_text(encoding='utf-8')
+                  match = re.search(r'<html\b[^>]*data-template-3d="([^"]+)"', html, re.I)
+                  actual = match.group(1) if match else None
+                  if actual != expected:
+                      mismatches.append(f'{page.parent.name}: expected {expected}, got {actual}')
+          print(f'Pages checked: {len(pages)}')
+          print(f'3D concepts used: {len(distribution)}')
+          print('Largest template groups:', sorted(distribution.items(), key=lambda x: x[1], reverse=True)[:12])
+          print(f'Manifest template mismatches: {len(mismatches)}')
+          if mismatches:
+              errors.extend(mismatches[:50])
+          if errors:
+              print('Validation errors:')
+              print('\\n'.join(errors[:100]))
+              raise SystemExit(f'Validation failed: {len(errors)} issue(s)')
+          print('Validation passed.')
+          PY
+
+      - name: Generate QA reports and preview bundle
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import csv, re, json, zipfile
+          from pathlib import Path
+          root = Path('.')
+          pages = sorted(p for p in (root / 'sites').glob('*/index.html') if p.is_file())
+          manifest_path = root / 'varese_sites_missing_manifest.json'
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          by_slug = {x.get('slug'): x for x in manifest if x.get('slug')}
+          qa = []
+          dist = {}
+          leftovers = [
+              'Add to bag', 'Add to cart', 'Shop No. 9', 'Discovery set',
+              '50 ml — €290', 'Bergamot', 'Iris', 'Vanilla', 'Oud',
+              'No phones on the counter', 'Drop the needle', 'Put your hand on the record',
+              'lunar', 'moon resort', 'vinyl records'
+          ]
+          for page in pages:
+              html = page.read_text(encoding='utf-8', errors='replace')
+              title = (re.search(r'<title[^>]*>(.*?)</title>', html, re.I | re.S) or [None, ''])[1]
+              h1 = (re.search(r'<h1[^>]*>(.*?)</h1>', html, re.I | re.S) or [None, ''])[1]
+              template = (re.search(r'<html\b[^>]*data-template-3d="([^"]+)"', html, re.I) or [None, ''])[1]
+              visible_html = re.sub(r'<script\b[\s\S]*?</script>', ' ', html, flags=re.I)
+              visible_html = re.sub(r'<style\b[\s\S]*?</style>', ' ', visible_html, flags=re.I)
+              visible_html = re.sub(r'<!--[\s\S]*?-->', ' ', visible_html)
+              plain = re.sub(r'<[^>]+>', ' ', visible_html)
+              plain = re.sub(r'\s+', ' ', plain)
+              record = by_slug.get(page.parent.name, {})
+              business_name = str(record.get('nome', record.get('attivita', record.get('name', '')))).lower()
+              found = [x for x in leftovers if x.lower() in plain.lower() and x.lower() not in business_name]
+              tel_count = len(re.findall(r'href=["\']tel:', html, re.I))
+              mail_count = len(re.findall(r'href=["\']mailto:', html, re.I))
+              contact_section = bool(re.search(r'id=["\']contatti["\']', html, re.I))
+              qa.append({
+                  'slug': page.parent.name,
+                  'attivita_manifest': record.get('attivita', record.get('nome', record.get('name',''))),
+                  'template_3d': template or '',
+                  'titolo': re.sub(r'<[^>]+>', '', title).strip(),
+                  'h1': re.sub(r'<[^>]+>', '', h1).strip(),
+                  'lang_it': bool(re.search(r'<html\b[^>]*lang="it"', html, re.I)),
+                  'sezione_contatti': contact_section,
+                  'link_telefono': tel_count,
+                  'link_email': mail_count,
+                  'possibili_residui_demo': ' | '.join(found),
+                  'stato_verifica': 'CONTROLLO VISIVO NECESSARIO' if found else 'QA AUTOMATICO BASE'
+              })
+              dist[template or 'MISSING'] = dist.get(template or 'MISSING', 0) + 1
+          with open('qa-rebuild.csv','w',encoding='utf-8-sig',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=list(qa[0].keys()))
+              w.writeheader(); w.writerows(qa)
+          with open('distribuzione-template.csv','w',encoding='utf-8-sig',newline='') as f:
+              w=csv.writer(f); w.writerow(['template_3d','numero_pagine'])
+              w.writerows(sorted(dist.items(),key=lambda x:(-x[1],x[0])))
+          with zipfile.ZipFile('preview-rebuilt-pages.zip','w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
+              for page in pages:
+                  z.write(page, page.as_posix())
+              z.write('qa-rebuild.csv')
+              z.write('distribuzione-template.csv')
+          print(f'QA report rows: {len(qa)}')
+          print(f'Potential demo-copy flags: {sum(bool(x["possibili_residui_demo"]) for x in qa)}')
+          print(f'Pages with contacts section: {sum(x["sezione_contatti"] for x in qa)}')
+          print(f'Pages with phone links: {sum(x["link_telefono"] > 0 for x in qa)}')
+          print(f'Pages with email links: {sum(x["link_email"] > 0 for x in qa)}')
+          PY
+
+      - name: Upload rebuilt preview and QA reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: varese-sites-rebuilt-preview-and-qa
+          path: |
+            preview-rebuilt-pages.zip
+            qa-rebuild.csv
+            distribuzione-template.csv
+          if-no-files-found: error
+          retention-days: 14
