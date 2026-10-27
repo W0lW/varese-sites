@@ -37,6 +37,12 @@ function inspectPage(file) {
   if (lang.toLowerCase() !== "it") findings.push({ code: "LANG_NOT_IT", sample: lang || "(missing)" });
   if (!template) findings.push({ code: "MISSING_3D_TEMPLATE", sample: "(missing data-template-3d)" });
   if (!title.trim()) findings.push({ code: "MISSING_TITLE", sample: "(missing title)" });
+  if (!/<link\b[^>]*rel=["']stylesheet["'][^>]*href=["'][^"']+["']/i.test(html)) {
+    findings.push({ code: "MISSING_3D_STYLESHEET", sample: "No linked stylesheet found" });
+  }
+  if (!/<script\b[^>]*type=["']module["'][^>]*src=["'][^"']+["']/i.test(html)) {
+    findings.push({ code: "MISSING_3D_MODULE_SCRIPT", sample: "No bundled module script found" });
+  }
 
   const visible = stripNonContent(html);
   for (const [code, re] of rules) {
