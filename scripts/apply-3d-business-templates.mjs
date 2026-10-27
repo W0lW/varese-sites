@@ -110,7 +110,40 @@ function pick(slug, title, desc, manifestSector = "") {
   return sectors.find(x => x.match.test(hay)) || fallback;
 }
 function replaceAll(html, pairs) {
+  // Replace authored copy case-insensitively without touching HTML attributes, CSS or JS.
+  // Text-node replacement also avoids breaking selectors/data attributes such as "sound-label".
+  const tokens = /<script\\b[\\s\\S]*?<\\/script>|<style\\b[\\s\\S]*?<\\/style>|<[^>]+>|[^<]+/gi;
+  return html.replace(tokens, token => {
+    if (token.startsWith("<")) return token;
+    let text = token;
+    for (const [from, to] of pairs) {
+      const escaped = from.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\function replaceAll(html, pairs) {
   for (const [from, to] of pairs) html = html.split(from).join(to);
+  return html;
+}");
+      text = text.replace(new RegExp(escaped, "gi"), to);
+    }
+    return text;
+  });
+}
+function removeSectionsContainingDemoCards(html) {
+  const tokens = /<\\/?section\\b[^>]*>/gi;
+  const stack = [];
+  const removals = [];
+  let match;
+  const cardCopy = /Join Sleeve|Most kept|Every LF pressing|Liner notes written at the counter|10% off anything on the wall|First pick of the test pressings|Your request played before 21:00|¥\\s*[0-9,]+\\s*\\/\\s*month|SLEEVE/i;
+  while ((match = tokens.exec(html))) {
+    if (/^<\\s*section\\b/i.test(match[0])) stack.push({ start: match.index, contentStart: tokens.lastIndex, end: -1 });
+    else if (stack.length) {
+      const section = stack.pop();
+      section.end = tokens.lastIndex;
+      const body = html.slice(section.contentStart, match.index).replace(/<script\\b[\\s\\S]*?<\\/script>|<style\\b[\\s\\S]*?<\\/style>|<[^>]+>/gi, " ");
+      if (cardCopy.test(body)) removals.push([section.start, section.end]);
+    }
+  }
+  // Remove outermost matching ranges first and never splice overlapping nested ranges twice.
+  const filtered = removals.filter(([start, end]) => !removals.some(([a, b]) => a < start && b >= end));
+  for (const [start, end] of filtered.sort((a, b) => b[0] - a[0])) html = html.slice(0, start) + html.slice(end);
   return html;
 }
 function generatedDescription(business, sector, context = "", slug = "", municipality = "") {
@@ -402,6 +435,29 @@ function rewrite(html, business, sector, phone, email, address, context = "", mu
     .replace(/oldest maple has seen 180 autumns/gi, sector.description)
     .replace(/555\s*014\s*\d{3,}/gi, "Telefono da verificare")
     .replace(/example\.com/gi, "");
+
+  // Final visible-copy pass catches capitalization variants in the original demos without
+  // rewriting class names, asset paths, inline JS or CSS.
+  out = replaceAll(out, [
+    ["Listening bar & record label · Shimokitazawa, Tokyo", "Locale · Bar e ristorazione"],
+    ["Sound off", "Audio disattivato"], ["Sound on", "Audio attivo"],
+    ["Audio off", "Audio disattivato"], ["Audio on", "Audio attivo"],
+    ["Drop the needle", sector.nav[0]], ["Record club", sector.nav[2]],
+    ["Pre-order the LP", sector.cta], ["Newsletter", "Aggiornamenti"],
+    ["Subscribe", "Contatti"], ["Join Sleeve", sector.cta],
+    ["Most kept", "Più richiesto"], ["Every LF pressing, mailed flat", "Una proposta da scoprire direttamente in negozio"],
+    ["Liner notes written at the counter", "Informazioni e consigli direttamente in negozio"],
+    ["10% off anything on the wall", "Chiedi informazioni sulle proposte disponibili"],
+    ["First pick of the test pressings", "Scopri le proposte disponibili"],
+    ["Your request played before 21:00", "Contatta l’attività per concordare la richiesta"],
+    ["The bar", sector.nav[1]], ["Catalogue", sector.nav[0]], ["The shop", "L’attività"],
+    ["Order this box", sector.cta], ["Fill it for me", "Scopri la proposta"],
+    ["Untie & start again", "Ricomincia"], ["Listening bar & record label", "Locale · Bar e ristorazione"]
+  ]);
+  out = removeSectionsContainingDemoCards(out);
+  for (const sectionId of (demoSectionsByTemplate[sector.id] || [])) {
+    out = removeSectionById(out, sectionId);
+  }
 
   // Remove the collection/template switcher from every business page. It belongs only
   // on the 3D showcase, never on a customer's public website.
