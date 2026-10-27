@@ -773,8 +773,18 @@ for (const dir of siteDirs) {
   const eyebrow = (oldHtml.match(/class=["'][^"']*eyebrow[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>/i) || [])[1] || "";
   const manifestSector = String(record.settore || "");
   const sectorText = manifestSector + " " + (oldHtml.match(/<h1[^>]*>[\s\S]*?<\/h1>/i) || [""])[0] + " " + eyebrow + " " + description;
-  const sector = { ...pick(dir.name, titleText, sectorText, manifestSector) };
-  // Keep sector-appropriate Italian copy, but use the audited 3D concept for this exact business.
+  let sector = { ...pick(dir.name, titleText, sectorText, manifestSector) };
+  const categoryKey = businessCategoryOverrides.get(dir.name) || "";
+  const categoryDefinition = businessCategoryDefinitions[categoryKey];
+  if (categoryDefinition) {
+    const categorySource = businessCategorySources.get(dir.name) || {};
+    sector = {
+      ...sector, ...categoryDefinition, id: sector.id, categoryKey,
+      categorySource: categorySource.source_url || "",
+      categoryReason: categorySource.reason || (categoryKey === "needs_review" ? "needs_review" : "business-name-or-sector-audit")
+    };
+  }
+  // Keep the audited 3D concept for this exact business, while tailoring the content to its own activity.
   const auditedTemplateId = record.template_id_3d || "";
   if (auditedTemplateId && /^[a-z0-9-]+$/.test(auditedTemplateId)) sector.id = auditedTemplateId;
   const links = getTextLinks(oldHtml);
