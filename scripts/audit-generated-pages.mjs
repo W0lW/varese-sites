@@ -90,7 +90,7 @@ function inspectPage(file) {
   const visible = stripNonContent(html);
   for (const [code, re] of rules) {
     const match = visible.match(re);
-    if (match) findings.push({ code, sample: match[0].replace(/\s+/g, " ").slice(0, 100) });
+    if (match) findings.push({ code, sample: visible.slice(Math.max(0, match.index - 45), Math.min(visible.length, match.index + match[0].length + 45)).replace(/\s+/g, " ").slice(0, 160) });
   }
   return { slug, findings };
 }
