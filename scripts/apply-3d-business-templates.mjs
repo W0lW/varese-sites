@@ -325,15 +325,14 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
   // on the 3D showcase, never on a customer's public website.
   const businessChrome = '<style id="business-page-cleanup">.tw-nav,.tw-nav-home,.tw-nav-step,.tw-nav-count{display:none!important;visibility:hidden!important;pointer-events:none!important}';
   if (sector.kind === "ospitalità") {
-    // These concepts are useful as visuals, but the record-club subscriptions and
-    // vinyl catalogue are fictional products unrelated to a real local venue.
-    out = out.replace(/<section\\b[^>]*\\bid=["']club["'][^>]*>[\\s\\S]*?<\\/section>/i, '');
-    out = out.replace(/<section\\b[^>]*\\bid=["']catalogue["'][^>]*>[\\s\\S]*?<\\/section>/i, '');
-    out = out.replace(/<head>/i, '<head>\\n' + businessChrome +
+    // Remove the fictional vinyl catalogue and paid membership plans from real venue pages.
+    out = out.replace(/<section\b[^>]*\bid=["']club["'][^>]*>[\s\S]*?<\/section>/i, '');
+    out = out.replace(/<section\b[^>]*\bid=["']catalogue["'][^>]*>[\s\S]*?<\/section>/i, '');
+    out = out.replace(/<head>/i, '<head>\n' + businessChrome +
       '#pressing .tracks,#pressing .buy,.pressing .stock{display:none!important}' +
       '</style>');
   } else {
-    out = out.replace(/<head>/i, '<head>\\n' + businessChrome +
+    out = out.replace(/<head>/i, '<head>\n' + businessChrome +
       '.tw-nav{display:none!important}.pressing .tracks,.pressing .buy,.catalogue .sleeves,.club .tiers{display:none!important}' +
       '</style>');
   }
