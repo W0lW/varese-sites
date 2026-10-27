@@ -200,7 +200,8 @@ function inspectPage(file) {
   const candidate = candidateContacts.get(slug);
   const categorySource = businessCategorySources.get(slug) || {};
   const categoryText = record?.settore || extraRecord?.settore || "";
-  const categoryKey = businessCategoryOverrides.get(slug) || categorySource.category ||
+  const auditedOverride = businessCategoryOverrides.get(slug) || "";
+  const categoryKey = (auditedOverride && auditedOverride !== "needs_review" ? auditedOverride : "") || categorySource.category ||
     inferAuditCategoryKey(categoryText, [record?.nome, extraRecord?.nome, extraRecord?.titolo_pagina, title, h1].filter(Boolean).join(" "), template);
   if (!categoryKey || categoryKey === "needs_review") findings.push({ code: "BUSINESS_CATEGORY_NEEDS_REVIEW", sample: "Category inferred from limited business data; manual review recommended" });
   if (record) {
