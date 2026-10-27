@@ -327,9 +327,10 @@ function rewrite(html, business, sector, phone, email, address, context = "") {
   if (sector.kind === "ospitalità") {
     // These concepts are useful as visuals, but the record-club subscriptions and
     // vinyl catalogue are fictional products unrelated to a real local venue.
+    out = out.replace(/<section\\b[^>]*\\bid=["']club["'][^>]*>[\\s\\S]*?<\\/section>/i, '');
+    out = out.replace(/<section\\b[^>]*\\bid=["']catalogue["'][^>]*>[\\s\\S]*?<\\/section>/i, '');
     out = out.replace(/<head>/i, '<head>\\n' + businessChrome +
-      '#club .tiers,#catalogue .sleeves,#pressing .tracks,#pressing .buy,.pressing .stock{display:none!important}' +
-      '#club .price{display:none!important}.club .tier .btn{display:none!important}' +
+      '#pressing .tracks,#pressing .buy,.pressing .stock{display:none!important}' +
       '</style>');
   } else {
     out = out.replace(/<head>/i, '<head>\\n' + businessChrome +
