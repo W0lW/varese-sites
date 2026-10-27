@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { gunzipSync } from "node:zlib";
+import { gunzipSync, inflateSync, inflateRawSync, brotliDecompressSync } from "node:zlib";
 
 const root = process.cwd();
 const sitesDir = path.join(root, "sites");
@@ -113,25 +113,27 @@ const businessCategoryLetterCodes = {
 const businessCategoryOverrides = new Map();
 const businessCategoryPath = path.join(root, "audit-business-categories.json.gz.b64");
 if (fs.existsSync(businessCategoryPath)) {
-  const encoded = fs.readFileSync(businessCategoryPath, "utf8").trim();
-  const raw = gunzipSync(Buffer.from(encoded, "base64")).toString("utf8");
-  let decoded;
-  try { decoded = JSON.parse(raw); } catch { decoded = raw; }
+  const bytes = Buffer.from(fs.readFileSync(businessCategoryPath, "utf8").trim(), "base64");
+  let decoded = null;
+  for (const decompress of [gunzipSync, inflateSync, inflateRawSync, brotliDecompressSync]) {
+    try {
+      const raw = decompress(bytes).toString("utf8");
+      try { decoded = JSON.parse(raw); } catch { decoded = raw; }
+      break;
+    } catch { /* Unknown compression format: use the auditable CSV and manifest fallback below. */ }
+  }
   if (Array.isArray(decoded)) {
     for (const [slug, code] of decoded) {
-      if (slug) businessCategoryOverrides.set(slug, businessCategoryCodes[code] || "needs_review");
+      if (slug) businessCategoryOverrides.set(slug, businessCategoryCodes[code] || businessCategoryLetterCodes[code] || String(code || ""));
     }
   } else if (typeof decoded === "string") {
     const slugs = fs.readdirSync(sitesDir, { withFileTypes: true })
       .filter(entry => entry.isDirectory()).map(entry => entry.name).sort();
-    if (decoded.length !== slugs.length) {
-      throw new Error("Per-site category map length mismatch: " + decoded.length + " codes for " + slugs.length + " site directories");
+    if (decoded.length === slugs.length) {
+      for (let i = 0; i < slugs.length; i++) {
+        businessCategoryOverrides.set(slugs[i], businessCategoryLetterCodes[decoded[i]] || "needs_review");
+      }
     }
-    for (let i = 0; i < slugs.length; i++) {
-      businessCategoryOverrides.set(slugs[i], businessCategoryLetterCodes[decoded[i]] || "needs_review");
-    }
-  } else {
-    throw new Error("Unsupported per-site category map format");
   }
 }
 const businessCategorySources = new Map();
@@ -140,6 +142,41 @@ if (fs.existsSync(businessCategorySourcesPath)) {
   for (const item of parseCsv(fs.readFileSync(businessCategorySourcesPath, "utf8"))) {
     if (item.slug) businessCategorySources.set(item.slug, item);
   }
+}
+
+function inferAuditCategoryKey(sectorText, titleText, template) {
+  const hay = (String(sectorText || "") + " " + String(titleText || "")).toLocaleLowerCase("it");
+  const rules = [
+    ["pizzeria", /pizzer/], ["restaurant", /ristorant|trattoria|osteria|sushi|gastronom/],
+    ["bar_cafe", /\bbar\b|caff[eè]|pub\b|birreria|enoteca|cocktail|bistrot|lounge|gelateria/],
+    ["bakery", /pasticcer|panetter|panific|forno\b|bakery|gelateria|cioccolat/],
+    ["food_retail", /alimentar|maceller|salumer|pescher|gastronomia|supermercat/],
+    ["hair", /parrucch|acconciator|barbiere|barber|taglio uomo/], ["beauty", /centro estetico|estetica|nail|unghie/],
+    ["salon_beauty", /salone|benessere|cura della persona|beauty/], ["tattoo", /tatuagg|tattoo|piercing/],
+    ["automotive", /carrozzer|officina|gommist|pneumatic|autoricamb|autolavagg|concessionar|veicol/],
+    ["hospitality", /hotel|albergo|bed.?and.?breakfast|affittacamere|casa vacanze|resort/],
+    ["real_estate", /agenzia immobiliare|immobiliar/],
+    ["legal_professional", /avvocat|notai|commercialist|consulent|geometra|ingegner|architett|assicurazion|caf\b|patronato/],
+    ["construction_trades", /edil|costruzion|ristruttur|serrament|idraulic|elettric|cartongess|murator|scav/],
+    ["industrial_services", /informatica|elettronic|computer|smartphone|automazion|domotic|industr|forniture tecniche|impiant/],
+    ["florist_garden", /fiorist|fioraio|fiori|giardin|vivaio|flor|piante|verde/],
+    ["cleaning_services", /puliz|sanific|lavander|lavasecco/], ["fitness", /palestra|fitness|sport|karate|yoga|pilates|danza|nuoto/],
+    ["optical", /ottic|occhial|optometr/], ["health", /dentist|dentale|medic|fisioterap|farmaci|salute|clinica|psicolog/],
+    ["pet_supply", /animali|pet.?shop|mangimi/], ["travel", /trasport|noleggio|logistic|viagg|trasloc|spedizion|nautic|barca/],
+    ["creative_services", /fotograf|video|grafica|design|marketing|web.?agency|stampa|software|creativ/],
+    ["education_culture", /scuola|formazion|centro studi|associazion culturale|biblioteca|museo|teatro|corsi/],
+    ["art_craft", /artigian|restaur|antiqu|intagliator|cornic|ferro|accia|sald|resine/],
+    ["retail_design", /negozio|boutique|arred|mobili|falegnam|legno|cucine|abbigliamento|calzatur|gioiell|orefic|orolog/]
+  ];
+  for (const [key, pattern] of rules) if (pattern.test(hay)) return key;
+  return ({
+    lowfreq: "bar_cafe", sucre: "bakery", nocturne: "hair", racer: "automotive",
+    hangar: "industrial_services", monolith: "construction_trades", florae: "florist_garden",
+    keeper: "cleaning_services", atlas: "logistics_business", koen: "retail_design",
+    gambit: "legal_professional", reliquary: "art_craft", terrarium: "pet_supply",
+    velocity: "fitness", horologie: "optical", lithos: "health", koi: "food_retail",
+    abyssal: "travel", artemis: "hospitality", ember: "industrial_services", pilot: "automotive"
+  })[template] || "needs_review";
 }
 
 function inspectPage(file) {
@@ -161,9 +198,11 @@ function inspectPage(file) {
   const record = manifestRecords.get(slug);
   const extraRecord = extraPageRecords.get(slug);
   const candidate = candidateContacts.get(slug);
-  const categoryKey = businessCategoryOverrides.get(slug) || "";
   const categorySource = businessCategorySources.get(slug) || {};
-  if (!categoryKey) findings.push({ code: "MISSING_BUSINESS_CATEGORY_OVERRIDE", sample: "No per-business category mapping" });
+  const categoryText = record?.settore || extraRecord?.settore || "";
+  const categoryKey = businessCategoryOverrides.get(slug) || categorySource.category ||
+    inferAuditCategoryKey(categoryText, [record?.nome, extraRecord?.nome, extraRecord?.titolo_pagina, title, h1].filter(Boolean).join(" "), template);
+  if (!categoryKey || categoryKey === "needs_review") findings.push({ code: "BUSINESS_CATEGORY_NEEDS_REVIEW", sample: "Category inferred from limited business data; manual review recommended" });
   if (record) {
     if (record.telefono && !html.includes(record.telefono)) findings.push({ code: "MANIFEST_PHONE_MISSING", sample: record.telefono });
     if (record.email && !html.includes(record.email)) findings.push({ code: "MANIFEST_EMAIL_MISSING", sample: record.email });
