@@ -58,10 +58,13 @@ function parseCsv(text) {
   return rows.filter(r => r.some(v => v.trim())).map(r => Object.fromEntries(headers.map((h, i) => [h, r[i] || ""])));
 }
 function removeSectionById(html, id) {
-  const openRe = new RegExp("<section\\b(?=[^>]*\\bid=[\\\"']" + id + "[\\\"'])[^>]*>", "i");
-  const match = openRe.exec(html);
-  if (!match) return html;
-  const start = match.index;
+  const openTagRe = /<section\b[^>]*>/gi;
+  let open, start = -1;
+  const idRe = new RegExp("\\bid=[\\\"']" + id + "[\\\"']", "i");
+  while ((open = openTagRe.exec(html))) {
+    if (idRe.test(open[0])) { start = open.index; break; }
+  }
+  if (start < 0) return html;
   const tokenRe = /<\/?section\b[^>]*>/gi;
   tokenRe.lastIndex = start;
   let depth = 0, token;
