@@ -336,7 +336,17 @@ function generatedDescription(business, sector, context = "", slug = "", municip
   const actions = actionLines[sector.kind] || actionLines.default;
   const tailored = opener + business + (municipality ? " a " + municipality : "") + " " +
     actions[Math.floor(hash / 13) % actions.length];
-  return curatedCopy[slug] || tailored + " " + localClosers[Math.floor(hash / 101) % localClosers.length];
+  const endings = [
+    "Prima di organizzare la visita o il lavoro, conferma sempre i dettagli aggiornati.",
+    "Per evitare equivoci, concorda direttamente tempi e modalità.",
+    "Le disponibilità possono cambiare: chiedi conferma prima di prendere accordi.",
+    "Un contatto diretto è il modo migliore per chiarire ogni dettaglio pratico.",
+    "Valuta la proposta in base alle tue esigenze e alle informazioni confermate.",
+    "Prima di decidere, verifica direttamente costi, orari o modalità pertinenti alla richiesta.",
+    "Le informazioni specifiche vanno confermate con l’attività prima di procedere.",
+    "Per un quadro preciso, fai riferimento ai contatti riportati in questa pagina."
+  ];
+  return curatedCopy[slug] || tailored + " " + endings[Math.floor(hash / 101) % endings.length];
 }
 function rewrite(html, business, sector, phone, email, address, context = "", municipality = "", phoneCandidate = "", emailCandidate = "") {
   const title = esc(business);
