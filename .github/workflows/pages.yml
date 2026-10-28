@@ -64,7 +64,7 @@ jobs:
           echo "Business concept pages: $count"
           test "$count" -ge 2000
           mkdir -p _site
-          rsync -a --exclude='.git' --exclude='.github' --exclude='template 3D' --exclude='Template 3D' --exclude='node_modules' --exclude='_site' ./ _site/
+          rsync -a --exclude='.git' --exclude='.github' --exclude='custom-pages' --exclude='template 3D' --exclude='Template 3D' --exclude='node_modules' --exclude='_site' ./ _site/
           mkdir -p "_site/Template 3D"
           cp -a "template 3D/Dioramas/dist/." "_site/Template 3D/"
           test -f "_site/Template 3D/index.html"
