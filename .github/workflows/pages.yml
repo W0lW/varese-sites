@@ -43,6 +43,9 @@ jobs:
       - name: Audit generated pages for demo residue and structural defects
         run: node scripts/audit-generated-pages.mjs
 
+      - name: Apply bespoke business pages
+        run: node scripts/apply-custom-pages.mjs
+
       - name: Upload per-site QA report
         if: always()
         uses: actions/upload-artifact@v4
