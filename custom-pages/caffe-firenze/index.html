@@ -9,9 +9,9 @@
 :root{--bg:#17100d;--bg2:#241711;--fg:#f4ead9;--muted:#b9a797;--gold:#c99b64;--line:#ffffff20}
 *{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--bg)}body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}a{color:inherit}.wrap{max-width:1180px;margin:auto;padding:0 5vw}
 header{position:absolute;z-index:5;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:25px 5vw;border-bottom:1px solid #ffffff18;gap:20px}.mark{font-family:Georgia,serif;font-size:15px;letter-spacing:.13em;text-transform:uppercase;color:var(--fg)}nav a{font-size:12px;letter-spacing:.08em;text-decoration:none;margin-left:24px;color:#e6d8c8}
-.coffee-experience{height:245vh;position:relative;background:radial-gradient(ellipse at 72% 42%,#4a2b1b 0%,#241711 38%,#17100d 76%);isolation:isolate}.coffee-sticky{position:sticky;top:0;height:100svh;min-height:570px;overflow:hidden}.coffee-sticky:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#17100df2 0%,#17100da8 34%,transparent 68%),linear-gradient(0deg,#17100d80,transparent 35%);z-index:1}.coffee-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;outline:0}.hero-copy{position:absolute;z-index:2;left:max(5vw,calc((100vw - 1180px)/2));top:50%;transform:translateY(-42%);width:min(44vw,530px);pointer-events:none;transition:opacity .35s ease}.eyebrow{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:750}.hero-copy h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(52px,8vw,112px);letter-spacing:-.065em;line-height:.86;margin:22px 0 26px;max-width:680px}.hero-copy p{font-size:clamp(15px,1.5vw,19px);max-width:370px;color:#d1c1b2}.hero-copy .cta{display:inline-flex;margin-top:17px;padding:12px 17px;border:1px solid #c99b6480;color:var(--fg);text-decoration:none;letter-spacing:.1em;font-size:10px;font-weight:750;pointer-events:auto;transition:background .2s,color .2s}.cta:hover{background:var(--gold);color:#17100d}.story-copy{position:absolute;z-index:2;left:max(5vw,calc((100vw - 1180px)/2));bottom:10%;max-width:370px;pointer-events:none}.story-copy .step{display:none}.story-copy .step.active{display:block;animation:reveal .6s both}.story-copy h2{font:400 clamp(28px,4vw,46px)/1.02 Georgia,serif;margin:12px 0}.story-copy p{color:#d1c1b2;font-size:14px;max-width:340px}.scroll-note{position:absolute;z-index:2;right:5vw;bottom:34px;display:flex;align-items:center;gap:12px;color:#d2bdab;font-size:9px;letter-spacing:.18em;text-transform:uppercase}.scroll-note:before{content:"";height:1px;width:36px;background:var(--gold)}.scroll-progress{position:absolute;z-index:3;bottom:0;left:0;width:100%;height:2px;background:#ffffff15}.scroll-progress span{display:block;width:0;height:100%;background:var(--gold)}@keyframes reveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.coffee-experience{height:245vh;position:relative;background:#130b07;isolation:isolate}.coffee-sticky{background-image:linear-gradient(90deg,rgba(13,7,4,.82) 0%,rgba(19,10,5,.44) 42%,rgba(15,8,4,.2) 100%),linear-gradient(0deg,rgba(12,6,3,.55),transparent 58%),url("https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=2400&q=90");background-size:cover;background-position:center 56%}.coffee-sticky{position:sticky;top:0;height:100svh;min-height:570px;overflow:hidden}.coffee-sticky:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#110904d9 0%,#1109049c 34%,#11090420 75%),linear-gradient(0deg,#1109049c,transparent 42%);z-index:1}.coffee-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;outline:0}.hero-copy{position:absolute;z-index:2;left:max(5vw,calc((100vw - 1180px)/2));top:50%;transform:translateY(-42%);width:min(44vw,530px);pointer-events:none;transition:opacity .35s ease}.eyebrow{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:750}.hero-copy h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(52px,8vw,112px);letter-spacing:-.065em;line-height:.86;margin:22px 0 26px;max-width:680px}.hero-copy p{font-size:clamp(15px,1.5vw,19px);max-width:370px;color:#d1c1b2}.hero-copy .cta{display:inline-flex;align-items:center;gap:18px;margin-top:21px;padding:15px 25px;border:1px solid #f4d58b;border-radius:999px;background:linear-gradient(135deg,#f5dfa0 0%,#c28a36 34%,#f4d98e 57%,#9a6724 100%);box-shadow:inset 0 1px 0 #fff5cf,0 7px 26px #0008,0 0 24px #c99b6430;color:#241509;text-decoration:none;letter-spacing:.15em;font-family:Georgia,"Times New Roman",serif;font-size:11px;font-weight:700;text-shadow:0 1px #fff3c7;pointer-events:auto;transition:transform .25s ease,box-shadow .25s ease,filter .25s ease}.hero-copy .cta:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:inset 0 1px 0 #fff8dc,0 11px 30px #0009,0 0 30px #d8a44b55}.hero-copy .cta span{font-size:17px;line-height:1}.story-copy{position:absolute;z-index:2;left:max(5vw,calc((100vw - 1180px)/2));bottom:10%;max-width:370px;pointer-events:none}.story-copy .step{display:none}.story-copy .step.active{display:block;animation:reveal .6s both}.story-copy h2{font:400 clamp(28px,4vw,46px)/1.02 Georgia,serif;margin:12px 0}.story-copy p{color:#d1c1b2;font-size:14px;max-width:340px}.scroll-note{position:absolute;z-index:2;right:5vw;bottom:34px;display:flex;align-items:center;gap:12px;color:#d2bdab;font-size:9px;letter-spacing:.18em;text-transform:uppercase}.scroll-note:before{content:"";height:1px;width:36px;background:var(--gold)}.scroll-progress{position:absolute;z-index:3;bottom:0;left:0;width:100%;height:2px;background:#ffffff15}.scroll-progress span{display:block;width:0;height:100%;background:var(--gold)}@keyframes reveal{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 section.content{padding:82px 0;border-top:1px solid var(--line);background:var(--bg)}.sectionhead{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:28px}h2{font:400 clamp(30px,4vw,52px)/1.03 Georgia,serif;letter-spacing:-.04em;margin:0}.num{font-size:10px;color:var(--gold);letter-spacing:.16em}.aboutgrid{display:grid;grid-template-columns:1fr 1fr;gap:6vw}.aboutgrid p{margin:0;font-size:17px;color:var(--muted)}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{border:1px solid var(--line);padding:24px;min-height:145px;background:linear-gradient(145deg,#ffffff08,transparent)}.card b{display:block;color:var(--gold);font-size:10px;letter-spacing:.14em;margin-bottom:16px}.card span{font:20px/1.2 Georgia,serif}.contacts{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.contact{padding:22px;border:1px solid var(--line);display:flex;flex-direction:column;gap:8px;text-decoration:none;min-width:0;overflow-wrap:anywhere;transition:border-color .2s}.contact:hover{border-color:var(--gold)}.contact small{font-size:10px;letter-spacing:.16em;color:var(--gold);font-weight:800}.contact strong{font-size:15px}.textlink{display:inline-block;margin:16px 18px 0 0;color:var(--gold);font-weight:700;text-underline-offset:4px}footer{padding:28px 0 45px;color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:20px;background:var(--bg)}
-@media(max-width:760px){header{padding:19px 5vw}.mark{font-size:11px}nav a{margin-left:13px;font-size:10px}.coffee-experience{height:220vh}.coffee-sticky{min-height:520px}.coffee-sticky:after{background:linear-gradient(180deg,#17100dce 0%,#17100d45 40%,#17100db8 100%)}.hero-copy{left:7vw;top:14%;transform:none;width:86vw}.hero-copy h1{font-size:clamp(52px,16vw,80px);margin:16px 0}.hero-copy p{max-width:300px;font-size:14px}.story-copy{left:7vw;right:7vw;bottom:9%;max-width:330px}.story-copy h2{font-size:34px}.story-copy p{font-size:13px}.scroll-note{right:7vw;bottom:25px;font-size:8px}.aboutgrid,.cards,.contacts{grid-template-columns:1fr}.sectionhead{align-items:start;flex-direction:column}section.content{padding:60px 0}footer{flex-direction:column}.coffee-sticky:after{background:linear-gradient(180deg,#17100dce 0%,transparent 35%,#17100dbd 100%)}}
+@media(max-width:760px){header{padding:19px 5vw}.mark{font-size:11px}nav a{margin-left:13px;font-size:10px}.coffee-experience{height:220vh}.coffee-sticky{min-height:520px}.coffee-sticky:after{background:linear-gradient(180deg,#110904c9 0%,#11090420 38%,#110904bb 100%)}.hero-copy{left:7vw;top:14%;transform:none;width:86vw}.hero-copy h1{font-size:clamp(52px,16vw,80px);margin:16px 0}.hero-copy p{max-width:300px;font-size:14px}.story-copy{left:7vw;right:7vw;bottom:9%;max-width:330px}.story-copy h2{font-size:34px}.story-copy p{font-size:13px}.scroll-note{right:7vw;bottom:25px;font-size:8px}.aboutgrid,.cards,.contacts{grid-template-columns:1fr}.sectionhead{align-items:start;flex-direction:column}section.content{padding:60px 0}footer{flex-direction:column}.coffee-sticky:after{background:linear-gradient(180deg,#110904d9 0%,#11090422 37%,#110904c9 100%)}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-copy,.story-copy .step.active{animation:none;transition:none}}
 </style>
 </head>
@@ -21,7 +21,7 @@ section.content{padding:82px 0;border-top:1px solid var(--line);background:var(-
 <section class="coffee-experience" id="esperienza" aria-label="Esperienza 3D Caffè Firenze">
 <div class="coffee-sticky">
 <canvas class="coffee-canvas" id="coffee-canvas" aria-label="Tazzina di espresso tridimensionale con vapore"></canvas>
-<div class="hero-copy" id="hero-copy"><div class="eyebrow">Una pausa, senza fretta · Varese</div><h1>Caffè<br>Firenze.</h1><p>Il piacere semplice di fermarsi un momento, davanti a un buon caffè.</p><a class="cta" href="#contatti">SCOPRI DOVE SIAMO ↗</a></div>
+<div class="hero-copy" id="hero-copy"><div class="eyebrow">Una pausa, senza fretta · Varese</div><h1>Caffè<br>Firenze.</h1><p>Il piacere semplice di fermarsi un momento, davanti a un buon caffè.</p><a class="cta" href="#contatti">SCOPRI DOVE SIAMO <span aria-hidden="true">↗</span></a></div>
 <div class="story-copy" aria-live="polite"><div class="step active" data-step="0"><div class="eyebrow">01 — Il rituale</div><h2>Piccoli gesti.<br>Buon caffè.</h2><p>Ogni pausa merita il suo tempo. Lasciati accompagnare dal profumo di un espresso.</p></div><div class="step" data-step="1"><div class="eyebrow">02 — La cura</div><h2>Il piacere è<br>nei dettagli.</h2><p>Porcellana, luce calda e il momento giusto per rallentare.</p></div><div class="step" data-step="2"><div class="eyebrow">03 — Ci vediamo qui</div><h2>La tua prossima<br>pausa è a Varese.</h2><p>Piazza della Repubblica 11. Passa a trovarci.</p></div></div>
 <div class="scroll-note">Scorri per esplorare</div><div class="scroll-progress"><span id="scroll-progress"></span></div>
 </div>
@@ -42,7 +42,7 @@ const progressBar = document.querySelector('#scroll-progress');
 const steps = [...document.querySelectorAll('.story-copy .step')];
 const heroCopy = document.querySelector('#hero-copy');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-let renderer, scene, camera, cupGroup, steamLines = [], raf = 0, scrollProgress = 0, width = 0, height = 0;
+let renderer, scene, camera, cupGroup, steamSprites = [], steamTexture, raf = 0, scrollProgress = 0, width = 0, height = 0, entryStart = 0;
 const clock = new THREE.Clock();
 
 function porcelain(color = 0xf2e8d8, roughness = 0.2) {
@@ -52,37 +52,42 @@ function lathe(points, material, segments = 96) {
   const mesh = new THREE.Mesh(new THREE.LatheGeometry(points.map(p=>new THREE.Vector2(p[0],p[1])), segments), material);
   mesh.castShadow = true; mesh.receiveShadow = true; return mesh;
 }
+function makeSteamTexture() {
+  const c=document.createElement("canvas"); c.width=128; c.height=128;
+  const ctx=c.getContext("2d");
+  const g=ctx.createRadialGradient(64,64,2,64,64,62);
+  g.addColorStop(0,"rgba(255,246,232,0.28)"); g.addColorStop(.25,"rgba(255,239,220,0.16)"); g.addColorStop(.58,"rgba(238,220,201,0.055)"); g.addColorStop(1,"rgba(238,220,201,0)");
+  ctx.fillStyle=g; ctx.fillRect(0,0,128,128);
+  steamTexture=new THREE.CanvasTexture(c); steamTexture.colorSpace=THREE.SRGBColorSpace;
+}
 function makeSteam(index) {
-  const count = 42;
-  const positions = new Float32Array(count*3);
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
-  const material = new THREE.LineBasicMaterial({color:0xf8e8d7,transparent:true,opacity:0.23,depthWrite:false});
-  const line = new THREE.Line(geometry,material);
-  line.userData = {index,count,positions};
-  scene.add(line); steamLines.push(line);
+  const material=new THREE.SpriteMaterial({map:steamTexture,color:0xfff0df,transparent:true,opacity:.34,depthWrite:false,blending:THREE.NormalBlending});
+  const sprite=new THREE.Sprite(material);
+  sprite.userData={index,phase:index*.79,drift:(index%2?1:-1)*(.035+(index%4)*.012),rise:(index%5)*.19,seed:index*1.71};
+  sprite.position.set((index%5-2)*.075, .92+(index%7)*.12, (index%3-1)*.035);
+  sprite.scale.set(.24,.42,1); scene.add(sprite); steamSprites.push(sprite);
 }
 function updateSteam(time) {
-  for (const line of steamLines) {
-    const {index,count,positions} = line.userData;
-    for (let i=0;i<count;i++) {
-      const t=i/(count-1), rise=t*0.88;
-      const phase=time*(0.72+index*0.08)+t*5.6+index*2.1;
-      positions[i*3] = (index-1)*0.12 + Math.sin(phase)*(.035+t*.07);
-      positions[i*3+1] = 0.94 + rise;
-      positions[i*3+2] = (index-1)*0.045 + Math.cos(phase*.7)*(.018+t*.035);
-    }
-    line.geometry.attributes.position.needsUpdate=true;
-    line.material.opacity=0.12 + (Math.sin(time*1.5+index)+1)*0.045;
+  for(const sprite of steamSprites) {
+    const d=sprite.userData;
+    const cycle=(time*.38+d.rise)%1.35;
+    const t=cycle/1.35;
+    sprite.position.x=d.drift + Math.sin(time*1.1+d.phase+t*5)*(.025+t*.09);
+    sprite.position.y=.91+t*1.05;
+    sprite.position.z=Math.sin(time*.75+d.seed)*.035;
+    const swell=Math.sin(Math.PI*t);
+    const scale=.16+swell*.28+t*.12;
+    sprite.scale.set(scale,scale*1.55,1);
+    sprite.material.opacity=(.08+swell*.22)*(1-t*.62);
   }
 }
 function buildScene() {
   scene = new THREE.Scene();
-  scene.background = new THREE.Color('#21150f');
-  scene.fog = new THREE.Fog('#21150f',6,13);
+  scene.fog = new THREE.FogExp2('#21150f',.018);
   camera = new THREE.PerspectiveCamera(34,1,0.1,40);
   camera.position.set(3.2,1.45,4.3);
-  renderer = new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});
+  renderer = new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
+  renderer.setClearColor(0x000000,0);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.65));
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
@@ -108,7 +113,8 @@ function buildScene() {
   crema.rotation.x=-Math.PI/2; crema.position.y=.868; cupGroup.add(crema);
   const highlight = new THREE.Mesh(new THREE.TorusGeometry(.23,.006,6,80),new THREE.MeshBasicMaterial({color:0xdca56b,transparent:true,opacity:.72}));
   highlight.rotation.x=Math.PI/2; highlight.position.set(-.08,.869,.05); highlight.scale.set(1,.65,1); cupGroup.add(highlight);
-  for(let i=0;i<3;i++) makeSteam(i);
+  makeSteamTexture();
+  for(let i=0;i<24;i++) makeSteam(i);
   onResize();
 }
 function onResize() {
@@ -129,9 +135,12 @@ function render() {
   raf=requestAnimationFrame(render);
   const time=clock.getElapsedTime();
   const p=reducedMotion?0:scrollProgress;
+  const elapsed=(performance.now()-entryStart)/1000;
+  const intro=reducedMotion?1:THREE.MathUtils.smoothstep(elapsed,0,2.1);
   const angle=-.72 + p*Math.PI*1.85;
-  const radius=width<760?4.25:3.65;
-  camera.position.set(Math.sin(angle)*radius,1.25+Math.sin(p*Math.PI)*.55,Math.cos(angle)*radius);
+  const wideRadius=width<760?4.25:3.65;
+  const radius=THREE.MathUtils.lerp(width<760?2.15:1.95,wideRadius,intro);
+  camera.position.set(Math.sin(angle)*radius,THREE.MathUtils.lerp(1.02,1.25+Math.sin(p*Math.PI)*.55,intro),Math.cos(angle)*radius);
   camera.lookAt(0,.66,0);
   cupGroup.rotation.y = .10 + p*.12 + Math.sin(time*.45)*.025;
   cupGroup.position.y=.045 + (reducedMotion?0:Math.sin(time*.8)*.018);
@@ -139,6 +148,7 @@ function render() {
   renderer.render(scene,camera);
 }
 try {
+  entryStart=performance.now();
   buildScene();
   window.addEventListener('resize',onResize,{passive:true});
   window.addEventListener('scroll',readScroll,{passive:true});
