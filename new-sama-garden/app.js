@@ -394,8 +394,9 @@
 
   // --- Native Window Scroll Handler ---
   function onScroll() {
+    document.body.classList.toggle("menu-mode", window.scrollY >= 2950);
     if (isAutoPlaying || isProgrammaticScroll) return;
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const maxScroll = 3000;
     if (maxScroll > 0) {
       targetProgress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
       document.body.classList.toggle("menu-mode", window.scrollY >= 2950);
