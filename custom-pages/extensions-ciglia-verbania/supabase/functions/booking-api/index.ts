@@ -2,11 +2,11 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { fromZonedTime, toZonedTime } from "npm:date-fns-tz@3";
 
 const TZ = "Europe/Rome";
-const URL = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const OWNER_KEY = Deno.env.get("OWNER_ACTION_API_KEY")!;
+const OWNER_KEY = Deno.env.get("OWNER_ACTION_API_KEY") ?? "";
 const ALLOWED_ORIGINS = (Deno.env.get("SITE_ORIGIN") ?? "").split(",").map((x) => x.trim()).filter(Boolean);
-const db = createClient(URL, SERVICE_KEY, { auth: { persistSession: false } });
+const db = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
 
 const json = (body: unknown, status = 200, headers: HeadersInit = {}) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", ...headers } });
