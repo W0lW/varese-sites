@@ -98,7 +98,7 @@ Deno.serve(async (req) => {
   if (origin && ALLOWED_ORIGINS.length && !ALLOWED_ORIGINS.includes(origin)) return json({ error: "Origin non autorizzata." }, 403, headers);
   const url = new URL(req.url);
   const path = url.pathname.replace(/^.*\/booking-api/, "") || "/";
-  const owner = sameSecret(req.headers.get("x-owner-api-key") ?? "", OWNER_KEY);
+  const owner = OWNER_KEY.length > 0 && sameSecret(req.headers.get("x-owner-api-key") ?? "", OWNER_KEY);
   try {
     if (path === "/public/services" && req.method === "GET") {
       const { data, error } = await db.from("services").select("id,name,description,price_cents,duration_minutes").eq("is_active", true).order("sort_order");
@@ -161,6 +161,6 @@ Deno.serve(async (req) => {
     return json({ error: "Endpoint non trovato." }, 404, headers);
   } catch (e) {
     console.error(e);
-    return json({ error: e instanceof Error ? e.message : "Errore interno." }, 400, headers);
+    return json({ error: e instanceof Error ? e.message : "Errore interno." }, 500, headers);
   }
 });
