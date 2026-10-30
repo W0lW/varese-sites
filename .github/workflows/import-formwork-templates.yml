@@ -1,0 +1,65 @@
+name: Import all FORMWORK 3D templates
+
+on:
+  push:
+    branches:
+      - feat/extensions-ciglia-verbania
+    paths:
+      - .github/workflows/import-formwork-templates.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/extensions-ciglia-verbania
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Download the complete 27-template collection
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="Template 3D/Dioramas/FORMWORK"
+          mkdir -p "$ROOT"
+          slugs="aurelis monolith heliodon nebula chroma atelier phosphor soma grid neon clay algorithm aether resonance award contour driftwear halo sumi isometria revolver aurum roastery velocity zodiac meridian farside"
+          for slug in $slugs; do
+            echo "Importing $slug"
+            tmp="$(mktemp -d)"
+            git clone --quiet --depth 1 "https://github.com/shellcat-com/formwork-$slug.git" "$tmp/repo"
+            rm -rf "$tmp/repo/.git"
+            mkdir -p "$ROOT/$slug"
+            cp -a "$tmp/repo/." "$ROOT/$slug/"
+            printf '%s\n' "Source: https://github.com/shellcat-com/formwork-$slug" "License: MIT (see LICENSE)" > "$ROOT/$slug/ORIGIN.txt"
+            rm -rf "$tmp"
+          done
+          cat > "$ROOT/README.md" <<'EOF'
+          # FORMWORK — 27 template sorgenti
+
+          Raccolta importata dai repository ufficiali shellcat-com/formwork-*.
+          Ogni sottocartella conserva HTML, CSS, JavaScript, guide, licenza e asset originali.
+          I template sono conservati come sorgenti indipendenti: non sono tutti caricati nella pagina Extensions Ciglia.
+          Licenze: MIT, verificare il file LICENSE di ciascun template.
+          Catalogo originale: https://github.com/shellcat-com/formwork
+          Demo collection: https://bswxyz.github.io/formwork/
+          EOF
+          echo "Imported $(find "$ROOT" -mindepth 1 -maxdepth 1 -type d | wc -l) templates"
+
+      - name: Commit imported templates
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "Template 3D/Dioramas/FORMWORK"
+          if git diff --cached --quiet; then
+            echo "No template changes to commit"
+          else
+            git commit -m "Import all 27 FORMWORK 3D templates"
+            git push origin HEAD:feat/extensions-ciglia-verbania
+          fi
