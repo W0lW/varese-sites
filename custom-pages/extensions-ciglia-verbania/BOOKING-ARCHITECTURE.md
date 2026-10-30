@@ -1,26 +1,37 @@
-# Extensions Ciglia Verbania — progetto
+# Booking and GPT architecture — Extensions Ciglia Verbania
 
-## Concept
-Sito beauty editoriale rosa cipria/fragola, responsive, con hero 3D CSS, storyscrolling a sezioni sticky, catalogo prodotti e richiesta appuntamento.
+## Template decision
+Use **Sorrel Lite** as the free, commercial-use salon foundation (Mike Smith Design): https://github.com/mikesmithdesign/sorrel-lite
+- Responsive one-page salon layout, editorial typography, booking-first section and smooth scrolling.
+- Its licence allows commercial client work and modifications without attribution. Keep the original README and LICENSE with the adapted source.
+- It is not a 3D storyscroll template by itself. Add a GSAP ScrollTrigger product story with a 3D CSS/WebGL product stage rather than pretending the base template already has it.
+- Remove all original demo imagery, business details, opening hours and phone number. Use only client-owned product photos and approved lash-work imagery.
 
-## Prodotti comunicati dal cliente
-- Lash Kit Valigetta — 60 ml — 15 €
-- Whipped Shampoo — 100 ml — 20 €
+## Booking architecture
+**Source of truth:** Supabase Postgres, timezone Europe/Rome.
+**API:** Supabase Edge Function `booking-api`.
+**Public site:** lists active services and real available slots; creates a booking request/booking. No phone field.
+**Private owner interface:** authenticated admin can create date/time blocks, set opening hours, update services and confirm/cancel appointments.
+**GPT:** a private Custom GPT Action calls the same API with a dedicated secret API key. It can read availability and appointments, create owner blocks, and manage bookings. It must never use a browser-side key or the Supabase service-role key.
 
-## Prenotazioni: architettura da completare
-La pagina include una UI di richiesta ma non dichiara disponibilità né conferma appuntamenti. Per prenotazioni automatiche reali serve una sorgente dati unica e persistente:
-1. Supabase (Postgres) per servizi, durate, orari, eccezioni, appuntamenti e blocchi manuali.
-2. API server-side (Vercel Functions) che calcola gli slot liberi e crea prenotazioni con transazione/constraint anti-overbooking.
-3. Area privata titolare con login per bloccare date, pause, ferie e fasce orarie; tutte le modifiche aggiornano lo stesso calendario.
-4. ChatGPT: creare un GPT privato con Actions verso le API protette (OAuth/API key custodita lato server) per leggere disponibilità e creare blocchi solo dopo autorizzazione. Non collegare il sito alla sessione ChatGPT personale del titolare e non esporre chiavi nel browser.
-5. Invio conferma al cliente via email o canale scelto dal titolare; richiesta, conferma, modifica e cancellazione devono avere stati distinti.
+## Rules
+- Availability is computed server-side from active services, opening hours, existing non-cancelled appointments and owner blocks.
+- Booking creation re-checks availability inside the database transaction and rejects overlapping reservations; a slot shown earlier is not a guarantee.
+- Store timestamps in UTC; calculate/display in Europe/Rome.
+- Distinguish `pending`, `confirmed`, `cancelled`, and `blocked`.
+- GPT may create a block only for an explicit owner instruction; it must repeat the date/time being blocked before executing destructive or broad actions.
+- No phone number is collected or published. Email is optional/used only if Lola chooses it for confirmations.
+- Add rate limiting, CORS allowlist, audit log, minimal data retention, privacy notice and GDPR deletion process before public launch.
 
-## Dati mancanti prima di attivare le prenotazioni
-- Servizi reali, prezzi e durata di ciascun trattamento.
-- Giorni e orari di apertura, pause e durata minima tra appuntamenti.
-- Anticipo minimo e finestra massima di prenotazione.
-- Canale per conferme e cancellazioni.
-- Credenziali/owner account per il calendario e il provider backend.
+## Not configured yet
+No live database, API key, owner account, calendar, booking hours or services have been created. Those require the owner's Supabase connection and business rules. Do not claim the booking system is live until deployment and end-to-end tests pass.
 
-## Pubblicazione
-Questa pagina è inserita come custom page in `custom-pages/extensions-ciglia-verbania/index.html`; il workflow della repository la applica in `sites/extensions-ciglia-verbania` durante il deploy.
+## Information needed from Lola later
+- Service names, prices, durations and buffer times.
+- Weekly opening hours, breaks, holidays and booking horizon.
+- Whether reservations auto-confirm or remain pending for approval.
+- Whether email confirmations are desired.
+- Owner email for private admin access.
+
+## GPT Action
+OpenAPI draft: `openapi/gpt-actions.yaml`. After deployment, replace the placeholder server URL and configure a dedicated API key in the Custom GPT Action authentication settings.
