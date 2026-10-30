@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#120e0b">
+  <title>Burger House 3D — Preview</title>
+  <style>
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#120e0b;color:#f7f0e7;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+    .top{position:fixed;z-index:5;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:14px 22px;background:linear-gradient(#120e0bee,#120e0b99,transparent);pointer-events:none}
+    .brand{font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:800}.actions{display:flex;gap:10px;pointer-events:auto}
+    a{color:#17100a;text-decoration:none;background:#f0a33b;border-radius:999px;padding:10px 16px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+    a.secondary{background:#ffffff18;color:#fff;border:1px solid #ffffff40;backdrop-filter:blur(12px)}
+    main{height:100svh;min-height:560px;padding-top:0}
+    iframe{width:100%;height:100%;border:0;background:#120e0b}
+    .fallback{position:fixed;inset:auto 16px 16px;z-index:4;text-align:center;color:#c9b9a8;font-size:12px;pointer-events:none;text-shadow:0 1px 8px #000}
+    @media(max-width:560px){.top{padding:12px}.brand{font-size:10px}.actions{gap:6px}a{padding:9px 11px;font-size:9px}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="brand">6ix Sites / 3D Restaurant Demo</div>
+    <nav class="actions">
+      <a class="secondary" href="https://github.com/mindset-code/burger-house-3d" target="_blank" rel="noopener">Source MIT</a>
+      <a href="https://burger-house-3d.web.app" target="_blank" rel="noopener">Apri a schermo intero ↗</a>
+    </nav>
+  </header>
+  <main>
+    <iframe src="https://burger-house-3d.web.app" title="Burger House 3D — demo interattiva" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" loading="eager"></iframe>
+  </main>
+  <div class="fallback">Se la demo non viene incorporata dal browser, usa “Apri a schermo intero”.</div>
+</body>
+</html>
