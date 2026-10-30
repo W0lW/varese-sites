@@ -17,7 +17,7 @@ for (const entry of fs.readdirSync(sourceRoot, { withFileTypes: true })) {
   const targetDir = path.join(sitesRoot, entry.name);
   const target = path.join(targetDir, "index.html");
   if (!fs.existsSync(source)) continue;
-  if (!fs.existsSync(targetDir)) throw new Error(`Custom page target does not exist: ${entry.name}`);
+  fs.mkdirSync(targetDir, { recursive: true });
   const html = fs.readFileSync(source, "utf8");
   if (!/<html\b/i.test(html) || !/<body\b/i.test(html) || !/<\/html>/i.test(html)) {
     throw new Error(`Custom page is not a complete HTML document: ${entry.name}`);
