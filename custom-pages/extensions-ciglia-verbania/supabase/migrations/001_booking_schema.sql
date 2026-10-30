@@ -64,3 +64,15 @@ alter table public.appointments enable row level security;
 
 -- No anon/authenticated policies are intentionally created. Use the Edge Function
 -- as the authorization and validation boundary. Never expose service_role.
+
+
+create table public.booking_settings (
+  id integer primary key default 1 check (id = 1),
+  auto_confirm boolean not null default false,
+  timezone text not null default 'Europe/Rome',
+  slot_interval_minutes integer not null default 15 check (slot_interval_minutes between 5 and 60),
+  max_days_ahead integer not null default 90 check (max_days_ahead between 1 and 365),
+  min_notice_hours integer not null default 2 check (min_notice_hours between 0 and 168)
+);
+insert into public.booking_settings (id) values (1) on conflict (id) do nothing;
+alter table public.booking_settings enable row level security;
