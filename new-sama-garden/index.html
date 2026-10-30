@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Sama Garden · Hamburgeria a Brebbia</title>
+  <meta name="description" content="An interactive, photorealistic exploded-view culinary experience. Scroll to deconstruct a gourmet burger into its composite artisan layers.">
+  
+  <!-- Open Graph / Facebook / LinkedIn -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The Deconstructed Burger · Interactive Esploso View">
+  <meta property="og:description" content="Scroll up and down to explode the artisan burger into its isolated composite layers with culinary inspection tags.">
+  <meta property="og:image" content="assets/burger_assembled_photo.jpg">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The Deconstructed Burger · Interactive Exploded View">
+  <meta name="twitter:description" content="Scroll up and down to explode the artisan burger into its isolated composite layers with culinary inspection tags.">
+  <meta name="twitter:image" content="assets/burger_assembled_photo.jpg">
+
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+</head>
+<body>
+
+  <!-- Ambient Cinematic Spotlight & Vignette -->
+  <div class="ambient-glow" id="ambientGlow"></div>
+  <div class="particles-container" id="particlesContainer"></div>
+
+  <!-- Persistent Fullscreen Stage Viewport -->
+  <main class="viewport">
+    
+    <!-- Top Bar Navigation / HUD -->
+    <header class="hud-header">
+      <div class="brand">
+        <span class="badge">BREBBIA · HAMBURGERIA</span>
+        <h1 class="logo-title">NEW SAMA GARDEN</h1>
+      </div>
+
+      <div class="hud-actions">
+        <!-- Presets -->
+        <div class="preset-group" role="group" aria-label="Explosion presets">
+          <button class="btn btn-preset active" data-target="0" title="Burger completo">Intero</button>
+          <button class="btn btn-preset" data-target="0.5" title="Burger aperto">Aperto</button>
+          <button class="btn btn-preset" data-target="1" title="Ingredienti separati">Exploded</button>
+        </div>
+
+        <!-- Auto Demo Tour -->
+        <button class="btn btn-icon" id="btnAutoPlay" title="Auto Demo Mode" aria-label="Avvia tour automatico">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          <span class="btn-text">Tour</span>
+        </button>
+
+        <!-- Sound Toggle -->
+        <button class="btn btn-icon" id="btnSound" title="Attiva/disattiva audio" aria-label="Toggle Sound Effects">
+          <svg class="icon icon-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+          <svg class="icon icon-sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+
+        <!-- Reset Button -->
+        <button class="btn btn-icon" id="btnReset" title="Ricomincia" aria-label="Reset View">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- 3D Centered Burger Canvas Stage -->
+    <section class="stage" id="stage">
+      <div class="burger-scene" id="burgerScene">
+        
+        <!-- Ambient Base Ground Shadow -->
+        <div class="ground-shadow" id="groundShadow"></div>
+
+        <!-- Burger Stack (Ordered Top to Bottom) -->
+        <div class="burger-stack" id="burgerStack">
+
+          <!-- Layer 1: Bun Crown -->
+          <div class="layer-item" data-layer-id="bun_top" style="--layer-order: 5;">
+            <div class="layer-visual">
+              <img src="assets/bun_top.png" alt="Brioche Bun Crown" class="layer-img" draggable="false">
+              <div class="layer-shadow"></div>
+            </div>
+          </div>
+
+          <!-- Layer 2: Sauce Drip -->
+          <div class="layer-item" data-layer-id="sauce" style="--layer-order: 4;">
+            <div class="layer-visual">
+              <img src="assets/sauce.png" alt="Secret Sauce Drip" class="layer-img" draggable="false">
+              <div class="layer-shadow"></div>
+            </div>
+          </div>
+
+          <!-- Layer 3: Sliced Tomatoes -->
+          <div class="layer-item" data-layer-id="tomato" style="--layer-order: 3;">
+            <div class="layer-visual">
+              <img src="assets/tomato.png" alt="Heirloom Tomatoes" class="layer-img" draggable="false">
+              <div class="layer-shadow"></div>
+            </div>
+          </div>
+
+          <!-- Layer 4: Crisp Lettuce -->
+          <div class="layer-item" data-layer-id="lettuce" style="--layer-order: 2;">
+            <div class="layer-visual">
+              <img src="assets/lettuce.png" alt="Frisée Lettuce" class="layer-img" draggable="false">
+              <div class="layer-shadow"></div>
+            </div>
+          </div>
+
+          <!-- Layer 5: Angus Patty -->
+          <div class="layer-item" data-layer-id="burger" style="--layer-order: 1;">
+            <div class="layer-visual">
+              <img src="assets/burger.png" alt="Grilled Angus Patty" class="layer-img" draggable="false">
+              <div class="layer-shadow"></div>
+            </div>
+          </div>
+
+          <!-- Layer 6: Bun Heel -->
+          <div class="layer-item" data-layer-id="bun_bottom" style="--layer-order: 0;">
+            <div class="layer-visual">
+              <img src="assets/bun_bottom.png" alt="Brioche Heel" class="layer-img" draggable="false">
+              <div class="layer-shadow"></div>
+            </div>
+          </div>
+
+        </div><!-- /burger-stack -->
+
+        <!-- Symmetrical 2D Annotation Overlay -->
+        <div class="callouts-overlay" id="calloutsOverlay">
+          <!-- 01 Bun Crown (Left) -->
+          <div class="callout callout-left" data-layer-ref="bun_top">
+            <div class="callout-content">
+              <span class="callout-num">01</span>
+              <div class="callout-text">
+                <h3>Brioche Crown</h3>
+                <p>Golden glazed &amp; toasted sesame seeds</p>
+              </div>
+            </div>
+            <div class="callout-line"></div>
+          </div>
+
+          <!-- 02 Signature Sauce (Right) -->
+          <div class="callout callout-right" data-layer-ref="sauce">
+            <div class="callout-line"></div>
+            <div class="callout-content">
+              <span class="callout-num">02</span>
+              <div class="callout-text">
+                <h3>Signature Sauce</h3>
+                <p>Smoked paprika &amp; garlic reduction</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 03 Sliced Tomatoes (Left) -->
+          <div class="callout callout-left" data-layer-ref="tomato">
+            <div class="callout-content">
+              <span class="callout-num">03</span>
+              <div class="callout-text">
+                <h3>Heirloom Tomatoes</h3>
+                <p>Vine-ripened &amp; sea salt kissed</p>
+              </div>
+            </div>
+            <div class="callout-line"></div>
+          </div>
+
+          <!-- 04 Crisp Lettuce (Right) -->
+          <div class="callout callout-right" data-layer-ref="lettuce">
+            <div class="callout-line"></div>
+            <div class="callout-content">
+              <span class="callout-num">04</span>
+              <div class="callout-text">
+                <h3>Garden Frisée</h3>
+                <p>Crisp curly farm-fresh greens</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 05 Angus Patty (Left) -->
+          <div class="callout callout-left" data-layer-ref="burger">
+            <div class="callout-content">
+              <span class="callout-num">05</span>
+              <div class="callout-text">
+                <h3>Angus Beef Patty</h3>
+                <p>Flame-seared 200g prime blend</p>
+              </div>
+            </div>
+            <div class="callout-line"></div>
+          </div>
+
+          <!-- 06 Bun Heel (Right) -->
+          <div class="callout callout-right" data-layer-ref="bun_bottom">
+            <div class="callout-line"></div>
+            <div class="callout-content">
+              <span class="callout-num">06</span>
+              <div class="callout-text">
+                <h3>Toasted Heel</h3>
+                <p>Cast-iron buttered brioche bun</p>
+              </div>
+            </div>
+          </div>
+        </div><!-- /callouts-overlay -->
+
+      </div><!-- /burger-scene -->
+    </section>
+
+    <!-- Scroll Hint (shown at assembled state) -->
+    <div class="scroll-hint" id="scrollHint">
+      <div class="mouse-icon">
+        <div class="mouse-wheel"></div>
+      </div>
+      <span class="hint-text">SCORRI PER SCOPRIRE GLI INGREDIENTI</span>
+    </div>
+
+    <!-- Bottom HUD / Scrubber Controls -->
+    <footer class="hud-footer">
+      <div class="status-indicator">
+        <span class="status-label">STRATI DEL BURGER</span>
+        <span class="status-value" id="statusValue">0%</span>
+      </div>
+
+      <!-- Interactive Scrubber Range -->
+      <div class="scrubber-wrapper">
+        <input type="range" min="0" max="100" value="0" step="0.1" id="explosionSlider" class="scrubber-slider" aria-label="Explosion Slider">
+        <div class="scrubber-track-fill" id="scrubberFill"></div>
+      </div>
+
+      <!-- Quick Layer Dots / Selector -->
+      <div class="layer-quick-select" aria-label="Layer quick selector">
+        <button class="layer-dot" data-layer="bun_top" title="01 Top Bun">1</button>
+        <button class="layer-dot" data-layer="sauce" title="02 Sauce">2</button>
+        <button class="layer-dot" data-layer="tomato" title="03 Tomato">3</button>
+        <button class="layer-dot" data-layer="lettuce" title="04 Lettuce">4</button>
+        <button class="layer-dot" data-layer="burger" title="05 Patty">5</button>
+        <button class="layer-dot" data-layer="bun_bottom" title="06 Bottom Bun">6</button>
+      </div>
+    </footer>
+
+    <!-- Side Ingredient Detail Drawer / Modal -->
+    <aside class="ingredient-drawer" id="ingredientDrawer" aria-hidden="true">
+      <button class="drawer-close" id="drawerClose" aria-label="Close details">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="drawer-content">
+        <div class="drawer-badge" id="drawerLayerIndex">LAYER 01</div>
+        <h2 class="drawer-title" id="drawerTitle">Artisan Brioche Crown</h2>
+        <p class="drawer-tagline" id="drawerTagline">Baked fresh daily using cultured French Normandy butter</p>
+
+        <div class="drawer-image-preview">
+          <img id="drawerImage" src="" alt="Layer preview">
+        </div>
+
+        <div class="drawer-specs">
+          <div class="spec-card">
+            <span class="spec-label">RUOLO</span>
+            <span class="spec-val" id="drawerRole">Structural &amp; Sweetness</span>
+          </div>
+          <div class="spec-card">
+            <span class="spec-label">TEMPERATURA</span>
+            <span class="spec-val" id="drawerTemp">Warm (55°C)</span>
+          </div>
+          <div class="spec-card">
+            <span class="spec-label">GUSTO</span>
+            <span class="spec-val" id="drawerFlavor">Toasted, Buttery, Nutty</span>
+          </div>
+          <div class="spec-card">
+            <span class="spec-label">PROVENIENZA</span>
+            <span class="spec-val" id="drawerOrigin">Artisan Craft Bakery</span>
+          </div>
+        </div>
+
+        <div class="drawer-narrative">
+          <h4>La preparazione</h4>
+          <p id="drawerDescription">...</p>
+        </div>
+
+        <div class="drawer-nav-footer">
+          <button class="btn btn-outline" id="drawerPrev">← Precedente</button>
+          <button class="btn btn-outline" id="drawerNext">Successivo →</button>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- Virtual Tall Scroll Container to Drive Browser Scroll -->
+  <div class="scroll-driver" id="scrollDriver"></div>
+<section class="menu-section" id="menu"><div class="menu-kicker">NEW SAMA GARDEN · BREBBIA</div><h2>Il menu <em>demo</em></h2><p class="menu-intro">Una prima proposta per mostrare come potrebbe essere il menu online. Piatti, ingredienti e prezzi sono provvisori e verranno sostituiti con quelli reali dopo il confronto con il cliente.</p><div class="menu-grid">
+<article class="menu-card"><span class="menu-number">01 / CLASSICI</span><h3>Garden Classic</h3><p>Pane morbido, burger di manzo, cheddar, lattuga, pomodoro e salsa della casa.</p><strong>€ 10,00</strong><small>Prezzo d’esempio</small></article>
+<article class="menu-card featured"><span class="menu-number">02 / SIGNATURE</span><h3>Sama Double</h3><p>Doppio burger, doppio cheddar, cipolla caramellata, cetriolini e burger sauce.</p><strong>€ 13,50</strong><small>Prezzo d’esempio</small></article>
+<article class="menu-card"><span class="menu-number">03 / CHICKEN</span><h3>Crispy Chicken</h3><p>Pollo croccante, insalata fresca, pomodoro e maionese delicata.</p><strong>€ 11,00</strong><small>Prezzo d’esempio</small></article>
+<article class="menu-card"><span class="menu-number">04 / SIDES</span><h3>Garden Fries</h3><p>Patatine dorate con salsa a scelta.</p><strong>€ 4,00</strong><small>Prezzo d’esempio</small></article></div>
+<div class="menu-note">DEMO · MENU, PREZZI, ALLERGENI E DISPONIBILITÀ DA CONFERMARE</div>
+<div class="contact-panel" id="contatti"><div><span class="menu-kicker">PASSA A TROVARCI</span><h2>Ci vediamo da <em>New Sama Garden.</em></h2><p>Via F. Petrarca 4 · Brebbia (VA)</p><p>Telefono: <a href="tel:+393756165530">375 616 5530</a></p></div><a class="call-button" href="tel:+393756165530">Chiama per prenotare <span>↗</span></a></div>
+<footer class="site-foot"><span>NEW SAMA GARDEN</span><span>BREBBIA · VIA F. PETRARCA 4</span><a href="https://github.com/smford/hamburger-decomp" target="_blank" rel="noopener">Sorgente originale · AGPL-3.0</a></footer></section>
+
+  <script src="app.js"></script>
+</body>
+</html>
