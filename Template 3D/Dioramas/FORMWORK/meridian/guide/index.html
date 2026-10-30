@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MERIDIAN — Guide · How this was built</title>
+<meta name="description" content="How the MERIDIAN espresso-equipment site was built with Formwork: a hand-drawn canvas pressure gauge, an odometer readout, and four interactive patterns grounded in production UI." />
+<meta name="theme-color" content="#0B0908" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#0B0908;--panel:#151110;--panel-2:#1B1512;--ink:#F4EDE4;--dim:#A99E90;--faint:#6E6458;
+    --accent:#C8622C;--hot:#E98A4B;--line:rgba(244,237,228,.10);
+    --serif:"Instrument Serif",Georgia,serif;--sans:"Archivo",system-ui,sans-serif;--mono:"IBM Plex Mono",monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:400;line-height:1.65;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+  ::selection{background:var(--accent);color:#120A05}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(28px,6vw,80px) clamp(20px,5vw,32px)}
+  .top{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:.76rem;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:clamp(40px,8vh,90px)}
+  .top a{color:var(--dim)}
+  .brand{font-family:var(--serif);font-size:1.5rem;letter-spacing:.02em;color:var(--ink);text-transform:none}
+  .tag{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:.72rem;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:1.4rem}
+  .tag::before{content:"";width:30px;height:1px;background:var(--accent)}
+  h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.6rem,7vw,4.2rem);line-height:1.02;
+    letter-spacing:-.01em;margin-bottom:1.2rem}
+  h1 em{font-style:italic;color:var(--accent)}
+  .lede{font-size:clamp(1.1rem,2.2vw,1.32rem);color:var(--dim);max-width:58ch;margin-bottom:3.4rem}
+  h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.6rem,4vw,2.3rem);margin:3rem 0 1rem;
+    letter-spacing:-.01em}
+  h2 em{font-style:italic;color:var(--accent)}
+  h3{font-family:var(--mono);font-weight:500;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--hot);margin:1.8rem 0 .6rem}
+  p{color:var(--dim);margin:0 0 1.1rem;max-width:64ch}
+  strong{color:var(--ink);font-weight:500}
+  ul{color:var(--dim);margin:0 0 1.2rem 1.2rem}li{margin:.4rem 0}
+  code{font-family:var(--mono);font-size:.86em;background:rgba(244,237,228,.06);padding:.12em .4em;
+    border-radius:4px;color:var(--ink)}
+  pre{background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:18px 20px;
+    overflow-x:auto;margin:0 0 1.4rem;font-size:.8rem;line-height:1.65;font-family:var(--mono)}
+  pre code{background:none;padding:0;color:var(--dim)}
+  pre .c{color:var(--faint)}
+  pre .k{color:var(--hot)}
+  .stack{list-style:none;margin:0 0 1.2rem;padding:0}
+  .stack li{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);margin:0}
+  .stack b{color:var(--ink);font-weight:500;min-width:132px;font-family:var(--mono);font-size:.82rem;
+    letter-spacing:.02em}
+  .rule{height:1px;background:var(--line);margin:3rem 0}
+  footer{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--line);font-family:var(--mono);
+    font-size:.78rem;color:var(--faint)}
+  footer a{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a class="brand" href="../">MERIDIAN</a><a href="../">&larr; Back to site</a></div>
+  <span class="tag">Build guide · Site 26 of 27</span>
+  <h1>A pressure gauge, <em>drawn by hand.</em></h1>
+  <p class="lede">MERIDIAN is one of 27 sites in the Formwork collection. Its signature is a readout you can
+    watch work: a live analog gauge on a real <code>&lt;canvas&gt;</code>, stats that roll into place like an
+    odometer, and a copper line that fills as you scroll. No chart library, no animation framework — just a
+    couple hundred lines of vanilla JS.</p>
+
+  <h2>The idea</h2>
+  <p>Espresso is a measured thing: nine bars, ninety-three and a half degrees, eighteen grams in, thirty-six
+    out. The brand promise is precision, so the interface had to <em>feel</em> like an instrument. Everything
+    that carries a number is treated as a readout — it moves the way a dial or a counter moves, never the way
+    a marketing headline fades in.</p>
+
+  <h2>The stack</h2>
+  <ul class="stack">
+    <li><b>Gauge</b> Canvas 2D — arc, machined ticks, and a copper needle drawn each frame.</li>
+    <li><b>Odometer</b> Clipped digit columns with a 0–9 reel moved by <code>translateY</code>.</li>
+    <li><b>Motion</b> Delta-timed <code>requestAnimationFrame</code>; observers pause offscreen work.</li>
+    <li><b>Type</b> Instrument Serif (display), Archivo (body), IBM Plex Mono (every readout).</li>
+    <li><b>Build</b> None. Plain HTML/CSS/JS with relative paths — drop it on any static host.</li>
+  </ul>
+
+  <h2>Signature technique: <em>the readout</em></h2>
+  <h3>The gauge</h3>
+  <p>The gauge runs one continuous extraction cycle: pressure ramps to nine bars on an ease-out, holds while
+    the shot timer and yield count up, drops, rests, and loops. State is a pure function of a single clock
+    <code>t</code>, so the drawing code never has to remember anything:</p>
+  <pre><code><span class="k">function</span> stateAt(t) {
+  <span class="k">let</span> bar;
+  <span class="k">if</span> (t &lt; RAMP)             bar = easeOut(t / RAMP) * MAXBAR;
+  <span class="k">else if</span> (t &lt; RAMP + HOLD) bar = MAXBAR;
+  <span class="k">else if</span> (t &lt; SHOT_END)    bar = MAXBAR * (1 - easeIn((t - RAMP - HOLD) / DROP));
+  <span class="k">else</span>                     bar = 0;
+  <span class="c">// timer and yield are read off the same clock…</span>
+  <span class="k">return</span> { bar, timer, yld };
+}</code></pre>
+  <p>The animation loop is delta-timed, so the cycle takes the same wall-clock time on a 60&nbsp;Hz or 120&nbsp;Hz
+    display, and <code>devicePixelRatio</code> is capped at 2 so a 3× phone doesn't render a nine-megapixel
+    dial. An <code>IntersectionObserver</code> stops the loop entirely once the hero scrolls away:</p>
+  <pre><code><span class="k">const</span> dt = Math.min(0.05, (now - last) / 1000); last = now;
+<span class="k">if</span> (visible) t = (t + dt) % CYCLE;      <span class="c">// advance only while on screen</span>
+draw(stateAt(t).bar);</code></pre>
+
+  <h3>The odometer</h3>
+  <p>Every stat is a row of clipped columns, each holding a <code>0–9</code> reel. To show a digit you slide
+    its reel up by that many ems. <code>rollTo</code> only rebuilds the DOM when the <em>shape</em> of the value
+    changes (say <code>27 s</code> → <code>3:15</code>); otherwise the existing reels animate straight from the
+    old value to the new one, which is what makes the brew-card numbers spin when you switch methods:</p>
+  <pre><code><span class="k">function</span> rollTo(el, str, animate) {
+  <span class="k">const</span> mask = str.replace(/[0-9]/g, <span class="c">'#'</span>);
+  <span class="k">if</span> (el._mask !== mask) buildOdometer(el, str);  <span class="c">// shape changed → rebuild reels</span>
+  <span class="k">let</span> ci = 0;
+  <span class="k">for</span> (<span class="k">const</span> ch <span class="k">of</span> str)
+    <span class="k">if</span> (ch &gt;= <span class="c">'0'</span> &amp;&amp; ch &lt;= <span class="c">'9'</span>)
+      cols[ci++].firstChild.style.transform = <span class="c">`translateY(-${+ch}em)`</span>;
+}</code></pre>
+
+  <h2>The interactive patterns</h2>
+  <p>Four components carry the page. Each is a real, keyboard-accessible control — not a picture of one — and
+    each is grounded in a pattern that ships in production software.</p>
+  <h3>Segmented control</h3>
+  <p>A genuine <code>role="tablist"</code> with a sliding thumb positioned by <code>offsetLeft</code>/
+    <code>offsetWidth</code>, roving <code>tabindex</code>, and arrow / Home / End keys. Grounded in the inline
+    pricing pills of <strong>Webflow</strong> and the tabs-wired-to-a-panel pattern from <strong>1Password</strong>
+    — a filled active segment that swaps the content below it immediately.</p>
+  <h3>Numbered stepper</h3>
+  <p>Six <code>&lt;button&gt;</code> rows with <code>aria-current</code>, a sticky image panel, and a thin
+    auto-advance bar that pauses on hover, focus, reduced-motion, or when scrolled offscreen. Grounded in the
+    numbered walkthrough steppers of <strong>Sequence</strong> and the list-left / art-right layout of
+    <strong>Mural</strong>.</p>
+  <h3>Tier cards</h3>
+  <p>Three flat machine cards separated by hairlines rather than boxes, one CTA each, with a single copper
+    "MOST BUILT" flag on the middle card. Grounded in the dark, flat, hairline-divided product cards of
+    <strong>Grok</strong> and the single-CTA tier ladder of <strong>Claude</strong>'s pricing.</p>
+
+  <h2>Details that matter</h2>
+  <ul>
+    <li><strong>JS off</strong> — enhancements gate on a <code>.js</code> class the script adds. Without it, the
+      first method panel and the first process step are already the visible defaults, and every stat shows its
+      final value as plain text.</li>
+    <li><strong>Reduced motion</strong> — the gauge renders a single frame held at nine bars, digits jump to
+      their final values, the stepper stops auto-advancing, and the extraction line still fills (it's
+      scroll-linked, so there was never a transition to remove).</li>
+    <li><strong>Keyboard &amp; semantics</strong> — a skip link, a copper <code>:focus-visible</code> ring
+      throughout, one <code>&lt;h1&gt;</code>, landmark regions, and a real tablist that answers arrow keys.</li>
+    <li><strong>Performance</strong> — capped DPR, delta-timed animation, and observers that disconnect or pause
+      the moment their work leaves the viewport.</li>
+  </ul>
+
+  <div class="rule"></div>
+  <p>A dial, a reel of digits, and a line down the edge of the page — the whole site is one instrument reading
+    itself out.</p>
+  <footer>Designed &amp; built by <strong>Formwork</strong> · Site 26 of 27 ·
+    <a href="../">Return to MERIDIAN &rarr;</a> ·
+    <a href="https://bswxyz.github.io/formwork/">The full collection &rarr;</a></footer>
+</div>
+</body>
+</html>

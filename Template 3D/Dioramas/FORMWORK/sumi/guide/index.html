@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SUMI — Guide · How this was built</title>
+<meta name="description" content="How the SUMI site was built with Formwork: ink that blooms across washi paper, drawn live in a WebGL fragment shader." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=Jost:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+<style>
+  :root{--paper:#efe9dd;--ink:#1a1714;--dim:#5c554b;--faint:#938a7c;--accent:#b83a2e;--line:rgba(26,23,20,.14)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"Jost",system-ui,sans-serif;font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+  .wrap{max-width:740px;margin:0 auto;padding:clamp(28px,6vw,80px) clamp(20px,5vw,32px)}
+  .top{display:flex;justify-content:space-between;align-items:center;font-family:"Shippori Mincho",serif;font-size:.9rem;letter-spacing:.06em;color:var(--faint);margin-bottom:clamp(40px,8vh,90px)}
+  .top a{color:var(--dim)}
+  .brand{font-weight:600;letter-spacing:.14em;color:var(--ink)}
+  .tag{display:inline-block;font-family:"Shippori Mincho",serif;font-size:.86rem;letter-spacing:.1em;color:var(--accent);margin-bottom:1.2rem}
+  h1{font-family:"Shippori Mincho",serif;font-weight:600;font-size:clamp(2.6rem,8vw,4.4rem);line-height:1.05;margin-bottom:1.2rem}
+  h1 em{font-style:normal;color:var(--accent)}
+  .lede{font-family:"Shippori Mincho",serif;font-size:clamp(1.15rem,2.4vw,1.4rem);color:var(--dim);max-width:56ch;margin-bottom:3rem}
+  h2{font-family:"Shippori Mincho",serif;font-weight:500;font-size:clamp(1.6rem,4vw,2.3rem);margin:2.8rem 0 1rem}
+  p{color:var(--dim);margin:0 0 1.1rem;max-width:64ch}
+  strong{color:var(--ink);font-weight:500}
+  ul{color:var(--dim);margin:0 0 1.2rem 1.2rem}li{margin:.4rem 0}
+  code{font-family:"JetBrains Mono",monospace;font-size:.84em;background:rgba(26,23,20,.06);padding:.12em .4em;border-radius:3px;color:var(--ink)}
+  pre{background:#e7e0d1;border:1px solid var(--line);border-radius:6px;padding:18px 20px;overflow-x:auto;margin:0 0 1.4rem;font-size:.82rem;line-height:1.6;font-family:"JetBrains Mono",monospace}
+  pre code{background:none;padding:0;color:var(--dim)}
+  .stack{list-style:none;margin:0 0 1.2rem;padding:0}
+  .stack li{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .stack b{color:var(--ink);font-weight:500;min-width:120px}
+  .rule{height:1px;background:var(--line);margin:2.8rem 0}
+  footer{margin-top:3.4rem;padding-top:1.6rem;border-top:1px solid var(--line);font-family:"Shippori Mincho",serif;font-size:.85rem;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a class="brand" href="../">SUMI 墨</a><a href="../">← Back to site</a></div>
+  <span class="tag">Build guide · Site 19 of 25</span>
+  <h1>Ink that bleeds into <em>paper that isn't there</em>.</h1>
+  <p class="lede">SUMI is one of 25 sites built by Formwork. There is no image of ink here — the black
+    blooms are computed for every pixel, and they follow your cursor like wet pigment.</p>
+
+  <h2>The idea</h2>
+  <p>Sumi-e is about restraint: one black, a lot of paper. The site keeps almost everything empty and
+    lets a single living ink stain occupy the right side, so the eye rests on the type and the space.</p>
+
+  <h2>The stack</h2>
+  <ul class="stack">
+    <li><b>Ink</b> a hand-written GLSL fragment shader on raw WebGL — no library.</li>
+    <li><b>Type</b> Shippori Mincho, a serif that sets Latin and 漢字 with equal grace.</li>
+    <li><b>Motion</b> GSAP for scroll reveals; the shader animates on a clock.</li>
+    <li><b>Host</b> static files on GitHub Pages.</li>
+  </ul>
+
+  <h2>Signature technique: ink from noise</h2>
+  <p>Fractal noise (fBm) is sampled, warped by itself, and sampled again — the same trick that makes
+    smoke, but here we <strong>threshold</strong> it hard. A sharp <code>smoothstep</code> gives the
+    solid body of the stroke; a softer one just below it gives the feathered <em>bleed</em> where ink
+    creeps into the fibres:</p>
+  <pre><code>float f = fbm(p*1.7 + 1.5*warp + t);
+float body    = smoothstep(0.56, 0.80, f + bias + mouseBloom);
+float feather = smoothstep(0.44, 0.56, f) * 0.35;   // wet edge
+col = mix(paper, sumiBlack, clamp(body + feather*0.5, 0., 1.));</code></pre>
+  <p>The paper isn't flat either — a faint per-pixel noise adds fibre, and the ink pools toward the
+    right (a positional bias) so the left-hand copy always sits on clean paper.</p>
+
+  <h2>Details that matter</h2>
+  <ul>
+    <li><strong>Cursor as brush</strong> — a bloom term raises the ink threshold near the pointer, so ink gathers where you point.</li>
+    <li><strong>間 (ma)</strong> — the composition is mostly empty on purpose; the negative space is the design.</li>
+    <li><strong>The seal</strong> — a CSS <em>hanko</em> stamp, rotated a few degrees like a real one pressed by hand.</li>
+    <li><strong>Reduced motion / no WebGL</strong> — a still ink frame, or a soft CSS ink-wash fallback.</li>
+  </ul>
+
+  <h2>Ship it on GitHub Pages</h2>
+  <pre><code>git init -b main &amp;&amp; git add -A &amp;&amp; git commit -m "ship"
+gh repo create formwork-sumi --public --source=. --push
+gh api --method POST /repos/OWNER/formwork-sumi/pages \
+  -f 'source[branch]=main' -f 'source[path]=/'</code></pre>
+
+  <div class="rule"></div>
+  <p>One black, a field of noise, and a lot of restraint — ink that behaves like ink, and paper that knows when to stay empty.</p>
+  <footer>Designed &amp; built by <strong>Formwork</strong> · Part of a 25-site showcase · <a href="../">Return to SUMI →</a></footer>
+</div>
+</body>
+</html>

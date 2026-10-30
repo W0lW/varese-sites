@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SOMA — Guide · How this was built</title>
+<meta name="description" content="How the SOMA site was designed and built by Formwork: gooey pastel metaballs with an SVG goo filter, a live 4·4·6 breathing guide, and static hosting on GitHub Pages." />
+<meta name="theme-color" content="#faf5ee" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --cream:#faf5ee;--cream-2:#f3ebe0;--paper:#fffdf9;
+    --ink:#3a3540;--dim:#6f6572;--faint:#9a919d;
+    --accent:#c07d54;               /* deep terracotta */
+    --line:rgba(58,53,64,.12);--line-soft:rgba(58,53,64,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--cream);color:var(--ink);
+    font-family:"Figtree",system-ui,-apple-system,sans-serif;font-weight:400;line-height:1.7;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(28px,6vw,80px) clamp(20px,5vw,32px)}
+  .top{display:flex;justify-content:space-between;align-items:center;
+    font-size:.82rem;letter-spacing:.06em;color:var(--faint);margin-bottom:clamp(40px,8vh,90px)}
+  .top a{color:var(--dim)}
+  .brand{display:inline-flex;align-items:center;gap:9px;
+    font-family:"Fraunces",Georgia,serif;font-size:1.24rem;letter-spacing:.16em;color:var(--ink)}
+  .brand-dot{width:10px;height:10px;border-radius:50%;
+    background:radial-gradient(circle at 35% 32%,#f6d9cf,var(--accent) 78%);
+    box-shadow:0 0 0 4px rgba(224,168,132,.16)}
+  h1{font-family:"Fraunces",Georgia,serif;font-weight:300;
+    font-size:clamp(2.6rem,8vw,4.4rem);line-height:1.04;letter-spacing:-.01em;margin-bottom:1.2rem}
+  h1 em{color:var(--accent);font-style:italic}
+  .lede{font-size:clamp(1.1rem,2.2vw,1.32rem);color:var(--dim);max-width:56ch;margin-bottom:3.4rem}
+  h2{font-family:"Fraunces",Georgia,serif;font-weight:400;
+    font-size:clamp(1.7rem,4vw,2.4rem);margin:3rem 0 1rem;letter-spacing:-.01em}
+  p{color:var(--dim);margin:0 0 1.1rem;max-width:64ch}
+  .tag{display:inline-block;font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:1.4rem}
+  ul,ol{color:var(--dim);margin:0 0 1.2rem 1.2rem}
+  li{margin:.45rem 0}
+  strong{color:var(--ink);font-weight:600}
+  code{font-family:"JetBrains Mono",monospace;font-size:.85em;
+    background:rgba(58,53,64,.06);padding:.12em .42em;border-radius:5px;color:var(--ink)}
+  pre{background:var(--paper);border:1px solid var(--line-soft);border-radius:12px;
+    padding:18px 20px;overflow-x:auto;margin:0 0 1.4rem;font-size:.82rem;line-height:1.6;
+    box-shadow:0 20px 50px -40px rgba(58,53,64,.5)}
+  pre code{background:none;padding:0;color:#5b5563}
+  .rule{height:1px;background:var(--line-soft);margin:3rem 0}
+  .stack{list-style:none;margin:0 0 1.2rem;padding:0;display:grid;gap:2px}
+  .stack li{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+  .stack b{color:var(--ink);font-weight:600;min-width:120px;display:inline-block}
+  footer{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--line-soft);
+    font-size:.84rem;color:var(--faint)}
+  a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="../"><span class="brand-dot" aria-hidden="true"></span>SOMA</a>
+    <a href="../">← Back to site</a>
+  </div>
+
+  <span class="tag">Build guide · Site 08 of 25</span>
+  <h1>A breathing practice, rendered as <em>soft, merging light</em>.</h1>
+  <p class="lede">SOMA is one of 25 sites designed and built by Formwork to demonstrate web design,
+    motion, and taste. This one is the calm outlier — no sharp edges, no hurry. Here is exactly
+    how it was made, and how you could build the same.</p>
+
+  <h2>The idea</h2>
+  <p>The brief was a warm, healing breath-work brand — the opposite of a hard tech landing page.
+    So the whole page is built around <strong>softness as a system</strong>: low-contrast pastels,
+    a rounded humanist sans, generous space, and one hero visual that never sits still but never
+    startles. Colour does the work that photography usually would.</p>
+
+  <h2>The stack</h2>
+  <ul class="stack">
+    <li><b>Hero visual</b> Gooey pastel metaballs — DOM circles fused by an SVG <code>goo</code> filter.</li>
+    <li><b>Breathing guide</b> A CSS-scaled orb on a 4·4·6 loop, driven by a tiny state machine.</li>
+    <li><b>Motion</b> No animation library. <code>IntersectionObserver</code> reveals, CSS transitions, one rAF loop.</li>
+    <li><b>Type</b> Fraunces (soft light serif) for the calm statements, Figtree for everything else.</li>
+    <li><b>Build</b> Plain HTML/CSS/JS. No bundler, no framework, no CDN dependency to fail.</li>
+    <li><b>Host</b> GitHub Pages, served straight from the repo's <code>main</code> branch.</li>
+  </ul>
+
+  <h2>The signature technique: gooey metaballs</h2>
+  <p>Six blush, sage, terracotta and plum circles are stacked in the hero. On their own they are
+    just overlapping discs. The magic is a single SVG filter: blur everything heavily, then
+    <strong>re-sharpen the alpha channel</strong> so soft edges snap back into one continuous skin.
+    Where two blurred blobs overlap, the combined alpha crosses the threshold and they fuse — the
+    classic "goo" effect.</p>
+  <pre><code>&lt;filter id="goo"&gt;
+  &lt;feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur"/&gt;
+  &lt;feColorMatrix in="blur" result="goo" mode="matrix"
+    values="1 0 0 0 0
+            0 1 0 0 0
+            0 0 1 0 0
+            0 0 0 24 -11"/&gt;   &lt;!-- steep alpha ramp = crisp gooey edge --&gt;
+&lt;/filter&gt;</code></pre>
+  <p>The filter is applied to the container behind an <code>@supports (filter:url("#goo"))</code>
+    guard; where SVG filters aren't available the blobs simply stay a soft blurred cloud. A slow
+    <code>requestAnimationFrame</code> loop then drifts each blob on offset sine waves and gently
+    swells its scale, so the field is always merging, parting and morphing:</p>
+  <pre><code>const dx = Math.sin(t * b.fx * TAU + b.px) * b.ax + ptr.x * b.par;
+const dy = Math.cos(t * b.fy * TAU + b.py) * b.ay + ptr.y * b.par;
+const s  = 1 + Math.sin(t * b.fs * TAU + b.ps) * b.am; // slow swell/thin
+b.el.style.transform =
+  `translate(-50%,-50%) translate(${dx}px,${dy}px) scale(${s})`;</code></pre>
+
+  <h2>The breathing guide</h2>
+  <p>At the centre sits the live cue. A three-phase state machine sets a <code>data-phase</code>
+    attribute; CSS maps each phase to an orb scale and eases between them over the phase's own
+    duration, while the cue word crossfades in sync.</p>
+  <pre><code>const phases = [
+  { phase:'in',   label:'Breathe in',  dur:4000 },
+  { phase:'hold', label:'Hold',        dur:4000 },
+  { phase:'out',  label:'Breathe out', dur:6000 }
+];
+// each step sets the CSS transition-duration, swaps the word, then schedules the next</code></pre>
+
+  <h2>Details that matter</h2>
+  <ul>
+    <li><strong>Never a blank hero</strong> — the intro is a CSS <code>.loaded</code> class added on a double <code>requestAnimationFrame</code> with a 400ms failsafe, so a backgrounded tab can't freeze it.</li>
+    <li><strong>Content survives failure</strong> — reveals are hidden only under a <code>.js</code> class; if the script never runs, everything is simply visible.</li>
+    <li><strong>Reduced motion</strong> — with <code>prefers-reduced-motion</code> the blobs hold still and the guide becomes a static instruction: <em>“In 4 · hold 4 · out 6.”</em></li>
+    <li><strong>Warmth</strong> — a 3.5% SVG-noise grain over the cream keeps the flat pastels from looking digital.</li>
+  </ul>
+
+  <h2>Ship it on GitHub Pages</h2>
+  <p>The site is fully static, so hosting is three commands:</p>
+  <pre><code>git init -b main && git add -A && git commit -m "ship soma"
+gh repo create formwork-soma --public --source=. --push
+gh api --method POST /repos/OWNER/formwork-soma/pages \
+  -f 'source[branch]=main' -f 'source[path]=/'</code></pre>
+  <p>Use <strong>relative paths</strong> (<code>./main.js</code>, not <code>/main.js</code>) because project
+    Pages live under <code>/repo-name/</code>, and add an empty <code>.nojekyll</code> file so every asset
+    serves verbatim.</p>
+
+  <div class="rule"></div>
+  <p>That is the whole recipe: one SVG filter, six drifting circles, a small breathing clock, and
+    restraint everywhere else. The other 24 sites each swap the central technique — shaders,
+    particles, kinetic type, isometric 3D — but the discipline is the same.</p>
+
+  <footer>Designed &amp; built by <strong>Formwork</strong> · Part of a 25-site showcase · <a href="../">Return to SOMA →</a></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script>document.documentElement.classList.add('js')</script>
+<title>SUMI 墨 — the art of ink and empty space</title>
+<meta name="description" content="SUMI is an ink-art studio working in sumi-e and calligraphy — rendered here as living ink that blooms across washi paper in a WebGL shader." />
+<meta name="theme-color" content="#efe9dd" />
+<meta property="og:title" content="SUMI 墨 — the art of ink and empty space" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<canvas id="ink" aria-hidden="true"></canvas>
+
+<header class="nav">
+  <a class="brand" href="./">SUMI<span>墨</span></a>
+  <nav class="nav-links">
+    <a href="#works">Works</a>
+    <a href="#ma">間 · Ma</a>
+    <a href="./guide/">Guide</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <p class="eyebrow reveal">墨絵 · Ink-art studio · Kyoto &amp; the web</p>
+    <h1 class="hero-title">
+      <span class="line"><span>SUMI</span></span>
+    </h1>
+    <p class="hero-kanji reveal" aria-hidden="true">墨</p>
+    <p class="hero-sub reveal">The art of ink and empty space. We paint with a single black,
+      and let the paper do the rest — move your cursor, and the ink follows.</p>
+    <div class="seal reveal" aria-hidden="true"><span>墨<br>絵</span></div>
+  </section>
+
+  <section id="works" class="works">
+    <div class="section-head">
+      <p class="kicker reveal">[ 作品 · Works ]</p>
+      <h2 class="reveal">Three strokes</h2>
+    </div>
+    <div class="work-grid">
+      <article class="work reveal" tabindex="0"><span class="w-jp">静</span><h3>Stillness</h3><p>A single vertical stroke, drawn in one breath. Ink on kōzo paper, 2026.</p></article>
+      <article class="work reveal" tabindex="0"><span class="w-jp">流</span><h3>Current</h3><p>Ink released into wet paper and left to find its own edge. 2025.</p></article>
+      <article class="work reveal" tabindex="0"><span class="w-jp">空</span><h3>Emptiness</h3><p>Mostly paper. The subject is the space the ink chose not to touch. 2025.</p></article>
+    </div>
+  </section>
+
+  <section id="ma" class="ma">
+    <div class="ma-inner">
+      <p class="ma-jp reveal" aria-hidden="true">間</p>
+      <p class="ma-text reveal">In sumi-e the untouched paper is not <em>nothing</em> —
+        it is <em>ma</em>, the interval, the pause that lets the mark mean something.
+        We design the same way: the empty space is the work.</p>
+      <p class="ma-sign reveal">— the studio</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <p class="foot-brand">SUMI 墨</p>
+  <div class="foot-bottom">
+    <span>© 2026 SUMI · 墨絵工房</span>
+    <span>Designed &amp; built by Formwork · <a href="./guide/">How this was built →</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="./main.js"></script>
+</body>
+</html>

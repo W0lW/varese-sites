@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ALGORITHM — A generative art studio</title>
+<meta name="description" content="ALGORITHM is a generative art studio. Code-drawn work that renders unique every visit — a seeded flow field of a few thousand particles, and never the same drawing twice." />
+<meta name="theme-color" content="#0c0d0f" />
+<meta property="og:title" content="ALGORITHM — A generative art studio" />
+<meta property="og:description" content="Code-drawn art, rendered unique every visit. Seeded, reproducible, never the same twice." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"><span></span></div>
+
+<header class="nav">
+  <a class="brand" href="./">ALGORITHM<sup>®</sup></a>
+  <nav class="nav-links">
+    <a href="#gallery">Gallery</a>
+    <a href="#process">Process</a>
+    <a href="./guide/">Guide</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <canvas id="field" aria-hidden="true"></canvas>
+    <div class="hero-fallback" aria-hidden="true"></div>
+    <div class="hero-vignette" aria-hidden="true"></div>
+
+    <div class="hero-inner">
+      <p class="eyebrow reveal">Generative art studio · Est. 2026</p>
+      <h1 class="wordmark"><span class="wm-inner">ALGORITHM</span></h1>
+      <p class="hero-sub reveal">Code-drawn art that renders unique on every visit — a flow field of a
+        few thousand particles, seeded by a single number, and never the same drawing twice.</p>
+
+      <div class="control reveal" role="group" aria-label="Generative seed controls">
+        <div class="seedbox">
+          <span class="seed-k">Seed</span>
+          <span class="seed-v" id="seedVal">0000000000</span>
+        </div>
+        <button class="btn" id="regen" type="button"><span>Regenerate</span></button>
+        <button class="btn ghost" id="copy" type="button"><span>Copy link</span></button>
+      </div>
+    </div>
+
+    <div class="hero-spec reveal" aria-hidden="true">
+      <span>FLOW FIELD</span><i>/</i><span id="pcount">— PARTICLES</span><i>/</i><span>PERLIN ADVECTION</span><i>/</i><span>SEED-LOCKED PALETTE</span>
+    </div>
+    <div class="scroll-cue reveal" aria-hidden="true"><span></span>scroll</div>
+  </section>
+
+  <section class="strip" aria-hidden="true">
+    <div class="strip-track">
+      <span>MULBERRY32</span><i>·</i><span>PERLIN fBm</span><i>·</i><span>CIRCLE PACKING</span><i>·</i><span>TRUCHET</span><i>·</i><span>DE&nbsp;JONG</span><i>·</i>
+      <span>MULBERRY32</span><i>·</i><span>PERLIN fBm</span><i>·</i><span>CIRCLE PACKING</span><i>·</i><span>TRUCHET</span><i>·</i><span>DE&nbsp;JONG</span><i>·</i>
+      <span>MULBERRY32</span><i>·</i><span>PERLIN fBm</span><i>·</i><span>CIRCLE PACKING</span><i>·</i><span>TRUCHET</span><i>·</i><span>DE&nbsp;JONG</span><i>·</i>
+    </div>
+  </section>
+
+  <section id="gallery" class="gallery">
+    <div class="section-head">
+      <p class="index reveal">Works — 01 / 03</p>
+      <h2 class="reveal">The Gallery</h2>
+      <p class="section-note reveal">Three studies, three algorithms — each reseeded from the same number
+        that draws the field above. Reload, or hit <em>Regenerate</em>, and the whole room repaints.</p>
+    </div>
+
+    <div class="pieces">
+      <figure class="piece reveal">
+        <div class="piece-frame">
+          <canvas id="piece-packing" aria-hidden="true"></canvas>
+          <div class="piece-fallback" aria-hidden="true"></div>
+        </div>
+        <figcaption>
+          <h3 class="piece-title">Aggregate No. 9</h3>
+          <p class="piece-meta">2026 · Circle packing · <span data-seed-label>#—</span></p>
+          <p class="piece-desc">Discs dropped at random, each one grown until it kisses a neighbour
+            or the edge of the frame. Density without a single placed mark.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="piece reveal">
+        <div class="piece-frame">
+          <canvas id="piece-truchet" aria-hidden="true"></canvas>
+          <div class="piece-fallback" aria-hidden="true"></div>
+        </div>
+        <figcaption>
+          <h3 class="piece-title">Continuum</h3>
+          <p class="piece-meta">2026 · Truchet contours · <span data-seed-label>#—</span></p>
+          <p class="piece-desc">A grid of two-arc tiles, each flipped by a coin toss. Continuous
+            curves that meander across the plane, deciding their own maze.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="piece reveal">
+        <div class="piece-frame">
+          <canvas id="piece-attractor" aria-hidden="true"></canvas>
+          <div class="piece-fallback" aria-hidden="true"></div>
+        </div>
+        <figcaption>
+          <h3 class="piece-title">Basin</h3>
+          <p class="piece-meta">2026 · De&nbsp;Jong attractor · <span data-seed-label>#—</span></p>
+          <p class="piece-desc">Eighty-thousand iterations of a chaotic map, four constants pulled from
+            the seed. Order that only appears once the points pile up.</p>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="process" class="process">
+    <div class="process-grid">
+      <div class="process-head">
+        <p class="index reveal">On process</p>
+        <p class="process-sign reveal">— The studio</p>
+      </div>
+      <div class="process-body">
+        <p class="lead reveal">We don't draw pictures. We write the rules a picture must obey —
+          then let a single number decide the rest.</p>
+        <p class="reveal">Every ALGORITHM piece begins as a <strong>seed</strong>: one 32-bit integer that
+          fixes a private universe of colour and motion. Feed the same seed twice and the drawing returns
+          intact, down to the last filament of ink. Change one digit and the entire field reorganises.</p>
+        <p class="reveal">The hero is a <strong>flow field</strong> — a few thousand particles set loose in
+          an invisible landscape of Perlin noise. Each one follows the slope beneath it and leaves a fading
+          trail. No mark is placed by hand; structure emerges from the arithmetic.</p>
+        <p class="reveal">The seed lives in the address bar. Share the URL and you share the exact drawing —
+          a reproducible original, signed by its number. <a href="./guide/">Read how it's built →</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-top">
+    <p class="footer-brand">ALGORITHM</p>
+    <div class="footer-side">
+      <p class="footer-k">Commission a piece</p>
+      <a class="footer-mail" href="mailto:studio@algorithm.art">studio@algorithm.art</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 ALGORITHM — Generative studio</span>
+    <span>Designed &amp; built by Formwork · <a href="./guide/">How this was built →</a></span>
+  </div>
+</footer>
+
+<script src="./main.js"></script>
+</body>
+</html>

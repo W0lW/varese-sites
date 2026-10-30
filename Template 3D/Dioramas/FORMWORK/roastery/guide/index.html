@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EMBER &amp; OAK — Guide · How this was built</title>
+<meta name="description" content="How the Ember & Oak roastery site was designed and built by Formwork: a canvas steam-particle field, warm parallax, a rotating CSS/SVG seal, and GitHub Pages." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Space+Mono:wght@400;700&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#2a1a12;--ink:#f0e6d2;--dim:#cdbfa4;--faint:#9c8b72;
+    --accent:#d9791f;--line:rgba(240,230,210,.14);--panel:#1c110a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Work Sans",system-ui,sans-serif;font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(120% 90% at 15% 0%,rgba(217,121,31,.14),transparent 55%),radial-gradient(120% 100% at 100% 0%,rgba(107,66,38,.4),transparent 60%)}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(28px,6vw,80px) clamp(20px,5vw,32px)}
+  .top{display:flex;justify-content:space-between;align-items:center;font-family:"Space Mono",monospace;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:clamp(40px,8vh,84px)}
+  .top a{color:var(--dim)}
+  .brand{display:inline-flex;align-items:center;gap:10px;font-family:"Fraunces",serif;font-size:1.2rem;letter-spacing:.14em;color:var(--ink)}
+  .brand span{color:var(--accent);font-style:italic}
+  .tag{display:inline-block;font-family:"Space Mono",monospace;font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-bottom:1.3rem}
+  h1{font-family:"Fraunces",serif;font-weight:400;font-size:clamp(2.5rem,8vw,4.4rem);line-height:1.02;letter-spacing:-.02em;margin-bottom:1.2rem}
+  h1 em{color:var(--accent);font-style:italic}
+  .lede{font-size:clamp(1.1rem,2.2vw,1.32rem);color:var(--dim);max-width:56ch;margin-bottom:3.2rem}
+  h2{font-family:"Fraunces",serif;font-weight:400;font-size:clamp(1.7rem,4vw,2.4rem);margin:3rem 0 1rem;letter-spacing:-.01em}
+  p{color:var(--dim);margin:0 0 1.1rem;max-width:64ch}
+  ul,ol{color:var(--dim);margin:0 0 1.2rem 1.2rem}
+  li{margin:.4rem 0}
+  strong{color:var(--ink);font-weight:500}
+  code{font-family:"Space Mono",monospace;font-size:.84em;background:rgba(240,230,210,.08);padding:.12em .4em;border-radius:3px;color:var(--ink)}
+  pre{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px 20px;overflow-x:auto;margin:0 0 1.4rem;font-size:.82rem;line-height:1.6}
+  pre code{background:none;padding:0;color:var(--dim);font-family:"Space Mono",monospace}
+  .rule{height:1px;background:var(--line);margin:3rem 0}
+  .stack{list-style:none;margin:0 0 1.2rem;padding:0;display:grid;gap:2px}
+  .stack li{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .stack b{color:var(--ink);font-weight:500;min-width:132px;display:inline-block}
+  footer{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--line);font-size:.84rem;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="../">EMBER <span>&amp;</span> OAK</a>
+    <a href="../">← Back to site</a>
+  </div>
+
+  <span class="tag">Build guide · Site 23 of 25</span>
+  <h1>A roastery you can almost <em>smell</em>.</h1>
+  <p class="lede">Ember &amp; Oak is one of 25 sites designed and built by Formwork to show off web
+    craft, motion, and taste. Here's exactly how the warmth was made — and how you can rebuild it.</p>
+
+  <h2>The idea</h2>
+  <p>Coffee is a tactile, sensory thing, so the brief was to make a page feel <strong>warm and
+    physical</strong> rather than slick. Kraft-brown paper, cream ink, a single burnt-amber accent,
+    and a characterful serif do most of the emotional work. The one moving thing that sells it is
+    <strong>steam</strong> — real, drifting steam rising off a cup at the top of the page.</p>
+
+  <h2>The stack</h2>
+  <ul class="stack">
+    <li><b>Hero visual</b> A hand-written 2D-canvas particle system — soft cream puffs, additive blend, sinusoidal turbulence.</li>
+    <li><b>Depth</b> GSAP + ScrollTrigger drive a gentle warm parallax between the word, the cup and the copy.</li>
+    <li><b>Rotating seal</b> An SVG <code>textPath</code> ring spun with a pure-CSS <code>@keyframes</code> rotation.</li>
+    <li><b>Type</b> Fraunces (display serif) · Work Sans (interface) · Space Mono (tasting-note tags).</li>
+    <li><b>Build</b> Plain HTML/CSS/JS — no framework, no bundler. It just runs.</li>
+    <li><b>Host</b> GitHub Pages, straight from the repo's <code>main</code> branch.</li>
+  </ul>
+
+  <h2>The signature technique: rising steam</h2>
+  <p>Each puff is a particle that rises, cools and spreads. It fades in and out over its life with a
+    sine envelope, and its horizontal drift <strong>widens with height</strong> — that's what reads
+    as wispy turbulence rather than a straight column. Puffs are drawn as soft radial gradients with
+    <code>globalCompositeOperation = 'lighter'</code> so they glow warmly against the dark kraft.</p>
+  <pre><code>const t = p.life / p.max;                 // 0 → 1 over the puff's life
+p.y -= p.vy * dt * (1.15 - t * 0.5);      // rise, decelerating as it cools
+const x = p.x + Math.sin(p.life*0.001*p.swaySpeed + p.phase) * p.sway * t;
+const r = p.r0 + p.grow * t;              // grow as it spreads
+const a = Math.sin(Math.PI * t) * p.alpha;// fade in, then out
+const g = ctx.createRadialGradient(x, p.y, 0, x, p.y, r);
+g.addColorStop(0, `rgba(244,235,214,${a})`);</code></pre>
+  <p>The emitter isn't a fixed point — it's measured from the live position of the cup SVG, so the
+    steam always leaves the rim even as the parallax nudges everything around. The device-pixel-ratio
+    is capped at <strong>1.5</strong> so it stays smooth on retina screens, and a hidden-tab check
+    parks the loop when you're not looking.</p>
+
+  <h2>Details that matter</h2>
+  <ul>
+    <li><strong>Robust reveals</strong> — content is only hidden once JS adds a <code>.js</code> class, and revealed by an <code>IntersectionObserver</code>, so a CDN hiccup never leaves a blank page.</li>
+    <li><strong>Roast meters</strong> — each origin's roast level animates its fill and marker on scroll from a single <code>--fill</code> custom property.</li>
+    <li><strong>Reduced motion</strong> — with <code>prefers-reduced-motion</code> the steam, spin and parallax all switch off and every reveal is forced visible.</li>
+    <li><strong>Paper grain</strong> — an SVG-noise overlay at ~4.5% opacity in <code>soft-light</code> gives the whole surface a tactile, printed feel.</li>
+  </ul>
+
+  <h2>Ship it on GitHub Pages</h2>
+  <p>Every site here is static, so hosting is three commands:</p>
+  <pre><code>git init -b main &amp;&amp; git add -A &amp;&amp; git commit -m "ship"
+gh repo create formwork-roastery --public --source=. --push
+gh api --method POST /repos/OWNER/formwork-roastery/pages \
+  -f 'source[branch]=main' -f 'source[path]=/'</code></pre>
+  <p>Use <strong>relative paths</strong> (<code>./main.js</code>, not <code>/main.js</code>) because
+    project Pages live under <code>/repo-name/</code>. Add an empty <code>.nojekyll</code> file so
+    every asset serves verbatim.</p>
+
+  <div class="rule"></div>
+  <p>That's the whole recipe: one particle system, a little parallax, honest type, and static hosting.
+    The other 24 sites each swap the central technique — shaders, kinetic type, 3D scenes — but the
+    discipline is the same.</p>
+
+  <footer>Designed &amp; built by <strong>Formwork</strong> · Part of a 25-site showcase · <a href="../">Return to Ember &amp; Oak →</a></footer>
+</div>
+</body>
+</html>

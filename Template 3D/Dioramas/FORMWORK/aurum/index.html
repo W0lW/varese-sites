@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AURUM — Haute Horlogerie · Maison Genève</title>
+<meta name="description" content="AURUM is a maison of haute horlogerie and fine jewellery. Time, wrought in gold and rendered in light — three collections, made entirely by hand." />
+<meta name="theme-color" content="#0a0a0b" />
+<meta property="og:title" content="AURUM — Haute Horlogerie" />
+<meta property="og:description" content="Time, wrought in gold and rendered in light. A maison of haute horlogerie." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="brand" href="./">AURUM</a>
+  <nav class="nav-links">
+    <a href="#collections">Collections</a>
+    <a href="#craft">Craft</a>
+    <a href="#calibre">Calibre</a>
+    <a href="./guide/">Guide</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <canvas id="dust" aria-hidden="true"></canvas>
+    <div class="hero-glow" aria-hidden="true"></div>
+
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow reveal">Haute Horlogerie — Maison Genève</p>
+        <h1 class="wordmark"><span class="wm-inner">AURUM</span></h1>
+        <p class="hero-tagline reveal">Time, wrought in gold — and rendered in light.</p>
+        <div class="hero-meta reveal">
+          <span class="since">Maison fondée · MDCCCXCIV</span>
+          <a class="cta" href="#collections"><span>Discover the collection</span></a>
+        </div>
+      </div>
+
+      <div class="hero-dial" aria-hidden="true">
+        <div class="dial">
+          <div class="dial-metal"></div>
+          <div class="dial-glare"></div>
+          <div class="dial-face"></div>
+          <svg class="dial-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="handGold" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#f6e5a6" />
+                <stop offset="0.5" stop-color="#d8b56a" />
+                <stop offset="1" stop-color="#8a6d2f" />
+              </linearGradient>
+              <radialGradient id="capGold" cx="0.4" cy="0.35" r="0.75">
+                <stop offset="0" stop-color="#f9eec0" />
+                <stop offset="0.55" stop-color="#c69b45" />
+                <stop offset="1" stop-color="#6e5526" />
+              </radialGradient>
+            </defs>
+
+            <!-- hour indices -->
+            <g class="indices" fill="#d9bd7a">
+              <g transform="rotate(0 200 200)"><rect x="197" y="30" width="6" height="26" rx="1.4"/></g>
+              <g transform="rotate(30 200 200)"><rect x="198" y="32" width="4" height="18" rx="1.2"/></g>
+              <g transform="rotate(60 200 200)"><rect x="198" y="32" width="4" height="18" rx="1.2"/></g>
+              <g transform="rotate(90 200 200)"><rect x="197" y="30" width="6" height="26" rx="1.4"/></g>
+              <g transform="rotate(120 200 200)"><rect x="198" y="32" width="4" height="18" rx="1.2"/></g>
+              <g transform="rotate(150 200 200)"><rect x="198" y="32" width="4" height="18" rx="1.2"/></g>
+              <g transform="rotate(180 200 200)"><rect x="197" y="30" width="6" height="26" rx="1.4"/></g>
+              <g transform="rotate(210 200 200)"><rect x="198" y="32" width="4" height="18" rx="1.2"/></g>
+              <g transform="rotate(240 200 200)"><rect x="198" y="32" width="4" height="18" rx="1.2"/></g>
+              <g transform="rotate(270 200 200)"><rect x="197" y="30" width="6" height="26" rx="1.4"/></g>
+              <g transform="rotate(300 200 200)"><rect x="198" y="32" width="4" height="18" rx="1.2"/></g>
+              <g transform="rotate(330 200 200)"><rect x="198" y="32" width="4" height="18" rx="1.2"/></g>
+            </g>
+
+            <!-- minute track -->
+            <circle cx="200" cy="200" r="150" fill="none" stroke="rgba(217,189,122,.22)" stroke-width="1" />
+
+            <!-- maison signature + microtext -->
+            <text class="dial-name" x="200" y="150" text-anchor="middle">AURUM</text>
+            <text class="dial-micro" x="200" y="168" text-anchor="middle">GENÈVE</text>
+            <text class="dial-swiss" x="200" y="272" text-anchor="middle">SWISS MADE · MDCCCXCIV</text>
+
+            <!-- hands: posed at 10:10 -->
+            <g class="hand hand-hour" transform="rotate(305 200 200)">
+              <rect x="196.4" y="118" width="7.2" height="90" rx="3.4" fill="url(#handGold)"/>
+            </g>
+            <g class="hand hand-min" transform="rotate(60 200 200)">
+              <rect x="197.6" y="70" width="4.8" height="138" rx="2.4" fill="url(#handGold)"/>
+            </g>
+            <g class="hand hand-sec">
+              <rect x="199.1" y="64" width="1.8" height="150" rx="0.9" fill="#f6e5a6"/>
+              <rect x="198.4" y="205" width="3.2" height="30" rx="1.6" fill="#f6e5a6"/>
+            </g>
+
+            <circle cx="200" cy="200" r="8.5" fill="url(#capGold)" />
+            <circle cx="200" cy="200" r="2.6" fill="#3a2f16" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-cue reveal" aria-hidden="true"><span></span>scroll</div>
+  </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Guilloché</span><i>◆</i><span>Tourbillon</span><i>◆</i><span>Le Cadran</span><i>◆</i>
+      <span>Savoir-faire</span><i>◆</i><span>Le Mouvement</span><i>◆</i><span>Genève</span><i>◆</i>
+      <span>Guilloché</span><i>◆</i><span>Tourbillon</span><i>◆</i><span>Le Cadran</span><i>◆</i>
+      <span>Savoir-faire</span><i>◆</i><span>Le Mouvement</span><i>◆</i><span>Genève</span><i>◆</i>
+    </div>
+  </div>
+
+  <section id="collections" class="collections">
+    <div class="section-head">
+      <p class="index">Les Collections · 01 — 03</p>
+      <h2 class="reveal">Three ways to<br><em>hold an hour.</em></h2>
+    </div>
+    <div class="cards">
+      <article class="card" tabindex="0">
+        <span class="card-frame" aria-hidden="true"></span>
+        <p class="card-no">N° 01</p>
+        <h3>NOCTURNE</h3>
+        <p class="card-notes">Onyx · white gold · moonphase</p>
+        <p class="card-desc">The midnight complication. A field of black onyx over which
+          a gold moon crosses in perfect, unhurried orbit — one revolution every 29 days.</p>
+        <span class="card-cta">Enter the vault →</span>
+      </article>
+      <article class="card" tabindex="0">
+        <span class="card-frame" aria-hidden="true"></span>
+        <p class="card-no">N° 02</p>
+        <h3>HELIOS</h3>
+        <p class="card-notes">Yellow gold · guilloché · perpetual</p>
+        <p class="card-desc">The sun at its zenith. A hand-turned guilloché dial in solid gold,
+          catching light at every angle, driven by a perpetual calendar that forgets nothing.</p>
+        <span class="card-cta">Enter the vault →</span>
+      </article>
+      <article class="card" tabindex="0">
+        <span class="card-frame" aria-hidden="true"></span>
+        <p class="card-no">N° 03</p>
+        <h3>MERIDIAN</h3>
+        <p class="card-notes">Rose gold · dual time · sapphire</p>
+        <p class="card-desc">The traveller's hour. Two time zones held in rose gold beneath a
+          domed sapphire — the hour you left, and the hour you arrive, read at a glance.</p>
+        <span class="card-cta">Enter the vault →</span>
+      </article>
+    </div>
+  </section>
+
+  <section id="craft" class="craft">
+    <div class="section-head">
+      <p class="index">Le Savoir-faire</p>
+      <h2 class="reveal">Made slowly,<br><em>by five hands.</em></h2>
+    </div>
+    <div class="timeline">
+      <div class="timeline-line" aria-hidden="true"></div>
+      <div class="step reveal">
+        <p class="step-no">01</p>
+        <div class="step-body">
+          <h3>Le Dessin — The Sketch</h3>
+          <p>Every piece begins in graphite. A single dial is drawn, discarded, and redrawn
+            forty times before the proportions are permitted to leave the atelier.</p>
+          <span class="step-dur">3 weeks</span>
+        </div>
+      </div>
+      <div class="step reveal">
+        <p class="step-no">02</p>
+        <div class="step-body">
+          <h3>Le Mouvement — The Movement</h3>
+          <p>Two hundred and eighteen components, each finished by hand — bevelled, black-polished,
+            and set with jewels — then assembled beneath a loupe by a single watchmaker.</p>
+          <span class="step-dur">9 weeks</span>
+        </div>
+      </div>
+      <div class="step reveal">
+        <p class="step-no">03</p>
+        <div class="step-body">
+          <h3>Le Cadran — The Dial</h3>
+          <p>The guilloché is cut on a rose engine turned by hand. One slip ruins the plate;
+            there is no undoing a line engraved in gold.</p>
+          <span class="step-dur">5 weeks</span>
+        </div>
+      </div>
+      <div class="step reveal">
+        <p class="step-no">04</p>
+        <div class="step-body">
+          <h3>Le Boîtier — The Case</h3>
+          <p>Eighteen-carat gold is cast, milled, and polished across nine stages until the
+            surface returns light like still water.</p>
+          <span class="step-dur">4 weeks</span>
+        </div>
+      </div>
+      <div class="step reveal">
+        <p class="step-no">05</p>
+        <div class="step-body">
+          <h3>L'Assemblage — The Regulation</h3>
+          <p>The finished calibre is regulated in six positions over a fortnight, until it keeps
+            time to within two seconds a day — and only then is it signed.</p>
+          <span class="step-dur">2 weeks</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="calibre" class="calibre">
+    <div class="section-head">
+      <p class="index">La Fiche Technique</p>
+      <h2 class="reveal">Calibre <em>AUR·1894</em></h2>
+    </div>
+    <ol class="specs">
+      <li class="spec-row"><span class="spec-no">01</span><span class="spec-key">Movement</span><span class="spec-val">Hand-wound mechanical, in-house</span></li>
+      <li class="spec-row"><span class="spec-no">02</span><span class="spec-key">Power reserve</span><span class="spec-val">72 hours, single barrel</span></li>
+      <li class="spec-row"><span class="spec-no">03</span><span class="spec-key">Frequency</span><span class="spec-val">21,600 vibrations / hour</span></li>
+      <li class="spec-row"><span class="spec-no">04</span><span class="spec-key">Jewels</span><span class="spec-val">29, chaton-set in gold</span></li>
+      <li class="spec-row"><span class="spec-no">05</span><span class="spec-key">Case</span><span class="spec-val">39 mm · 18-carat gold</span></li>
+      <li class="spec-row"><span class="spec-no">06</span><span class="spec-key">Crystal</span><span class="spec-val">Domed sapphire, both faces</span></li>
+      <li class="spec-row"><span class="spec-no">07</span><span class="spec-key">Finish</span><span class="spec-val">Hand-guilloché · black-polished</span></li>
+      <li class="spec-row"><span class="spec-no">08</span><span class="spec-key">Edition</span><span class="spec-val">Numbered · limited to 94 pieces</span></li>
+    </ol>
+  </section>
+
+  <section class="maison">
+    <div class="maison-inner">
+      <p class="eyebrow reveal">La Maison</p>
+      <p class="maison-text reveal">We do not measure time. We <em>adorn</em> it —
+        casting each hour in gold and letting the light do the rest. A watch from AURUM is
+        not a thing you own, but a thing you keep.</p>
+      <p class="maison-sign reveal">— The atelier, Genève</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-top">
+    <p class="footer-brand">AURUM</p>
+    <form class="request" onsubmit="return false;">
+      <label for="email">Request the private catalogue</label>
+      <div class="field">
+        <input id="email" type="email" placeholder="you@email.com" autocomplete="email" />
+        <button type="submit" aria-label="Submit request">→</button>
+      </div>
+    </form>
+  </div>
+  <div class="footer-bottom">
+    <span>© MMXXVI AURUM · Maison Genève</span>
+    <span>Designed &amp; built by Formwork · <a href="./guide/">How this was built</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="./main.js"></script>
+</body>
+</html>

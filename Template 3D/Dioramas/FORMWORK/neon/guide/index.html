@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NEON SPRAWL — Guide · How this was built</title>
+<meta name="description" content="How the NEON SPRAWL site was built with Formwork: an infinite retrowave terrain in three.js, a CSS sun, and a seamless tiling trick." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#0c0420;--ink:#f4ecff;--dim:#b09ccb;--faint:#6f5f8f;--accent:#ff2e97;--cyan:#2de2e6;--line:rgba(244,236,255,.14)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Space Grotesk",system-ui,sans-serif;font-weight:300;line-height:1.65;-webkit-font-smoothing:antialiased}
+  a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(28px,6vw,80px) clamp(20px,5vw,32px)}
+  .top{display:flex;justify-content:space-between;align-items:center;font-family:"JetBrains Mono",monospace;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:clamp(40px,8vh,90px)}
+  .top a{color:var(--dim)}
+  .brand{font-family:"Orbitron",sans-serif;font-weight:900;letter-spacing:.12em;color:var(--cyan)}
+  .tag{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:1.4rem}
+  h1{font-family:"Orbitron",sans-serif;font-weight:900;font-size:clamp(2.3rem,7vw,4rem);line-height:1.02;letter-spacing:.02em;margin-bottom:1.2rem}
+  h1 em{font-style:normal;color:var(--accent)}
+  .lede{font-size:clamp(1.1rem,2.2vw,1.35rem);color:var(--dim);max-width:56ch;margin-bottom:3.4rem}
+  h2{font-family:"Orbitron",sans-serif;font-weight:700;font-size:clamp(1.5rem,4vw,2.2rem);margin:3rem 0 1rem;letter-spacing:.02em}
+  p{color:var(--dim);margin:0 0 1.1rem;max-width:64ch}
+  strong{color:var(--ink);font-weight:500}
+  ul{color:var(--dim);margin:0 0 1.2rem 1.2rem}li{margin:.4rem 0}
+  code{font-family:"JetBrains Mono",monospace;font-size:.86em;background:rgba(255,255,255,.06);padding:.12em .4em;border-radius:3px;color:var(--ink)}
+  pre{background:#120830;border:1px solid var(--line);border-radius:6px;padding:18px 20px;overflow-x:auto;margin:0 0 1.4rem;font-size:.82rem;line-height:1.6;font-family:"JetBrains Mono",monospace}
+  pre code{background:none;padding:0;color:var(--dim)}
+  .stack{list-style:none;margin:0 0 1.2rem;padding:0}
+  .stack li{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .stack b{color:var(--ink);font-weight:500;min-width:120px}
+  .rule{height:1px;background:var(--line);margin:3rem 0}
+  footer{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--line);font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a class="brand" href="../">NEON SPRAWL</a><a href="../">← Back to site</a></div>
+  <span class="tag">Build guide · Site 10 of 25</span>
+  <h1>An <em>endless highway</em>, two planes deep.</h1>
+  <p class="lede">NEON SPRAWL is one of 25 sites built by Formwork. The road runs forever — but it's only
+    two pieces of terrain, leap-frogging past the camera on a seamless loop.</p>
+
+  <h2>The idea</h2>
+  <p>Every synthwave cover has the same three ingredients: a huge striped sun, a neon wireframe valley,
+    and purple. So the sun is pure CSS, the terrain is real 3D, and everything glows.</p>
+
+  <h2>The stack</h2>
+  <ul class="stack">
+    <li><b>Sun / sky</b> A CSS radial gradient with a repeating-gradient stripe mask.</li>
+    <li><b>Terrain</b> three.js (r160) wireframe planes via an import-map — no bundler.</li>
+    <li><b>Depth</b> Exponential fog tinted magenta so the grid melts into the horizon.</li>
+    <li><b>Type</b> Orbitron (display) with layered neon text-shadows.</li>
+    <li><b>Host</b> Static files on GitHub Pages.</li>
+  </ul>
+
+  <h2>Signature technique: the infinite loop</h2>
+  <p>Two identical terrain planes sit end-to-end. Every frame both slide toward the camera; the moment
+    one passes behind the lens it jumps <strong>two tile-lengths</strong> back to lead again:</p>
+  <pre><code>for (const p of [planeA, planeB]) {
+  p.position.z += SPEED * dt;
+  if (p.position.z > TILE) p.position.z -= 2 * TILE; // leap-frog
+}</code></pre>
+  <p>The seam is invisible because the height function <strong>tiles perfectly</strong> — it only uses
+    sine waves whose period divides the tile length, so a plane's back edge always matches the next
+    plane's front edge:</p>
+  <pre><code>const k1 = 2*Math.PI/TILE * 3, k2 = 2*Math.PI/TILE * 5; // whole cycles per tile
+const roll = Math.sin(z*k1)*0.8 + Math.sin(z*k2)*0.5;   // → height(z) == height(z+TILE)</code></pre>
+  <p>The valley stays flat (so the "road" reads) and mountains only rise past a certain <code>|x|</code>.</p>
+
+  <h2>Details that matter</h2>
+  <ul>
+    <li><strong>Layering</strong> — the hero is transparent so the fixed CSS sun + 3D canvas show through; lower sections are opaque and scroll over them.</li>
+    <li><strong>Neon type</strong> — three stacked <code>text-shadow</code>s (tight white, wide magenta, wider magenta) make letters look lit from within.</li>
+    <li><strong>Performance</strong> — devicePixelRatio capped at 1.5; delta-timed motion so speed is frame-rate independent.</li>
+    <li><strong>Reduced motion / no WebGL</strong> — the grid renders one still frame, or the CSS sky stands alone.</li>
+  </ul>
+
+  <h2>Ship it on GitHub Pages</h2>
+  <pre><code>git init -b main &amp;&amp; git add -A &amp;&amp; git commit -m "ship"
+gh repo create formwork-neon --public --source=. --push
+gh api --method POST /repos/OWNER/formwork-neon/pages \
+  -f 'source[branch]=main' -f 'source[path]=/'</code></pre>
+
+  <div class="rule"></div>
+  <p>Two planes, a handful of sine waves, and a CSS sun — an entire endless night drive.</p>
+  <footer>Designed &amp; built by <strong>Formwork</strong> · Part of a 25-site showcase · <a href="../">Return to NEON SPRAWL →</a></footer>
+</div>
+</body>
+</html>

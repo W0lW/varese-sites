@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CLAY — Journaling that feels like play</title>
+<meta name="description" content="CLAY is a soft little journaling app that feels like play. Write, doodle and colour five minutes a day — no streaks, no pressure, just a warm wobbly world you'll want to revisit." />
+<meta name="theme-color" content="#fdf6ee" />
+<meta property="og:title" content="CLAY — Journaling that feels like play" />
+<meta property="og:description" content="A soft little space to write, doodle and grow. Five minutes a day, no pressure." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+
+<!-- shared clay gradients (highlight + press) used by the SVG star & heart shapes -->
+<svg class="svg-defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    <radialGradient id="clay-hi" cx="32%" cy="26%" r="72%">
+      <stop offset="0%" stop-color="rgba(255,255,255,.85)" />
+      <stop offset="55%" stop-color="rgba(255,255,255,0)" />
+    </radialGradient>
+    <radialGradient id="clay-lo" cx="72%" cy="82%" r="70%">
+      <stop offset="0%" stop-color="rgba(34,18,58,.24)" />
+      <stop offset="62%" stop-color="rgba(34,18,58,0)" />
+    </radialGradient>
+    <path id="geo-heart" d="M50 88 C 12 60, 4 36, 22 22 C 34 12, 46 18, 50 30 C 54 18, 66 12, 78 22 C 96 36, 88 60, 50 88 Z" />
+    <polygon id="geo-star" points="50,4 61,36 96,37 68,58 78,92 50,71 22,92 32,58 4,37 39,36" />
+    <path id="geo-spark" d="M50 6 C 54 32, 68 46, 94 50 C 68 54, 54 68, 50 94 C 46 68, 32 54, 6 50 C 32 46, 46 32, 50 6 Z" />
+  </defs>
+</svg>
+
+<div class="bg-blobs" aria-hidden="true">
+  <span class="bg-blob b1"></span>
+  <span class="bg-blob b2"></span>
+  <span class="bg-blob b3"></span>
+</div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="./" aria-label="CLAY home">
+    <span class="brand-dot" aria-hidden="true"></span>
+    clay
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="./guide/">Guide</a>
+  </nav>
+  <a class="clay-btn clay-btn-sm nav-cta" href="#get"><span>Get the app</span></a>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="pill reveal">
+          <span class="pill-dot" aria-hidden="true"></span>
+          New · now on iOS &amp; Android
+        </p>
+        <h1 class="hero-title">
+          <span class="line"><span>Journaling</span></span>
+          <span class="line"><span>that feels</span></span>
+          <span class="line"><span>like <em>play.</em></span></span>
+        </h1>
+        <p class="hero-sub reveal">CLAY turns your thoughts into something you can squish, shape
+          and keep — a soft little space to write, doodle and grow. Five minutes a day, that's it.</p>
+        <div class="hero-cta reveal">
+          <a class="clay-btn clay-btn-lg" href="#get"><span>Start playing — it's free</span></a>
+          <a class="clay-link" href="#how"><span>See how it works</span><i aria-hidden="true">→</i></a>
+        </div>
+        <p class="hero-note reveal">Free forever · No streaks, no guilt-trips</p>
+      </div>
+
+      <div class="hero-play reveal" aria-hidden="true">
+        <div class="shape" data-depth="7" data-rot="-8" style="--x:26%;--y:2%;--w:clamp(112px,16vw,200px)">
+          <div class="shape-in clay clay-blob t-lilac"></div>
+        </div>
+        <div class="shape" data-depth="12" data-rot="6" style="--x:60%;--y:22%;--w:clamp(94px,13vw,158px)">
+          <div class="shape-in clay clay-squircle t-mint"></div>
+        </div>
+        <div class="shape" data-depth="16" data-rot="-5" style="--x:4%;--y:40%;--w:clamp(100px,12vw,140px)">
+          <svg class="shape-in svg-clay t-peach" viewBox="0 0 100 100" aria-hidden="true">
+            <use href="#geo-heart" class="s-base" />
+            <use href="#geo-heart" fill="url(#clay-hi)" />
+            <use href="#geo-heart" fill="url(#clay-lo)" />
+          </svg>
+        </div>
+        <div class="shape" data-depth="14" data-rot="10" style="--x:56%;--y:60%;--w:clamp(104px,12.5vw,144px)">
+          <svg class="shape-in svg-clay t-sky" viewBox="0 0 100 100" aria-hidden="true">
+            <use href="#geo-star" class="s-base" />
+            <use href="#geo-star" fill="url(#clay-hi)" />
+            <use href="#geo-star" fill="url(#clay-lo)" />
+          </svg>
+        </div>
+        <div class="shape" data-depth="22" data-rot="0" style="--x:32%;--y:58%;--w:clamp(76px,9vw,104px)">
+          <div class="shape-in clay clay-circle t-sun"></div>
+        </div>
+        <div class="shape" data-depth="10" data-rot="-14" style="--x:74%;--y:2%;--w:clamp(92px,11vw,128px);--h:clamp(48px,5.5vw,64px)">
+          <div class="shape-in clay clay-pill t-peach"></div>
+        </div>
+        <div class="shape" data-depth="26" data-rot="0" style="--x:8%;--y:10%;--w:clamp(50px,6vw,72px)">
+          <div class="shape-in clay clay-circle t-mint"></div>
+        </div>
+        <div class="shape" data-depth="18" data-rot="0" style="--x:86%;--y:52%;--w:clamp(56px,6.5vw,78px)">
+          <svg class="shape-in svg-clay t-lilac" viewBox="0 0 100 100" aria-hidden="true">
+            <use href="#geo-spark" class="s-base" />
+            <use href="#geo-spark" fill="url(#clay-hi)" />
+            <use href="#geo-spark" fill="url(#clay-lo)" />
+          </svg>
+        </div>
+        <p class="poke-hint"><b>poke</b> the shapes ✨</p>
+      </div>
+    </div>
+
+    <div class="scroll-cue reveal" aria-hidden="true"><span></span>scroll</div>
+  </section>
+
+  <section class="sticker-strip" aria-hidden="true">
+    <div class="sticker-track">
+      <span>write</span><b>◦</b><span>doodle</span><b>◦</b><span>squish</span><b>◦</b><span>colour</span><b>◦</b><span>grow</span><b>◦</b>
+      <span>write</span><b>◦</b><span>doodle</span><b>◦</b><span>squish</span><b>◦</b><span>colour</span><b>◦</b><span>grow</span><b>◦</b>
+      <span>write</span><b>◦</b><span>doodle</span><b>◦</b><span>squish</span><b>◦</b><span>colour</span><b>◦</b><span>grow</span><b>◦</b>
+    </div>
+  </section>
+
+  <section id="features" class="features">
+    <div class="section-head">
+      <p class="kicker reveal">Little things, made lovely</p>
+      <h2 class="reveal">Soft on purpose.<br>Made to be squished.</h2>
+      <p class="section-sub reveal">Everything in CLAY bends to your mood. No blank-page dread,
+        no productivity guilt — just a warm place that's happy to see you.</p>
+    </div>
+
+    <div class="cards">
+      <article class="card clay-card t-mint reveal" tabindex="0">
+        <div class="card-icon">
+          <div class="clay clay-blob t-mint"></div>
+        </div>
+        <h3>Squishy pages</h3>
+        <p>Write, sketch, and stick things down. Every page bends to whatever mood you're in —
+          tidy notes one day, a messy scribble the next.</p>
+      </article>
+
+      <article class="card clay-card t-peach reveal" tabindex="0">
+        <div class="card-icon">
+          <svg class="svg-clay t-peach" viewBox="0 0 100 100" aria-hidden="true">
+            <use href="#geo-heart" class="s-base" />
+            <use href="#geo-heart" fill="url(#clay-hi)" />
+            <use href="#geo-heart" fill="url(#clay-lo)" />
+          </svg>
+        </div>
+        <h3>A garden of moods</h3>
+        <p>Press a colour onto each day and watch your month bloom into a soft little garden you
+          can look back on — feelings, made visible.</p>
+      </article>
+
+      <article class="card clay-card t-lilac reveal" tabindex="0">
+        <div class="card-icon">
+          <svg class="svg-clay t-lilac" viewBox="0 0 100 100" aria-hidden="true">
+            <use href="#geo-star" class="s-base" />
+            <use href="#geo-star" fill="url(#clay-hi)" />
+            <use href="#geo-star" fill="url(#clay-lo)" />
+          </svg>
+        </div>
+        <h3>Kind little nudges</h3>
+        <p>Tiny, gentle reminders — never a streak to break or a red badge to dread. Show up when
+          you feel like it, and CLAY's just glad you came.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="garden" class="garden-sec">
+    <div class="section-head">
+      <p class="kicker reveal">A month, in soft focus</p>
+      <h2 class="reveal">Every day adds<br>a little colour.</h2>
+      <p class="section-sub reveal">Press a mood onto each day and your month blooms into a warm little
+        garden you can hold in your hand. Go on — <b>poke a day</b> and watch it squish.</p>
+    </div>
+
+    <div class="garden-wrap">
+      <div class="garden" id="gardenGrid" role="img"
+           aria-label="A grid of thirty soft clay dots in candy pastels — one squishy mood for each day of the month.">
+        <span class="pip" style="--i:0"  aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-lilac"></span></span></span>
+        <span class="pip" style="--i:1"  aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-mint"></span></span></span>
+        <span class="pip" style="--i:2"  aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-sky"></span></span></span>
+        <span class="pip" style="--i:3"  aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-peach"></span></span></span>
+        <span class="pip" style="--i:4"  aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-mint"></span></span></span>
+        <span class="pip" style="--i:5"  aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-sun"></span></span></span>
+        <span class="pip" style="--i:6"  aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-lilac"></span></span></span>
+        <span class="pip" style="--i:7"  aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-sky"></span></span></span>
+        <span class="pip" style="--i:8"  aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-mint"></span></span></span>
+        <span class="pip" style="--i:9"  aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-peach"></span></span></span>
+        <span class="pip" style="--i:10" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-lilac"></span></span></span>
+        <span class="pip" style="--i:11" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-mint"></span></span></span>
+        <span class="pip" style="--i:12" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-sun"></span></span></span>
+        <span class="pip" style="--i:13" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-sky"></span></span></span>
+        <span class="pip" style="--i:14" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-peach"></span></span></span>
+        <span class="pip" style="--i:15" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-mint"></span></span></span>
+        <span class="pip" style="--i:16" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-lilac"></span></span></span>
+        <span class="pip" style="--i:17" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-sky"></span></span></span>
+        <span class="pip" style="--i:18" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-mint"></span></span></span>
+        <span class="pip" style="--i:19" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-sun"></span></span></span>
+        <span class="pip" style="--i:20" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-peach"></span></span></span>
+        <span class="pip" style="--i:21" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-lilac"></span></span></span>
+        <span class="pip" style="--i:22" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-mint"></span></span></span>
+        <span class="pip" style="--i:23" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-sky"></span></span></span>
+        <span class="pip" style="--i:24" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-sun"></span></span></span>
+        <span class="pip" style="--i:25" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-mint"></span></span></span>
+        <span class="pip" style="--i:26" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-peach"></span></span></span>
+        <span class="pip" style="--i:27" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-lilac"></span></span></span>
+        <span class="pip" style="--i:28" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-sky"></span></span></span>
+        <span class="pip pip-today" style="--i:29" aria-hidden="true"><span class="pip-bob"><span class="pip-clay t-sun"></span></span><span class="pip-label">today</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" class="how">
+    <div class="section-head">
+      <p class="kicker reveal">How it works</p>
+      <h2 class="reveal">Three squishes<br>to a softer day.</h2>
+    </div>
+
+    <ol class="steps">
+      <li class="step reveal">
+        <div class="step-bubble">
+          <div class="clay clay-circle t-sun"></div>
+          <span class="step-no">1</span>
+        </div>
+        <h3>Open the jar</h3>
+        <p>Pop in for five minutes. CLAY hands you a soft prompt or a blank squishy page —
+          your call, no pressure.</p>
+      </li>
+      <li class="step reveal">
+        <div class="step-bubble">
+          <div class="clay clay-circle t-mint"></div>
+          <span class="step-no">2</span>
+        </div>
+        <h3>Shape your day</h3>
+        <p>Write it, doodle it, colour it. Squish a mood onto the page, then let it dry and
+          settle into your little world.</p>
+      </li>
+      <li class="step reveal">
+        <div class="step-bubble">
+          <div class="clay clay-circle t-lilac"></div>
+          <span class="step-no">3</span>
+        </div>
+        <h3>Watch it grow</h3>
+        <p>Your days stack into a warm, wobbly world of colour and memory — one you'll
+          actually want to revisit.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section id="get" class="cta">
+    <div class="cta-panel clay t-lilac">
+      <div class="cta-shapes" aria-hidden="true">
+        <div class="clay clay-circle t-sun cta-s1"></div>
+        <svg class="svg-clay t-peach cta-s2" viewBox="0 0 100 100"><use href="#geo-heart" class="s-base"/><use href="#geo-heart" fill="url(#clay-hi)"/><use href="#geo-heart" fill="url(#clay-lo)"/></svg>
+        <div class="clay clay-blob t-mint cta-s3"></div>
+      </div>
+      <p class="kicker">Come play</p>
+      <h2>Come play with<br>your thoughts.</h2>
+      <p class="cta-sub">Join 120,000 people making something soft every day. Drop your email and
+        we'll send you the beta the moment it's ready.</p>
+      <form class="cta-form" onsubmit="return false;">
+        <label class="visually-hidden" for="cta-email">Your email address</label>
+        <input id="cta-email" type="email" placeholder="you@email.com" autocomplete="email" />
+        <button class="clay-btn clay-btn-lg" type="submit"><span>Send me the beta</span></button>
+      </form>
+      <p class="cta-note">No spam, ever · Or <a href="./guide/">peek at how CLAY was built →</a></p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-top">
+    <div class="foot-brand">
+      <a class="brand" href="./" aria-label="CLAY home"><span class="brand-dot" aria-hidden="true"></span>clay</a>
+      <p>A soft little journaling app that feels like play.</p>
+    </div>
+    <nav class="foot-cols" aria-label="Footer">
+      <div class="foot-col">
+        <p class="foot-h">The app</p>
+        <a href="#get">iOS</a>
+        <a href="#get">Android</a>
+        <a href="#get">Web</a>
+        <a href="#features">What's new</a>
+      </div>
+      <div class="foot-col">
+        <p class="foot-h">Company</p>
+        <a href="#how">About</a>
+        <a href="#how">The soft blog</a>
+        <a href="#get">Careers</a>
+        <a href="#get">Say hi</a>
+      </div>
+      <div class="foot-col">
+        <p class="foot-h">Made with</p>
+        <a href="./guide/">Build guide</a>
+        <a href="./guide/">The clay recipe</a>
+        <a href="./guide/">Ship it yourself</a>
+      </div>
+    </nav>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 CLAY · made soft</span>
+    <span>Designed &amp; built by Formwork · <a href="./guide/">How this was built →</a></span>
+  </div>
+</footer>
+
+<script src="./main.js"></script>
+</body>
+</html>

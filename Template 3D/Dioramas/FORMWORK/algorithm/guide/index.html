@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ALGORITHM — Guide · How this was built</title>
+<meta name="description" content="How the ALGORITHM site was designed and built by Formwork: a seeded flow field on a 2D canvas, a mulberry32 PRNG, and a reproducible URL — plus three generative gallery pieces." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#0c0d0f;--ink:#e9e7e1;--dim:#a6a49c;--faint:#6c6b64;--accent:#e0733d;--line:rgba(233,231,225,.12)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Space Mono",ui-monospace,monospace;font-weight:400;line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(28px,6vw,80px) clamp(20px,5vw,32px)}
+  .top{display:flex;justify-content:space-between;align-items:center;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:clamp(40px,8vh,90px)}
+  .top a{color:var(--dim)}
+  .brand{font-family:"Fraunces",serif;font-size:1.3rem;letter-spacing:.02em;color:var(--ink);text-transform:none}
+  h1{font-family:"Fraunces",serif;font-weight:400;font-size:clamp(2.4rem,7vw,4.4rem);line-height:1.04;letter-spacing:-.02em;margin-bottom:1.2rem}
+  h1 em{color:var(--accent);font-style:italic}
+  .lede{font-size:clamp(1rem,2vw,1.2rem);color:var(--dim);max-width:58ch;margin-bottom:3.2rem;line-height:1.7}
+  h2{font-family:"Fraunces",serif;font-weight:400;font-size:clamp(1.6rem,4vw,2.4rem);margin:3rem 0 1rem;letter-spacing:-.01em}
+  p{color:var(--dim);margin:0 0 1.1rem;max-width:66ch}
+  .tag{display:inline-block;font-size:.68rem;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin-bottom:1.4rem}
+  ul,ol{color:var(--dim);margin:0 0 1.2rem 1.2rem}
+  li{margin:.42rem 0}
+  strong{color:var(--ink);font-weight:400}
+  code{font-family:"Space Mono",monospace;font-size:.86em;background:rgba(233,231,225,.06);padding:.12em .4em;border-radius:3px;color:var(--ink)}
+  pre{background:#101114;border:1px solid var(--line);border-radius:6px;padding:18px 20px;overflow-x:auto;margin:0 0 1.4rem;font-size:.8rem;line-height:1.65}
+  pre code{background:none;padding:0;color:var(--dim)}
+  .rule{height:1px;background:var(--line);margin:3rem 0}
+  .stack{list-style:none;margin:0 0 1.2rem;padding:0;display:grid;gap:2px}
+  .stack li{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .stack b{color:var(--ink);font-weight:700;min-width:130px;display:inline-block}
+  footer{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--line);font-size:.78rem;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="../">ALGORITHM</a>
+    <a href="../">← Back to site</a>
+  </div>
+
+  <span class="tag">Build guide · Site 12 of 25</span>
+  <h1>A studio that draws itself, from <em>one number</em>.</h1>
+  <p class="lede">ALGORITHM is one of 25 sites designed and built by Formwork to demonstrate web design,
+    motion, and generative craft. Here is exactly how this one was made — a hero that repaints on every
+    visit, yet stays perfectly reproducible.</p>
+
+  <h2>The idea</h2>
+  <p>The brief was "code-drawn art that renders unique every visit." So the site's entire identity is a
+    <strong>seed</strong>: a single 32-bit integer that fixes the palette, the noise field, and every mark
+    on screen. Reload with the same seed and you get the same drawing to the pixel; change one digit and the
+    whole composition reorganises. The seed rides in the URL, so a visit is a shareable original.</p>
+
+  <h2>The stack</h2>
+  <ul class="stack">
+    <li><b>Hero visual</b> A flow field on a plain 2D <code>&lt;canvas&gt;</code> — thousands of particles advected through Perlin noise, leaving fading ink trails.</li>
+    <li><b>Randomness</b> A <code>mulberry32</code> PRNG — 7 lines, deterministic, seeded once and drawn from in a fixed order.</li>
+    <li><b>Gallery</b> Three self-contained pieces: circle packing, Truchet contours, and a de Jong attractor.</li>
+    <li><b>Type</b> Fraunces (serif wordmark &amp; labels) against Space Mono (every interface surface).</li>
+    <li><b>Motion</b> No animation library. IntersectionObserver reveals, CSS-driven hero intro, one rAF loop.</li>
+    <li><b>Host</b> Static HTML/CSS/JS on GitHub Pages. No build step.</li>
+  </ul>
+
+  <h2>The signature technique: a seeded flow field</h2>
+  <p>Each frame, every particle reads the noise field beneath it, turns that value into an angle, steps
+    forward, and draws the tiny segment it just travelled. A near-transparent black rectangle painted over
+    the canvas each frame lets old trails fade, so the field breathes like ink in water. This is the actual
+    loop that runs the hero:</p>
+  <pre><code>function advance(fadeOn) {
+  if (fadeOn) { ctx.fillStyle = 'rgba(12,13,15,0.024)'; ctx.fillRect(0,0,w,h); }
+  ctx.lineWidth = 1.15; ctx.lineCap = 'round';
+  for (let i = 0; i &lt; particles.length; i++) {
+    const pt = particles[i];
+    const ang = fbm(noise, pt.x*cfg.scale, pt.y*cfg.scale) * TAU * cfg.turns;
+    const nx = pt.x + Math.cos(ang)*cfg.speed;
+    const ny = pt.y + Math.sin(ang)*cfg.speed;
+    ctx.strokeStyle = pt.col;
+    ctx.beginPath(); ctx.moveTo(pt.x, pt.y); ctx.lineTo(nx, ny); ctx.stroke();
+    pt.x = nx; pt.y = ny; pt.life++;
+    if (pt.life &gt; pt.max || nx &lt; -12 || nx &gt; w+12) spawn(Math.random, pt);
+  }
+}</code></pre>
+  <p>The <code>noise</code> function is a seeded Perlin generator (its permutation table is shuffled by the
+    same PRNG), wrapped in four octaves of fractal Brownian motion so the field has both broad currents and
+    fine detail. Because the field, palette, and initial particle positions are all drawn from the seed in a
+    fixed order, the opening frame is identical every time — after that the particles wander freely.</p>
+
+  <h2>Details that matter</h2>
+  <ul>
+    <li><strong>Reproducible URL</strong> — the seed is written to <code>?seed=</code> with <code>history.replaceState</code>; "Copy link" hands someone the exact drawing.</li>
+    <li><strong>Reduced motion</strong> — instead of animating, the field runs 240 steps synchronously and stops on one dense, static composition.</li>
+    <li><strong>Performance</strong> — <code>devicePixelRatio</code> is capped at 1.5 and the particle count scales with screen area, so phones throttle down automatically.</li>
+    <li><strong>Graceful failure</strong> — if the 2D context is missing, an <code>.no-canvas</code> class swaps in a CSS gradient; nothing throws.</li>
+    <li><strong>Robust reveals</strong> — content is only hidden once a <code>js</code> class is on <code>&lt;html&gt;</code>, so a failed script never leaves a blank page.</li>
+  </ul>
+
+  <h2>Ship it on GitHub Pages</h2>
+  <p>Every site here is static, so hosting is three commands:</p>
+  <pre><code>git init -b main && git add -A && git commit -m "ship"
+gh repo create formwork-algorithm --public --source=. --push
+gh api --method POST /repos/OWNER/formwork-algorithm/pages \
+  -f 'source[branch]=main' -f 'source[path]=/'</code></pre>
+  <p>Use <strong>relative paths</strong> (<code>./main.js</code>, not <code>/main.js</code>) because project
+    Pages live under <code>/repo-name/</code>. Add an empty <code>.nojekyll</code> file so every asset serves verbatim.</p>
+
+  <div class="rule"></div>
+  <p>That's the whole recipe: one PRNG, one noise field, a canvas, and strong type. The other 24 sites each
+    swap the central technique — shaders, kinetic type, 3D — but the discipline is the same.</p>
+
+  <footer>Designed &amp; built by <strong>Formwork</strong> · Part of a 25-site showcase · <a href="../">Return to ALGORITHM →</a></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AETHER — Memory infrastructure for AI</title>
+<meta name="description" content="AETHER is the memory layer for AI products. Give any model perfect recall over your team's knowledge — semantic, encrypted, and under 50ms." />
+<meta name="theme-color" content="#08090c" />
+<meta property="og:title" content="AETHER — Memory infrastructure for AI" />
+<meta property="og:description" content="The memory layer for AI products. Perfect recall over your team's knowledge — semantic, encrypted, sub-50ms." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<canvas id="aurora" class="aurora" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="./" aria-label="AETHER home">
+    <span class="brand-mark" aria-hidden="true"></span>
+    AETHER
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#features">Product</a>
+    <a href="#how">How it works</a>
+    <a href="#stats">Scale</a>
+    <a href="./guide/">Guide</a>
+  </nav>
+  <a class="nav-cta magnetic" href="#cta"><span>Get started</span></a>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow reveal">
+          <span class="dot" aria-hidden="true"></span>
+          Now in open beta · v2.4
+        </p>
+        <h1 class="hero-title">
+          <span class="line"><span>The memory layer</span></span>
+          <span class="line"><span>for <em>every</em> model.</span></span>
+        </h1>
+        <p class="hero-sub reveal">AETHER gives your AI perfect recall over everything your team
+          knows — messages, docs, decisions and code — retrieved by meaning in under 50 milliseconds.</p>
+        <div class="hero-cta reveal">
+          <a class="btn btn-primary magnetic" href="#cta"><span>Start building free</span></a>
+          <a class="btn btn-ghost" href="#how"><span>See how it works</span><i aria-hidden="true">→</i></a>
+        </div>
+        <p class="hero-note reveal">No card required · 10,000 free memories · SOC 2 Type II</p>
+      </div>
+
+      <div class="mockup reveal" aria-hidden="true">
+        <div class="mockup-glow"></div>
+        <div class="panel float">
+          <div class="panel-bar">
+            <span class="dots"><i></i><i></i><i></i></span>
+            <div class="cmd">
+              <svg class="cmd-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                <circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path>
+              </svg>
+              <span class="typed" id="typed">What did we decide about pricing?</span><span class="caret"></span>
+            </div>
+            <span class="kbd">⌘K</span>
+          </div>
+          <div class="panel-body">
+            <aside class="side">
+              <p class="side-h">Memory</p>
+              <ul class="sources">
+                <li><span class="src-dot v"></span>Slack<span class="src-n">18,204</span></li>
+                <li><span class="src-dot c"></span>Notion<span class="src-n">6,911</span></li>
+                <li><span class="src-dot v"></span>GitHub<span class="src-n">4,530</span></li>
+                <li><span class="src-dot c"></span>Drive<span class="src-n">2,088</span></li>
+              </ul>
+              <div class="graph-badge">
+                <svg viewBox="0 0 120 90" class="nodes-svg">
+                  <line x1="60" y1="45" x2="24" y2="22"></line>
+                  <line x1="60" y1="45" x2="98" y2="26"></line>
+                  <line x1="60" y1="45" x2="30" y2="70"></line>
+                  <line x1="60" y1="45" x2="94" y2="66"></line>
+                  <line x1="24" y1="22" x2="98" y2="26"></line>
+                  <circle class="n1" cx="60" cy="45" r="5"></circle>
+                  <circle class="n2" cx="24" cy="22" r="3.2"></circle>
+                  <circle class="n3" cx="98" cy="26" r="3.2"></circle>
+                  <circle class="n4" cx="30" cy="70" r="3.2"></circle>
+                  <circle class="n5" cx="94" cy="66" r="3.2"></circle>
+                </svg>
+                <span class="graph-cap">1.2M links</span>
+              </div>
+            </aside>
+            <div class="main-col">
+              <div class="answer">
+                <p class="answer-h"><span class="pulse"></span>Answer synthesised from 4 sources</p>
+                <span class="ln w1"></span>
+                <span class="ln w2"></span>
+                <span class="ln w3"></span>
+                <div class="cites">
+                  <span class="cite">pricing-v3.md</span>
+                  <span class="cite">#launch-planning</span>
+                  <span class="cite">Q3 Strategy</span>
+                </div>
+              </div>
+              <div class="spark">
+                <div class="spark-h">
+                  <span>Recall confidence</span><span class="spark-val">0.98</span>
+                </div>
+                <svg viewBox="0 0 260 70" preserveAspectRatio="none" class="spark-svg">
+                  <defs>
+                    <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#7c5cff" stop-opacity=".38"/>
+                      <stop offset="1" stop-color="#35e0e6" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <path class="spark-area" d="M0,58 L26,50 52,54 78,40 104,44 130,28 156,32 182,18 208,24 234,12 260,16 L260,70 L0,70 Z" fill="url(#sg)"/>
+                  <path class="spark-line" d="M0,58 L26,50 52,54 78,40 104,44 130,28 156,32 182,18 208,24 234,12 260,16" fill="none"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="trusted" aria-label="Trusted by">
+    <p class="trusted-h reveal">Powering memory for teams at</p>
+    <div class="wordmarks reveal">
+      <span class="wm">NEBULA</span>
+      <span class="wm">Cortex&nbsp;Labs</span>
+      <span class="wm">Halcyon</span>
+      <span class="wm">Vantage</span>
+      <span class="wm">Northwind</span>
+      <span class="wm">Parallax</span>
+      <span class="wm">Sift</span>
+    </div>
+  </section>
+
+  <section id="features" class="features">
+    <div class="section-head">
+      <p class="kicker reveal">// Capabilities</p>
+      <h2 class="reveal">One memory layer,<br><em>every</em> hard part solved.</h2>
+      <p class="section-sub reveal">Retrieval, ranking, sync and security — the infrastructure you'd
+        otherwise spend two quarters building, exposed behind a single API call.</p>
+    </div>
+
+    <div class="bento">
+      <article class="cell cell-lg reveal" tabindex="0">
+        <div class="cell-viz viz-recall">
+          <div class="q-bar"><span class="q-i"></span>ranked by meaning</div>
+          <div class="results">
+            <div class="res"><span class="res-t">Pricing was locked at $29 / seat</span><span class="rel"><i style="--w:96%"></i></span></div>
+            <div class="res"><span class="res-t">Annual plans get two months free</span><span class="rel"><i style="--w:82%"></i></span></div>
+            <div class="res"><span class="res-t">Enterprise stays custom-quoted</span><span class="rel"><i style="--w:64%"></i></span></div>
+          </div>
+        </div>
+        <div class="cell-copy">
+          <h3>Semantic recall</h3>
+          <p>Ask in plain language. AETHER returns the exact passage, message or decision — ranked
+            by meaning, not keywords — with citations your model can trust.</p>
+        </div>
+      </article>
+
+      <article class="cell reveal" tabindex="0">
+        <div class="cell-viz viz-graph">
+          <svg viewBox="0 0 160 120">
+            <g class="edges">
+              <line x1="80" y1="60" x2="34" y2="30"></line>
+              <line x1="80" y1="60" x2="128" y2="32"></line>
+              <line x1="80" y1="60" x2="40" y2="94"></line>
+              <line x1="80" y1="60" x2="124" y2="90"></line>
+              <line x1="34" y1="30" x2="128" y2="32"></line>
+              <line x1="40" y1="94" x2="124" y2="90"></line>
+            </g>
+            <circle class="g-core" cx="80" cy="60" r="7"></circle>
+            <circle class="g-n" cx="34" cy="30" r="4"></circle>
+            <circle class="g-n" cx="128" cy="32" r="4"></circle>
+            <circle class="g-n" cx="40" cy="94" r="4"></circle>
+            <circle class="g-n" cx="124" cy="90" r="4"></circle>
+          </svg>
+        </div>
+        <div class="cell-copy">
+          <h3>Living knowledge graph</h3>
+          <p>Every note, thread and commit is linked into a graph your agents can traverse.</p>
+        </div>
+      </article>
+
+      <article class="cell reveal" tabindex="0">
+        <div class="cell-viz viz-latency">
+          <div class="lat-num"><span class="lat-lt">&lt;</span><span class="lat-v" data-count="50">50</span><span class="lat-u">ms</span></div>
+          <div class="lat-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <p class="lat-cap">p99 retrieval</p>
+        </div>
+        <div class="cell-copy">
+          <h3>Millisecond retrieval</h3>
+          <p>A purpose-built vector index keeps recall under a blink, even across billions of tokens.</p>
+        </div>
+      </article>
+
+      <article class="cell reveal" tabindex="0">
+        <div class="cell-viz viz-models">
+          <div class="hub"><span>AETHER</span></div>
+          <span class="chip c1">GPT</span>
+          <span class="chip c2">Claude</span>
+          <span class="chip c3">Llama</span>
+          <span class="chip c4">Local</span>
+        </div>
+        <div class="cell-copy">
+          <h3>Model-agnostic</h3>
+          <p>Bring your own model. One memory layer serves them all, hosted or on-device.</p>
+        </div>
+      </article>
+
+      <article class="cell reveal" tabindex="0">
+        <div class="cell-viz viz-lock">
+          <svg viewBox="0 0 64 64" class="lock">
+            <rect x="16" y="28" width="32" height="26" rx="5"></rect>
+            <path d="M22 28v-6a10 10 0 0 1 20 0v6"></path>
+            <circle cx="32" cy="40" r="3.2"></circle>
+            <line x1="32" y1="43" x2="32" y2="48"></line>
+          </svg>
+          <span class="shimmer"></span>
+        </div>
+        <div class="cell-copy">
+          <h3>Zero-knowledge by default</h3>
+          <p>Encrypted in transit and at rest, scoped per tenant. Your memory is yours alone.</p>
+        </div>
+      </article>
+
+      <article class="cell reveal" tabindex="0">
+        <div class="cell-viz viz-sync">
+          <svg viewBox="0 0 80 80" class="sync-ring">
+            <circle cx="40" cy="40" r="30"></circle>
+            <path class="sync-arc" d="M40 10 a30 30 0 0 1 26 15" fill="none"></path>
+          </svg>
+          <div class="sync-src"><span>Slack</span><span>Notion</span><span>GitHub</span><span>Drive</span></div>
+        </div>
+        <div class="cell-copy">
+          <h3>Always in sync</h3>
+          <p>Connect a source once. New content is embedded and searchable the moment it changes.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="how" class="how">
+    <div class="section-head">
+      <p class="kicker reveal">// How it works</p>
+      <h2 class="reveal">From raw knowledge<br>to grounded answers.</h2>
+    </div>
+    <div class="how-grid">
+      <div class="how-visual">
+        <div class="hv-inner">
+          <div class="hv-glow"></div>
+          <div class="hv-stage" data-stage="1">
+            <p class="hv-tag">01 · Connect</p>
+            <div class="hv-rows">
+              <span class="hv-row"><b>Slack</b><i class="hv-ok"></i></span>
+              <span class="hv-row"><b>Notion</b><i class="hv-ok"></i></span>
+              <span class="hv-row"><b>GitHub</b><i class="hv-ok"></i></span>
+              <span class="hv-row"><b>Drive</b><i class="hv-sync"></i></span>
+            </div>
+          </div>
+          <div class="hv-stage" data-stage="2">
+            <p class="hv-tag">02 · Recall</p>
+            <div class="hv-query"><span class="hv-q">“auth migration owner?”</span></div>
+            <div class="hv-hits">
+              <span class="hv-hit"><i style="--w:94%"></i></span>
+              <span class="hv-hit"><i style="--w:76%"></i></span>
+              <span class="hv-hit"><i style="--w:58%"></i></span>
+            </div>
+          </div>
+          <div class="hv-stage" data-stage="3">
+            <p class="hv-tag">03 · Compose</p>
+            <div class="hv-answer">
+              <span class="ln w1"></span><span class="ln w2"></span><span class="ln w3"></span>
+              <div class="cites"><span class="cite">migration.md</span><span class="cite">#platform</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ol class="steps">
+        <li class="step" data-step="1">
+          <span class="step-no">01</span>
+          <h3>Connect your sources</h3>
+          <p>Point AETHER at Slack, Notion, GitHub, Drive or any REST endpoint. We chunk, embed and
+            index everything — and keep it fresh with incremental sync.</p>
+        </li>
+        <li class="step" data-step="2">
+          <span class="step-no">02</span>
+          <h3>Recall by meaning</h3>
+          <p>Send a natural-language query. AETHER ranks candidates across every source by semantic
+            relevance and returns the passages that actually answer it.</p>
+        </li>
+        <li class="step" data-step="3">
+          <span class="step-no">03</span>
+          <h3>Compose grounded replies</h3>
+          <p>Feed the retrieved context straight into your model. Answers arrive cited, current and
+            impossible to hallucinate around.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="stats" class="stats">
+    <div class="stats-inner">
+      <div class="stat reveal">
+        <span class="stat-num" data-count="40" data-suffix="B+">40B+</span>
+        <span class="stat-label">memories indexed</span>
+      </div>
+      <div class="stat reveal">
+        <span class="stat-num" data-prefix="&lt;" data-count="50" data-suffix="ms">&lt;50ms</span>
+        <span class="stat-label">p99 retrieval</span>
+      </div>
+      <div class="stat reveal">
+        <span class="stat-num" data-count="99.99" data-decimals="2" data-suffix="%">99.99%</span>
+        <span class="stat-label">measured uptime</span>
+      </div>
+      <div class="stat reveal">
+        <span class="stat-num" data-count="12000" data-comma="1" data-suffix="+">12,000+</span>
+        <span class="stat-label">teams building</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="cta" class="cta">
+    <div class="cta-panel reveal">
+      <div class="cta-glow"></div>
+      <p class="kicker">// Ship it this week</p>
+      <h2>Give your models<br>a memory.</h2>
+      <p class="cta-sub">Start free, wire up your first source in minutes, and scale to billions of
+        tokens without touching a vector database.</p>
+      <form class="cta-form" onsubmit="return false;">
+        <label class="visually-hidden" for="cta-email">Work email</label>
+        <input id="cta-email" type="email" placeholder="you@company.com" autocomplete="email" />
+        <button class="btn btn-primary magnetic" type="submit"><span>Request a key</span></button>
+      </form>
+      <p class="cta-note">Or <a href="./guide/">read how AETHER was built →</a></p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-top">
+    <div class="foot-brand">
+      <a class="brand" href="./" aria-label="AETHER home">
+        <span class="brand-mark" aria-hidden="true"></span>AETHER
+      </a>
+      <p>The memory infrastructure for AI products.</p>
+    </div>
+    <nav class="foot-cols" aria-label="Footer">
+      <div class="foot-col">
+        <p class="foot-h">Product</p>
+        <a href="#features">Semantic recall</a>
+        <a href="#features">Knowledge graph</a>
+        <a href="#how">How it works</a>
+        <a href="#stats">Scale</a>
+      </div>
+      <div class="foot-col">
+        <p class="foot-h">Developers</p>
+        <a href="./guide/">Build guide</a>
+        <a href="#features">API reference</a>
+        <a href="#features">SDKs</a>
+        <a href="#how">Quickstart</a>
+      </div>
+      <div class="foot-col">
+        <p class="foot-h">Company</p>
+        <a href="#cta">Careers</a>
+        <a href="#cta">Security</a>
+        <a href="#cta">Changelog</a>
+        <a href="#cta">Contact</a>
+      </div>
+    </nav>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 AETHER Labs · SOC 2 Type II</span>
+    <span>Designed &amp; built by Formwork · <a href="./guide/">How this was built →</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="./main.js"></script>
+</body>
+</html>

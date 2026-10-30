@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GRID SYSTEM — Architecture &amp; industrial design</title>
+<meta name="description" content="GRID SYSTEM is a studio for structure — architecture, industrial design and systems drawn to the millimetre. Press G to reveal the grid." />
+<meta name="theme-color" content="#f2f0ea" />
+<meta property="og:title" content="GRID SYSTEM — Architecture & industrial design" />
+<meta property="og:description" content="A studio for structure. Everything on a grid, or nothing at all." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<a class="skip" href="#index">Skip to project index</a>
+
+<!-- ===== SIGNATURE: modular grid overlay (toggle with G) ===== -->
+<div class="grid-overlay" id="gridOverlay" aria-hidden="true">
+  <div class="go-cols">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <div class="go-baseline"></div>
+  <i class="go-corner tl"></i><i class="go-corner tr"></i>
+  <i class="go-corner bl"></i><i class="go-corner br"></i>
+  <div class="go-cross" id="goCross">
+    <span class="gx"></span><span class="gy"></span>
+    <span class="gc-read" id="goRead">X&nbsp;000&nbsp;·&nbsp;Y&nbsp;000</span>
+  </div>
+</div>
+<div class="grid-hud" id="gridHud" aria-hidden="true">
+  <span class="hud-row"><b id="hudState">GRID · ON</b></span>
+  <span class="hud-row">12 COL · 32PX BASELINE</span>
+  <span class="hud-row">MAX 1280 · GUTTER 24</span>
+</div>
+<p class="sr-only" role="status" aria-live="polite" id="gridStatus"></p>
+
+<header class="nav" id="nav">
+  <a class="brand" href="./" aria-label="GRID SYSTEM — home">
+    <svg class="brand-ico" viewBox="0 0 12 12" width="13" height="13" aria-hidden="true">
+      <path d="M0 4h12M0 8h12M4 0v12M8 0v12" stroke="currentColor" stroke-width="1" fill="none"/>
+    </svg>
+    <span class="brand-name">GRID SYSTEM</span><span class="brand-reg">®</span>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#index">Index</a>
+    <a href="#approach">Approach</a>
+    <a href="./guide/">Guide</a>
+    <button class="grid-toggle magnetic" id="gridToggle" type="button" aria-pressed="false" aria-label="Toggle the modular grid overlay">
+      <span class="gt-dot" aria-hidden="true"></span>
+      <span class="gt-label">Grid</span>
+      <span class="gt-key" aria-hidden="true">G</span>
+    </button>
+  </nav>
+</header>
+
+<main>
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div class="hero-lead">
+        <p class="eyebrow reveal">◼ Studio for structure — Est. MMXIV</p>
+        <h1 class="hero-title">
+          <span class="line"><span>Precision is</span></span>
+          <span class="line"><span>our only</span></span>
+          <span class="line"><span>ornament<em>.</em></span></span>
+        </h1>
+        <p class="hero-sub reveal">We draw architecture, objects and systems on one honest grid —
+          measured, numbered, and built so anyone can read it.</p>
+      </div>
+      <aside class="hero-meta">
+        <dl class="meta">
+          <div class="meta-row reveal"><dt>Est.</dt><dd>2014</dd></div>
+          <div class="meta-row reveal"><dt>Discipline</dt><dd>Architecture · Industrial · Systems</dd></div>
+          <div class="meta-row reveal"><dt>Studios</dt><dd>Zürich · København</dd></div>
+          <div class="meta-row reveal"><dt>Coordinates</dt><dd>47.3769°N · 8.5417°E</dd></div>
+          <div class="meta-row reveal"><dt>Index</dt><dd><span data-count="9" data-pad="2">09</span>&nbsp;Projects</dd></div>
+        </dl>
+      </aside>
+    </div>
+    <div class="wrap hero-foot">
+      <span class="hf-a">↓ Scroll to the index</span>
+      <span class="hf-line" aria-hidden="true"></span>
+      <span class="hf-b">Press <kbd>G</kbd> to reveal the grid</span>
+    </div>
+  </section>
+
+  <!-- ===== PROJECT INDEX (data table) ===== -->
+  <section class="index-sec" id="index">
+    <div class="wrap">
+      <header class="sec-head">
+        <p class="kicker reveal">[ 01 ] — Project index</p>
+        <h2 class="reveal">Selected works,<br>ordered by number.</h2>
+        <p class="sec-note reveal">Hover or select a row to expand its record. Nine built projects, 2014–2026.</p>
+      </header>
+
+      <div class="table-scroll">
+      <table class="p-table">
+        <caption class="sr-only">Index of selected projects with number, project, location, type, year and area.</caption>
+        <thead>
+          <tr class="t-head-row">
+            <th class="t-no" scope="col">No.</th>
+            <th class="t-name" scope="col">Project</th>
+            <th class="t-loc" scope="col">Location</th>
+            <th class="t-type" scope="col">Type</th>
+            <th class="t-year" scope="col">Year</th>
+            <th class="t-area" scope="col">Area&nbsp;m²</th>
+          </tr>
+        </thead>
+
+        <tbody class="p-group">
+          <tr class="p-row" tabindex="0" role="button" aria-expanded="false">
+            <td class="t-no"><span class="no-flip"><b>01</b><b>01</b></span></td>
+            <td class="t-name">Kestrel Pavilion</td>
+            <td class="t-loc">Zürich, CH</td>
+            <td class="t-type">Pavilion</td>
+            <td class="t-year">2024</td>
+            <td class="t-area"><span data-count="1240">1,240</span></td>
+          </tr>
+          <tr class="p-detail"><td colspan="6"><div class="p-exp"><div class="p-exp-inner"><div class="p-exp-c">
+            <p class="p-note"><span class="p-arrow" aria-hidden="true">→</span> A demountable timber lattice on a 1.2&nbsp;metre module — assembled in nine days, then archived as drawings.</p>
+            <dl class="p-meta">
+              <div><dt>Location</dt><dd>Zürich, CH</dd></div>
+              <div><dt>Type</dt><dd>Pavilion</dd></div>
+              <div><dt>Role</dt><dd>Architecture · Structure</dd></div>
+              <div><dt>Client</dt><dd>Kunsthalle Zürich</dd></div>
+              <div><dt>Status</dt><dd>Built</dd></div>
+            </dl>
+          </div></div></div></td></tr>
+        </tbody>
+
+        <tbody class="p-group">
+          <tr class="p-row" tabindex="0" role="button" aria-expanded="false">
+            <td class="t-no"><span class="no-flip"><b>02</b><b>02</b></span></td>
+            <td class="t-name">Meridian Block</td>
+            <td class="t-loc">Rotterdam, NL</td>
+            <td class="t-type">Housing</td>
+            <td class="t-year">2024</td>
+            <td class="t-area"><span data-count="18600">18,600</span></td>
+          </tr>
+          <tr class="p-detail"><td colspan="6"><div class="p-exp"><div class="p-exp-inner"><div class="p-exp-c">
+            <p class="p-note"><span class="p-arrow" aria-hidden="true">→</span> 132 apartments on a single stacked plan — one grid, four elevations, no two windows argued into place.</p>
+            <dl class="p-meta">
+              <div><dt>Location</dt><dd>Rotterdam, NL</dd></div>
+              <div><dt>Type</dt><dd>Housing</dd></div>
+              <div><dt>Role</dt><dd>Architecture · Interiors</dd></div>
+              <div><dt>Client</dt><dd>Havenstad Ontwikkeling</dd></div>
+              <div><dt>Status</dt><dd>Built</dd></div>
+            </dl>
+          </div></div></div></td></tr>
+        </tbody>
+
+        <tbody class="p-group">
+          <tr class="p-row" tabindex="0" role="button" aria-expanded="false">
+            <td class="t-no"><span class="no-flip"><b>03</b><b>03</b></span></td>
+            <td class="t-name">Halden Transit Hall</td>
+            <td class="t-loc">Oslo, NO</td>
+            <td class="t-type">Infrastructure</td>
+            <td class="t-year">2023</td>
+            <td class="t-area"><span data-count="9450">9,450</span></td>
+          </tr>
+          <tr class="p-detail"><td colspan="6"><div class="p-exp"><div class="p-exp-inner"><div class="p-exp-c">
+            <p class="p-note"><span class="p-arrow" aria-hidden="true">→</span> A roof of 47 identical trusses over a working platform — the timetable is the only ornament.</p>
+            <dl class="p-meta">
+              <div><dt>Location</dt><dd>Oslo, NO</dd></div>
+              <div><dt>Type</dt><dd>Infrastructure</dd></div>
+              <div><dt>Role</dt><dd>Architecture · Wayfinding</dd></div>
+              <div><dt>Client</dt><dd>Bane NOR</dd></div>
+              <div><dt>Status</dt><dd>Built</dd></div>
+            </dl>
+          </div></div></div></td></tr>
+        </tbody>
+
+        <tbody class="p-group">
+          <tr class="p-row" tabindex="0" role="button" aria-expanded="false">
+            <td class="t-no"><span class="no-flip"><b>04</b><b>04</b></span></td>
+            <td class="t-name">Vantage Bridge</td>
+            <td class="t-loc">Porto, PT</td>
+            <td class="t-type">Bridge</td>
+            <td class="t-year">2023</td>
+            <td class="t-area"><span data-count="2180">2,180</span></td>
+          </tr>
+          <tr class="p-detail"><td colspan="6"><div class="p-exp"><div class="p-exp-inner"><div class="p-exp-c">
+            <p class="p-note"><span class="p-arrow" aria-hidden="true">→</span> A pedestrian span calibrated to a two-metre footfall rhythm, so the deck never resonates underfoot.</p>
+            <dl class="p-meta">
+              <div><dt>Location</dt><dd>Porto, PT</dd></div>
+              <div><dt>Type</dt><dd>Bridge</dd></div>
+              <div><dt>Role</dt><dd>Structure · Lighting</dd></div>
+              <div><dt>Client</dt><dd>Câmara do Porto</dd></div>
+              <div><dt>Status</dt><dd>Built</dd></div>
+            </dl>
+          </div></div></div></td></tr>
+        </tbody>
+
+        <tbody class="p-group">
+          <tr class="p-row" tabindex="0" role="button" aria-expanded="false">
+            <td class="t-no"><span class="no-flip"><b>05</b><b>05</b></span></td>
+            <td class="t-name">Grid Type Foundry</td>
+            <td class="t-loc">Copenhagen, DK</td>
+            <td class="t-type">Interior</td>
+            <td class="t-year">2022</td>
+            <td class="t-area"><span data-count="640">640</span></td>
+          </tr>
+          <tr class="p-detail"><td colspan="6"><div class="p-exp"><div class="p-exp-inner"><div class="p-exp-c">
+            <p class="p-note"><span class="p-arrow" aria-hidden="true">→</span> A working type foundry laid out on the baseline of its own specimen sheet — furniture set to the leading.</p>
+            <dl class="p-meta">
+              <div><dt>Location</dt><dd>Copenhagen, DK</dd></div>
+              <div><dt>Type</dt><dd>Interior</dd></div>
+              <div><dt>Role</dt><dd>Interior · Systems</dd></div>
+              <div><dt>Client</dt><dd>Foundry Studio</dd></div>
+              <div><dt>Status</dt><dd>Built</dd></div>
+            </dl>
+          </div></div></div></td></tr>
+        </tbody>
+
+        <tbody class="p-group">
+          <tr class="p-row" tabindex="0" role="button" aria-expanded="false">
+            <td class="t-no"><span class="no-flip"><b>06</b><b>06</b></span></td>
+            <td class="t-name">Cassini Observatory</td>
+            <td class="t-loc">Atacama, CL</td>
+            <td class="t-type">Research</td>
+            <td class="t-year">2022</td>
+            <td class="t-area"><span data-count="3900">3,900</span></td>
+          </tr>
+          <tr class="p-detail"><td colspan="6"><div class="p-exp"><div class="p-exp-inner"><div class="p-exp-c">
+            <p class="p-note"><span class="p-arrow" aria-hidden="true">→</span> A cold-desert research shell aligned to true north within 0.01° — every panel cut from one datum.</p>
+            <dl class="p-meta">
+              <div><dt>Location</dt><dd>Atacama, CL</dd></div>
+              <div><dt>Type</dt><dd>Research</dd></div>
+              <div><dt>Role</dt><dd>Architecture · Envelope</dd></div>
+              <div><dt>Client</dt><dd>ESO Consortium</dd></div>
+              <div><dt>Status</dt><dd>Built</dd></div>
+            </dl>
+          </div></div></div></td></tr>
+        </tbody>
+
+        <tbody class="p-group">
+          <tr class="p-row" tabindex="0" role="button" aria-expanded="false">
+            <td class="t-no"><span class="no-flip"><b>07</b><b>07</b></span></td>
+            <td class="t-name">Ordnance Masterplan</td>
+            <td class="t-loc">Leipzig, DE</td>
+            <td class="t-type">Masterplan</td>
+            <td class="t-year">2021</td>
+            <td class="t-area"><span data-count="84000">84,000</span></td>
+          </tr>
+          <tr class="p-detail"><td colspan="6"><div class="p-exp"><div class="p-exp-inner"><div class="p-exp-c">
+            <p class="p-note"><span class="p-arrow" aria-hidden="true">→</span> A district drawn as a rulebook — block, street and setback fixed to a single ground datum.</p>
+            <dl class="p-meta">
+              <div><dt>Location</dt><dd>Leipzig, DE</dd></div>
+              <div><dt>Type</dt><dd>Masterplan</dd></div>
+              <div><dt>Role</dt><dd>Urbanism · Guidelines</dd></div>
+              <div><dt>Client</dt><dd>Stadt Leipzig</dd></div>
+              <div><dt>Status</dt><dd>Phase II</dd></div>
+            </dl>
+          </div></div></div></td></tr>
+        </tbody>
+
+        <tbody class="p-group">
+          <tr class="p-row" tabindex="0" role="button" aria-expanded="false">
+            <td class="t-no"><span class="no-flip"><b>08</b><b>08</b></span></td>
+            <td class="t-name">Föhn Exhibition</td>
+            <td class="t-loc">Milan, IT</td>
+            <td class="t-type">Exhibition</td>
+            <td class="t-year">2021</td>
+            <td class="t-area"><span data-count="1120">1,120</span></td>
+          </tr>
+          <tr class="p-detail"><td colspan="6"><div class="p-exp"><div class="p-exp-inner"><div class="p-exp-c">
+            <p class="p-note"><span class="p-arrow" aria-hidden="true">→</span> Sixty industrial objects hung on a visible measuring grid — the display case was the argument.</p>
+            <dl class="p-meta">
+              <div><dt>Location</dt><dd>Milan, IT</dd></div>
+              <div><dt>Type</dt><dd>Exhibition</dd></div>
+              <div><dt>Role</dt><dd>Scenography · Product</dd></div>
+              <div><dt>Client</dt><dd>Salone Satellite</dd></div>
+              <div><dt>Status</dt><dd>Archived</dd></div>
+            </dl>
+          </div></div></div></td></tr>
+        </tbody>
+
+        <tbody class="p-group">
+          <tr class="p-row" tabindex="0" role="button" aria-expanded="false">
+            <td class="t-no"><span class="no-flip"><b>09</b><b>09</b></span></td>
+            <td class="t-name">Datum Housing</td>
+            <td class="t-loc">Ghent, BE</td>
+            <td class="t-type">Housing</td>
+            <td class="t-year">2020</td>
+            <td class="t-area"><span data-count="12300">12,300</span></td>
+          </tr>
+          <tr class="p-detail"><td colspan="6"><div class="p-exp"><div class="p-exp-inner"><div class="p-exp-c">
+            <p class="p-note"><span class="p-arrow" aria-hidden="true">→</span> Social housing where every window sits on the same invisible line — 84 homes, one horizon.</p>
+            <dl class="p-meta">
+              <div><dt>Location</dt><dd>Ghent, BE</dd></div>
+              <div><dt>Type</dt><dd>Housing</dd></div>
+              <div><dt>Role</dt><dd>Architecture</dd></div>
+              <div><dt>Client</dt><dd>Wonen Gent</dd></div>
+              <div><dt>Status</dt><dd>Built</dd></div>
+            </dl>
+          </div></div></div></td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== APPROACH (numbered 12-column grid) ===== -->
+  <section class="approach" id="approach">
+    <div class="wrap">
+      <header class="sec-head">
+        <p class="kicker reveal">[ 02 ] — Approach</p>
+        <h2 class="reveal">Six rules we<br>do not break.</h2>
+      </header>
+      <ol class="rules">
+        <li class="rule reveal">
+          <div class="r-top"><span class="r-no">01</span><span class="r-col">COL 01–04</span></div>
+          <h3>Measure twice.</h3>
+          <p>Every dimension is a decision. We make each one on purpose, then defend it.</p>
+        </li>
+        <li class="rule reveal">
+          <div class="r-top"><span class="r-no">02</span><span class="r-col">COL 05–08</span></div>
+          <h3>The grid is a promise.</h3>
+          <p>A system other people can build on without calling us first.</p>
+        </li>
+        <li class="rule reveal">
+          <div class="r-top"><span class="r-no">03</span><span class="r-col">COL 09–12</span></div>
+          <h3>Subtract until it breaks.</h3>
+          <p>Then add back the single part that was quietly holding it up.</p>
+        </li>
+        <li class="rule reveal">
+          <div class="r-top"><span class="r-no">04</span><span class="r-col">COL 01–04</span></div>
+          <h3>Material tells the truth.</h3>
+          <p>Concrete reads as concrete; steel behaves as steel. No costumes.</p>
+        </li>
+        <li class="rule reveal">
+          <div class="r-top"><span class="r-no">05</span><span class="r-col">COL 05–08</span></div>
+          <h3>The joint is the design.</h3>
+          <p>Detail is not decoration; it is where the thinking becomes visible.</p>
+        </li>
+        <li class="rule reveal">
+          <div class="r-top"><span class="r-no">06</span><span class="r-col">COL 09–12</span></div>
+          <h3>Build to be read.</h3>
+          <p>A structure should explain itself before the caption does.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== PULL QUOTE ===== -->
+  <section class="quote">
+    <div class="wrap">
+      <p class="kicker reveal">[ 03 ] — Studio note 014</p>
+      <p class="pq reveal">A grid is not a cage.<br>It is the reason the<br>parts <em>agree</em>.</p>
+      <p class="q-attr reveal">— GRID SYSTEM, on the discipline of drawing</p>
+    </div>
+  </section>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer" id="contact">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-left">
+        <p class="kicker">[ 04 ] — Contact</p>
+        <h2 class="foot-head">Bring us a<br>problem with<br><em>edges</em>.</h2>
+        <a class="foot-mail magnetic" href="mailto:hello@gridsystem.studio">hello@gridsystem.studio</a>
+      </div>
+      <div class="foot-right">
+        <form class="enquiry" onsubmit="return false;">
+          <label for="mail">New enquiries</label>
+          <div class="field">
+            <input id="mail" name="mail" type="email" placeholder="you@studio.com" autocomplete="email" />
+            <button type="submit" aria-label="Send enquiry">→</button>
+          </div>
+        </form>
+        <dl class="foot-cols">
+          <div><dt>Studios</dt><dd>Löwenstrasse 2, 8001 Zürich</dd><dd>Njalsgade 19, 2300 København</dd></div>
+          <div><dt>Index</dt><dd>09 built projects</dd><dd>2014 — 2026</dd></div>
+          <div><dt>Coordinates</dt><dd>47.3769°N · 8.5417°E</dd></div>
+        </dl>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 GRID SYSTEM ®</span>
+      <span>Designed &amp; built by Formwork · <a href="./guide/">How this was built →</a></span>
+      <span class="fb-coord">47.3769°N / 8.5417°E</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="./main.js"></script>
+</body>
+</html>

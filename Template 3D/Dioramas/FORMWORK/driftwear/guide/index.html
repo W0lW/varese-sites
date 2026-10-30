@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DRIFTWEAR — Guide · How this was built</title>
+<meta name="description" content="How the DRIFTWEAR site was designed and built with Formwork: a cursor-follow parallax hero, generative duotone fabric-drape panels, a drag/snap lookbook, and GitHub Pages." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#0d0d0e;--ink:#f4f2ee;--dim:#9c9a94;--faint:#66645f;--accent:#c9a68a;--line:rgba(244,242,238,.14)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Space Grotesk",system-ui,sans-serif;
+    font-weight:400;line-height:1.62;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(28px,6vw,80px) clamp(20px,5vw,32px)}
+  .top{display:flex;justify-content:space-between;align-items:center;font-family:"JetBrains Mono",monospace;
+    font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:clamp(40px,8vh,90px)}
+  .top a{color:var(--dim)}
+  .brand{font-family:"Archivo Black",sans-serif;font-size:1.15rem;letter-spacing:.01em;color:var(--ink)}
+  .brand span{color:var(--accent)}
+  .tag{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:1.4rem}
+  h1{font-family:"Archivo Black",sans-serif;font-weight:400;font-size:clamp(2.4rem,7vw,4.2rem);
+    line-height:.98;letter-spacing:-.01em;margin-bottom:1.2rem;text-transform:uppercase}
+  h1 em{color:var(--accent);font-style:normal}
+  .lede{font-size:clamp(1.1rem,2.2vw,1.32rem);color:var(--dim);max-width:58ch;margin-bottom:3.2rem}
+  h2{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:clamp(1.5rem,3.6vw,2.1rem);
+    margin:2.8rem 0 1rem;letter-spacing:-.01em}
+  p{color:var(--dim);margin:0 0 1.1rem;max-width:64ch}
+  .tagline{color:var(--faint);font-size:.9rem}
+  ul,ol{color:var(--dim);margin:0 0 1.2rem 1.2rem}
+  li{margin:.42rem 0}
+  strong{color:var(--ink);font-weight:500}
+  code{font-family:"JetBrains Mono",monospace;font-size:.85em;background:rgba(255,255,255,.06);
+    padding:.12em .4em;border-radius:3px;color:var(--ink)}
+  pre{background:#141416;border:1px solid var(--line);border-radius:6px;padding:18px 20px;
+    overflow-x:auto;margin:0 0 1.4rem;font-size:.8rem;line-height:1.6}
+  pre code{background:none;padding:0;color:var(--dim)}
+  .rule{height:1px;background:var(--line);margin:3rem 0}
+  .stack{list-style:none;margin:0 0 1.2rem;padding:0;display:grid;gap:2px}
+  .stack li{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .stack b{color:var(--ink);font-weight:500;min-width:132px;display:inline-block}
+  footer{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--line);
+    font-family:"JetBrains Mono",monospace;font-size:.76rem;letter-spacing:.06em;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="../">DRIFTWEAR<span>®</span></a>
+    <a href="../">← Back to site</a>
+  </div>
+
+  <span class="tag">Build guide · Site 17 of 25</span>
+  <h1>A clothing label with <em>no photographs</em>.</h1>
+  <p class="lede">DRIFTWEAR is one of 25 sites designed and built by Formwork to demonstrate
+    web design, motion, and taste. Every "garment" you see is drawn by code — here's exactly
+    how, and how you can do the same.</p>
+
+  <h2>The idea</h2>
+  <p>A streetwear label wants garments front and centre — but shooting a lookbook is expensive and
+    dates fast. The brief here was <strong>fashion without a single image</strong>. So the clothes
+    are rendered: each look is a <strong>duotone "fabric drape"</strong> painted on a canvas, and the
+    hero look leans toward your cursor like a panel hung just out of reach. Heavy grotesk type, a
+    near-black stage, and one sand accent do the rest.</p>
+
+  <h2>The stack</h2>
+  <ul class="stack">
+    <li><b>Hero visual</b> A cursor-follow parallax with a 3D-tilting garment panel.</li>
+    <li><b>Garments</b> A seeded 2D-canvas "drape" routine — folds, shading, vignette.</li>
+    <li><b>Lookbook</b> A drag-to-scroll row with CSS scroll-snap, momentum and arrows.</li>
+    <li><b>Type</b> Archivo Black (display) · Space Grotesk (interface) · JetBrains Mono (tags).</li>
+    <li><b>Build</b> Plain HTML/CSS/JS in an IIFE — no framework, no bundler, no images.</li>
+    <li><b>Host</b> GitHub Pages, served straight from the repo's <code>main</code> branch.</li>
+  </ul>
+
+  <h2>The signature: a fabric drape from one seed</h2>
+  <p>Each garment starts as an integer. A tiny PRNG turns it into fold count, tilt and contrast,
+    then the canvas is painted in thin vertical strips. Within each strip a top-to-bottom gradient
+    shades the cloth: ridges lean toward the highlight colour, valleys toward the shadow — and the
+    folds <strong>slant with the vertical position</strong>, so the panel reads as hanging cloth.</p>
+  <pre><code>const u = fx * folds + tilt * yy + phase;   // fold position, slanted by y
+let b = 0.5 + 0.5 * Math.sin(u * TAU);      // ridge (1) → valley (0)
+b += 0.12 * Math.sin((fx*ripFreq + yy*1.6) * TAU + ripPh); // cloth grain
+b = Math.pow(clamp(b,0,1), sharp);          // per-seed fold contrast
+grad.addColorStop(yy, mixRgb(shadow, highlight, b));</code></pre>
+  <p>Because everything derives from the seed, LOOK 01 and LOOK 06 never share a fold pattern, yet
+    they belong to the same family. Swap the two duotone colours per look and you get an entire
+    collection from one function.</p>
+
+  <h2>Details that matter</h2>
+  <ul>
+    <li><strong>Clean handoff</strong> — the intro animates every hero layer to <code>transform:none</code>, then the pointer-parallax takes over from that resting state, so there's no jump.</li>
+    <li><strong>Custom cursor</strong> — a ring that lerps toward the pointer and swells to read <code>VIEW</code> over a look or <code>DRAG</code> over the row.</li>
+    <li><strong>Light sheen</strong> — a soft-light highlight tracks the pointer inside each panel, so the "cloth" catches the light.</li>
+    <li><strong>Reduced motion</strong> — with <code>prefers-reduced-motion</code> the parallax, cursor and ticker all switch off and every panel renders as a still.</li>
+    <li><strong>Fails safe</strong> — content is only hidden once JS is confirmed (<code>.js</code>), and if the canvas is unavailable a CSS duotone gradient shows instead.</li>
+  </ul>
+
+  <h2>Ship it on GitHub Pages</h2>
+  <p>The whole site is static, so hosting is three commands:</p>
+  <pre><code>git init -b main &amp;&amp; git add -A &amp;&amp; git commit -m "ship"
+gh repo create formwork-driftwear --public --source=. --push
+gh api --method POST /repos/OWNER/formwork-driftwear/pages \
+  -f 'source[branch]=main' -f 'source[path]=/'</code></pre>
+  <p>Use <strong>relative paths</strong> (<code>./main.js</code>, not <code>/main.js</code>) because project
+    Pages live under <code>/repo-name/</code>. Add an empty <code>.nojekyll</code> file so every asset serves verbatim.</p>
+
+  <div class="rule"></div>
+  <p class="tagline">That's the recipe: one seeded canvas routine, a cursor-follow parallax, strong
+    type, and static hosting. The other 24 sites each swap the central technique — but the
+    discipline is the same.</p>
+
+  <footer>Designed &amp; built by <strong>Formwork</strong> · Part of a 25-site showcase · <a href="../">Return to DRIFTWEAR →</a></footer>
+</div>
+</body>
+</html>

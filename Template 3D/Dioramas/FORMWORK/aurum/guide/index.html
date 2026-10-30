@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AURUM — Guide · How this was built</title>
+<meta name="description" content="How the AURUM site was designed and built with Formwork: a canvas gold-dust field, a metallic wordmark sweep, a CSS/SVG watch dial, and GitHub Pages." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#0a0a0b;--ink:#f3efe6;--dim:#b6ad9c;--faint:#7c7466;--accent:#d9bd7a;--line:rgba(217,189,122,.16)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Jost",system-ui,sans-serif;font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(28px,6vw,80px) clamp(20px,5vw,32px)}
+  .top{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:clamp(40px,8vh,90px)}
+  .top a{color:var(--dim)}
+  .brand{font-family:"Playfair Display",serif;font-size:1.35rem;letter-spacing:.3em;color:var(--ink);font-weight:600}
+  h1{font-family:"Playfair Display",serif;font-weight:600;font-size:clamp(2.5rem,8vw,4.4rem);line-height:1.05;letter-spacing:-.01em;margin-bottom:1.2rem}
+  h1 em{color:var(--accent);font-style:italic}
+  .lede{font-size:clamp(1.05rem,2.2vw,1.3rem);color:var(--dim);max-width:56ch;margin-bottom:3.4rem}
+  h2{font-family:"Playfair Display",serif;font-weight:500;font-size:clamp(1.7rem,4vw,2.4rem);margin:3rem 0 1rem;letter-spacing:-.01em}
+  p{color:var(--dim);margin:0 0 1.1rem;max-width:64ch}
+  .tag{display:inline-block;font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin-bottom:1.4rem}
+  ul,ol{color:var(--dim);margin:0 0 1.2rem 1.2rem}
+  li{margin:.4rem 0}
+  strong{color:var(--ink);font-weight:500}
+  code{font-family:"JetBrains Mono",monospace;font-size:.86em;background:rgba(217,189,122,.08);padding:.12em .4em;border-radius:3px;color:var(--ink)}
+  pre{background:#121013;border:1px solid var(--line);border-radius:6px;padding:18px 20px;overflow-x:auto;margin:0 0 1.4rem;font-size:.82rem;line-height:1.6}
+  pre code{background:none;padding:0;color:var(--dim)}
+  .rule{height:1px;background:var(--line);margin:3rem 0}
+  .stack{list-style:none;margin:0 0 1.2rem;padding:0;display:grid;gap:2px}
+  .stack li{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .stack b{color:var(--ink);font-weight:500;min-width:130px;display:inline-block}
+  footer{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--line);font-size:.82rem;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="../">AURUM</a>
+    <a href="../">← Back to site</a>
+  </div>
+
+  <span class="tag">Build guide · Site 22 of 25</span>
+  <h1>A watch house, rendered in <em>gold dust</em>.</h1>
+  <p class="lede">AURUM is one of 25 sites designed and built by Formwork to demonstrate web design,
+    motion, and restraint. Here is exactly how this one was made — and how you can rebuild it.</p>
+
+  <h2>The idea</h2>
+  <p>The brief was <em>haute horlogerie</em> — dark, hushed, expensive. No photographs of watches;
+    instead the page should <strong>feel</strong> like gold: a slow drift of light-catching specks,
+    a wordmark that sweeps like polished metal, and one hand-built <strong>watch dial</strong> as the
+    single object on the page. Everything else — the Didone serif, the wide letter-spacing, the empty
+    space — exists to keep the gold quiet.</p>
+
+  <h2>The stack</h2>
+  <ul class="stack">
+    <li><b>Hero field</b> A canvas 2D particle system — a few hundred gold motes drifting upward.</li>
+    <li><b>Wordmark</b> An animated metallic gradient clipped to text (<code>background-clip</code>).</li>
+    <li><b>Centerpiece</b> A watch dial in pure CSS + SVG — conic-gradient bezel, a rotating glare.</li>
+    <li><b>Motion</b> GSAP + ScrollTrigger for reveals, card stagger, and the drawing timeline.</li>
+    <li><b>Type</b> Playfair Display (display) paired with Jost (small-caps labels).</li>
+    <li><b>Host</b> GitHub Pages, served straight from the repo's <code>main</code> branch.</li>
+  </ul>
+
+  <h2>The signature: a gold-dust field</h2>
+  <p>Each mote is a tiny radial gradient painted with <code>globalCompositeOperation = 'lighter'</code>,
+    so where specks overlap they add up and glow. They drift slowly upward, wrap at the edges, and
+    <strong>twinkle</strong> — a sine wave on each mote's alpha gives the impression of catching light.
+    Density scales to the viewport but is hard-capped so it stays weightless on any screen.</p>
+  <pre><code>const flick = 0.55 + 0.45 * Math.sin(m.tw);   // per-mote twinkle
+const alpha = m.a * flick;
+const g = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, glow);
+g.addColorStop(0, `rgba(${r},${gg},${b},${alpha})`);
+g.addColorStop(1, `rgba(${r},${gg},${b},0)`);
+ctx.fillStyle = g;
+ctx.arc(m.x, m.y, glow, 0, Math.PI * 2); ctx.fill();</code></pre>
+  <p>The wordmark uses the same palette a different way: a <code>linear-gradient</code> set to
+    <code>200%</code> width, clipped to the letters, and slid across on a loop — so light appears to
+    travel over solid gold.</p>
+
+  <h2>Details that matter</h2>
+  <ul>
+    <li><strong>The dial</strong> — a <code>conic-gradient</code> bezel for brushed metal, a second
+      conic layer rotating on top as a moving specular glare, and an SVG face posed at the classic 10:10.</li>
+    <li><strong>Robust intro</strong> — the hero reveal is a CSS transition keyed to a <code>.loaded</code>
+      class added on a double <code>requestAnimationFrame</code>, with a 400 ms failsafe, so it never freezes.</li>
+    <li><strong>Reduced motion</strong> — with <code>prefers-reduced-motion</code> the particles stop,
+      the sweep freezes, and every hidden element is forced visible. Static gold, no movement.</li>
+    <li><strong>Fails safe</strong> — content is only hidden once JavaScript adds a <code>.js</code> class,
+      so a blocked CDN never leaves a blank page.</li>
+  </ul>
+
+  <h2>Ship it on GitHub Pages</h2>
+  <p>Every site here is static, so hosting is three commands:</p>
+  <pre><code>git init -b main && git add -A && git commit -m "ship"
+gh repo create formwork-aurum --public --source=. --push
+gh api --method POST /repos/OWNER/formwork-aurum/pages \
+  -f 'source[branch]=main' -f 'source[path]=/'</code></pre>
+  <p>Use <strong>relative paths</strong> (<code>./main.js</code>, not <code>/main.js</code>) because project
+    Pages live under <code>/repo-name/</code>. Add an empty <code>.nojekyll</code> file so every asset serves verbatim.</p>
+
+  <div class="rule"></div>
+  <p>That is the whole recipe: one particle field, a clipped gradient, a CSS dial, a little scroll motion,
+    and static hosting. The other 24 sites each swap the central technique — shaders, kinetic type,
+    3D scenes — but the discipline is the same.</p>
+
+  <footer>Designed &amp; built by <strong>Formwork</strong> · Part of a 25-site showcase · <a href="../">Return to AURUM →</a></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SOMA — A daily breathing practice</title>
+<meta name="description" content="SOMA is a gentle place to breathe, rest, and return to yourself. Soft tools for a quieter nervous system — guided in two minutes, wherever you are." />
+<meta name="theme-color" content="#faf5ee" />
+<meta property="og:title" content="SOMA — A daily breathing practice" />
+<meta property="og:description" content="A gentle place to breathe, rest, and return to yourself." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<!-- gooey metaball filter — inlined so it always resolves (no JS/CDN dependency) -->
+<svg class="goo-defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="blur" />
+      <feColorMatrix in="blur" mode="matrix"
+        values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -11" result="goo" />
+      <feBlend in="SourceGraphic" in2="goo" />
+    </filter>
+  </defs>
+</svg>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="./" aria-label="SOMA home">
+    <span class="brand-dot" aria-hidden="true"></span>SOMA
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#practices">Practices</a>
+    <a href="#rhythm">Rhythm</a>
+    <a href="#begin">Begin</a>
+    <a href="./guide/">Guide</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="blobs" aria-hidden="true">
+      <span class="blob b1"></span>
+      <span class="blob b2"></span>
+      <span class="blob b3"></span>
+      <span class="blob b4"></span>
+      <span class="blob b5"></span>
+      <span class="blob b6"></span>
+    </div>
+    <div class="hero-veil" aria-hidden="true"></div>
+
+    <div class="hero-inner">
+      <p class="eyebrow reveal">A daily breathing practice</p>
+
+      <div class="breath reveal" data-phase="out" aria-hidden="true">
+        <span class="breath-orb"></span>
+        <span class="breath-ring"></span>
+        <span class="breath-word" id="breathWord">Breathe in</span>
+      </div>
+      <!-- accessible, static description of the live guide for screen readers -->
+      <p class="visually-hidden">A soft circle expands as you breathe in for four seconds,
+        holds for four, and contracts as you breathe out for six. Repeat gently.</p>
+
+      <h1 class="hero-title"><span class="line"><span>SOMA</span></span></h1>
+      <p class="hero-sub reveal">A gentle place to breathe, rest, and return to yourself —
+        soft tools for a quieter nervous system, in the time it takes to read this.</p>
+
+      <div class="hero-actions reveal">
+        <a class="cta" href="#begin"><span>Begin a session</span></a>
+        <span class="breath-caption">Follow the circle · inhale, hold, release</span>
+      </div>
+    </div>
+
+    <a class="scroll-cue reveal" href="#practices" aria-label="Scroll to practices">
+      <span aria-hidden="true"></span>softly down
+    </a>
+  </section>
+
+  <section class="whisper" aria-hidden="true">
+    <div class="whisper-track">
+      <span>inhale</span><i>·</i><span>hold</span><i>·</i><span>exhale</span><i>·</i>
+      <span>soften</span><i>·</i><span>arrive</span><i>·</i><span>return</span><i>·</i>
+      <span>inhale</span><i>·</i><span>hold</span><i>·</i><span>exhale</span><i>·</i>
+      <span>soften</span><i>·</i><span>arrive</span><i>·</i><span>return</span><i>·</i>
+    </div>
+  </section>
+
+  <section id="practices" class="practices">
+    <div class="section-head">
+      <p class="kicker reveal">Three ways in</p>
+      <h2 class="reveal">Practices for the <em>ordinary</em> day.</h2>
+      <p class="section-sub reveal">Nothing to master, nowhere to get to. Choose the one that
+        matches the hour you're in, and let the rest wait.</p>
+    </div>
+
+    <div class="cards">
+      <article class="card reveal" style="--tint:var(--blush)" tabindex="0">
+        <span class="card-blob" aria-hidden="true"></span>
+        <p class="card-no">01</p>
+        <h3>Stillness</h3>
+        <p class="card-meta">10 min · seated</p>
+        <p class="card-desc">Guided rests that ask nothing of you. Let the day settle,
+          one slow minute at a time, until the noise thins out.</p>
+        <span class="card-cta">Sit for a while <i aria-hidden="true">→</i></span>
+      </article>
+
+      <article class="card reveal" style="--tint:var(--sage)" tabindex="0">
+        <span class="card-blob" aria-hidden="true"></span>
+        <p class="card-no">02</p>
+        <h3>Breath</h3>
+        <p class="card-meta">4 min · anywhere</p>
+        <p class="card-desc">Simple patterns that lengthen the exhale and loosen the jaw.
+          The 4·4·6, and gentler counts still — no app, no screen required.</p>
+        <span class="card-cta">Take a breath <i aria-hidden="true">→</i></span>
+      </article>
+
+      <article class="card reveal" style="--tint:var(--plum)" tabindex="0">
+        <span class="card-blob" aria-hidden="true"></span>
+        <p class="card-no">03</p>
+        <h3>Sleep</h3>
+        <p class="card-meta">20 min · lying down</p>
+        <p class="card-desc">Low, warm soundscapes and unhurried counts to carry you
+          from wide awake to almost-dreaming. Leave it playing; drift off.</p>
+        <span class="card-cta">Wind down <i aria-hidden="true">→</i></span>
+      </article>
+    </div>
+  </section>
+
+  <section id="rhythm" class="rhythm">
+    <div class="rhythm-inner">
+      <p class="kicker reveal">The idea</p>
+      <p class="rhythm-statement reveal">You don't need to fix anything before you rest.
+        You only need to <em>arrive</em> — and then arrive again.</p>
+
+      <div class="rhythm-cols">
+        <div class="rcol reveal">
+          <p class="rcol-time">Morning</p>
+          <p class="rcol-body">A slow open. Three breaths before the phone,
+            before the day has an opinion about you.</p>
+        </div>
+        <div class="rcol reveal">
+          <p class="rcol-time">Midday</p>
+          <p class="rcol-body">A reset between the noise. Ninety seconds with a longer
+            exhale is enough to change the afternoon.</p>
+        </div>
+        <div class="rcol reveal">
+          <p class="rcol-time">Evening</p>
+          <p class="rcol-body">A soft close. Let the shoulders down, unclench the hands,
+            and give the day back to itself.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quote" aria-label="A calming note">
+    <div class="quote-blob" aria-hidden="true"></div>
+    <blockquote class="quote-text reveal">
+      The breath you're looking for is the one <em>you're already taking</em>.
+    </blockquote>
+    <p class="quote-by reveal">— from the SOMA field notes</p>
+  </section>
+
+  <section id="begin" class="begin">
+    <div class="begin-panel reveal">
+      <span class="begin-blob" aria-hidden="true"></span>
+      <p class="kicker">Ready when you are</p>
+      <h2>Two minutes.<br>That's the whole ask.</h2>
+      <p class="begin-sub">Leave your email and we'll send one quiet note each morning —
+        a single practice, chosen for the hour. Unsubscribe with one soft tap.</p>
+      <form class="begin-form" onsubmit="return false;">
+        <label class="visually-hidden" for="begin-email">Your email</label>
+        <input id="begin-email" type="email" placeholder="you@email.com" autocomplete="email" />
+        <button class="cta cta-solid" type="submit"><span>Send me one</span></button>
+      </form>
+      <p class="begin-note">No streaks, no badges, no pressure. Just a gentle nudge to breathe.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-top">
+    <div class="foot-brand">
+      <a class="brand" href="./" aria-label="SOMA home">
+        <span class="brand-dot" aria-hidden="true"></span>SOMA
+      </a>
+      <p>A gentle place to breathe, rest, and return.</p>
+    </div>
+    <nav class="foot-cols" aria-label="Footer">
+      <div class="foot-col">
+        <p class="foot-h">Practice</p>
+        <a href="#practices">Stillness</a>
+        <a href="#practices">Breath</a>
+        <a href="#practices">Sleep</a>
+      </div>
+      <div class="foot-col">
+        <p class="foot-h">About</p>
+        <a href="#rhythm">The idea</a>
+        <a href="#rhythm">Rhythm</a>
+        <a href="#begin">Begin</a>
+      </div>
+      <div class="foot-col">
+        <p class="foot-h">Made</p>
+        <a href="./guide/">Build guide</a>
+        <a href="./guide/">How it works</a>
+      </div>
+    </nav>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 SOMA · Breathe easy</span>
+    <span>Designed &amp; built by Formwork · <a href="./guide/">How this was built →</a></span>
+  </div>
+</footer>
+
+<script src="./main.js"></script>
+</body>
+</html>
