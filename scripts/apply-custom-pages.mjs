@@ -23,6 +23,12 @@ for (const entry of fs.readdirSync(sourceRoot, { withFileTypes: true })) {
     throw new Error(`Custom page is not a complete HTML document: ${entry.name}`);
   }
   fs.writeFileSync(target, html);
+  const sourceAssets = path.join(sourceRoot, entry.name, "assets");
+  const targetAssets = path.join(targetDir, "assets");
+  if (fs.existsSync(sourceAssets)) {
+    fs.cpSync(sourceAssets, targetAssets, { recursive: true, force: true });
+    console.log(`Copied bespoke assets: ${entry.name}/assets`);
+  }
   console.log(`Applied bespoke page: ${entry.name}`);
   applied++;
 }
