@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AETHER — Guide · How this was built</title>
+<meta name="description" content="How the AETHER site was designed and built by Formwork: a WebGL aurora gradient-mesh behind frosted glass, GSAP motion, and GitHub Pages." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#08090c;--ink:#eef1f8;--dim:#a7aec1;--faint:#6b7284;
+    --accent:#7c5cff;--cyan:#35e0e6;--line:rgba(255,255,255,.09);
+    --grad:linear-gradient(120deg,#7c5cff,#35e0e6);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Inter",system-ui,sans-serif;
+    font-weight:400;line-height:1.65;letter-spacing:-.005em;-webkit-font-smoothing:antialiased;
+    position:relative;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:radial-gradient(60% 45% at 20% 8%,rgba(124,92,255,.20),transparent 60%),
+               radial-gradient(55% 45% at 88% 20%,rgba(53,224,230,.14),transparent 60%)}
+  a{color:var(--cyan);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(28px,6vw,80px) clamp(20px,5vw,32px)}
+  .top{display:flex;justify-content:space-between;align-items:center;font-family:"JetBrains Mono",monospace;
+    font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:clamp(40px,8vh,90px)}
+  .top a{color:var(--dim)}
+  .brand{display:flex;align-items:center;gap:9px;font-family:"Inter",sans-serif;font-weight:600;
+    font-size:1.05rem;letter-spacing:.14em;color:var(--ink)}
+  .brand span{width:15px;height:15px;border-radius:5px;background:var(--grad);box-shadow:0 0 16px rgba(124,92,255,.6)}
+  h1{font-weight:600;font-size:clamp(2.3rem,7vw,3.9rem);line-height:1.04;letter-spacing:-.03em;margin-bottom:1.2rem}
+  h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:clamp(1.08rem,2.2vw,1.3rem);color:var(--dim);max-width:58ch;margin-bottom:3.4rem}
+  h2{font-weight:600;font-size:clamp(1.5rem,4vw,2.2rem);margin:3rem 0 1rem;letter-spacing:-.025em}
+  p{color:var(--dim);margin:0 0 1.1rem;max-width:64ch}
+  .tag{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--cyan);margin-bottom:1.4rem;padding:5px 11px;border-radius:20px;
+    border:1px solid var(--line);background:rgba(255,255,255,.03)}
+  ul,ol{color:var(--dim);margin:0 0 1.2rem 1.2rem}
+  li{margin:.4rem 0}
+  strong{color:var(--ink);font-weight:600}
+  code{font-family:"JetBrains Mono",monospace;font-size:.86em;background:rgba(255,255,255,.06);
+    padding:.12em .4em;border-radius:4px;color:var(--ink)}
+  pre{background:rgba(12,14,20,.7);border:1px solid var(--line);border-radius:10px;padding:18px 20px;
+    overflow-x:auto;margin:0 0 1.4rem;font-size:.82rem;line-height:1.6}
+  pre code{background:none;padding:0;color:var(--dim)}
+  .rule{height:1px;background:var(--line);margin:3rem 0}
+  .stack{list-style:none;margin:0 0 1.2rem;padding:0;display:grid;gap:2px}
+  .stack li{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .stack b{color:var(--ink);font-weight:600;min-width:130px;display:inline-block}
+  footer{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--line);font-family:"JetBrains Mono",monospace;
+    font-size:.8rem;color:var(--faint)}
+  footer a{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="../"><span aria-hidden="true"></span>AETHER</a>
+    <a href="../">← Back to site</a>
+  </div>
+
+  <span class="tag">Build guide · Site 13 of 25</span>
+  <h1>A memory product, wrapped in <em>living aurora</em>.</h1>
+  <p class="lede">AETHER is one of 25 sites designed and built by Formwork to demonstrate web design,
+    motion and taste. Here's exactly how this one was made — a real SaaS layout floating over a
+    shader — and how you can rebuild it.</p>
+
+  <h2>The idea</h2>
+  <p>The brief was a near-black, precise, motion-forward product site in the language of tools like
+    Linear and supermemory.ai. The signature move: a <strong>continuously drifting aurora
+    gradient-mesh</strong> rendered on a full-page WebGL canvas, with every panel above it built as
+    <strong>frosted glass</strong>. The blur samples the moving light behind it, so the whole page
+    feels lit from within. Everything else — tight Inter type, a bento grid, a sticky "how it works"
+    — is deliberately restrained so the glow does the talking.</p>
+
+  <h2>The stack</h2>
+  <ul class="stack">
+    <li><b>Background</b> A hand-written GLSL fragment shader on raw WebGL — no 3D library.</li>
+    <li><b>Motion</b> GSAP + ScrollTrigger for reveals, the sticky step sync, and magnetic buttons.</li>
+    <li><b>UI mockup</b> Pure HTML/SVG/CSS — a faux command bar, knowledge graph and sparkline.</li>
+    <li><b>Type</b> Inter (tight, −0.03em on display) with JetBrains Mono for labels and code.</li>
+    <li><b>Host</b> GitHub Pages, served straight from the repo's <code>main</code> branch.</li>
+  </ul>
+
+  <h2>The signature technique: a gradient-mesh</h2>
+  <p>Instead of noise ribbons, the aurora is built from a handful of soft light sources drifting on
+    slow sine paths. Each is a <strong>gaussian blob</strong> — <code>exp(-d²·s)</code> — tinted
+    violet or cyan and added over a near-black base. A little domain-warped fBm bends the whole
+    field first, so the blobs melt into one organic mesh rather than reading as separate dots.</p>
+  <pre><code>vec2 w = vec2(fbm(p*1.4 + t), fbm(p*1.4 - t));
+p += (w - 0.5) * 0.30;               // warp the domain first
+
+float blob(vec2 p, vec2 c, float s){ return exp(-dot(p-c,p-c)*s); }
+
+col += violet * 0.90 * blob(p, node1, 3.0);
+col += cyan   * 0.85 * blob(p, node2, 3.2); // ...five drifting nodes
+col *= 0.55 + 0.45 * vignette;       // keep text legible over the glow</code></pre>
+  <p>Two details keep it looking expensive: a per-pixel <strong>dither</strong> that kills colour
+    banding on the dark gradients, and a <strong>vignette</strong> that dims the edges so headline
+    text always clears 4.5:1 contrast against the field.</p>
+
+  <h2>Details that matter</h2>
+  <ul>
+    <li><strong>Frosted glass</strong> — panels use <code>backdrop-filter: blur()</code> so they refract the shader moving behind them.</li>
+    <li><strong>Sticky feature moment</strong> — the "how it works" visual is <code>position: sticky</code> and cross-fades through three stages as each step scrolls into view.</li>
+    <li><strong>Typing command bar</strong> — the hero mockup types and erases real queries; it degrades to static text under reduced-motion.</li>
+    <li><strong>Robust intro</strong> — the hero reveals via a CSS <code>.loaded</code> class on a double <code>requestAnimationFrame</code> plus a 400ms failsafe, so it never blanks if a CDN stalls.</li>
+    <li><strong>Reduced motion</strong> — one still shader frame, no drift, all content forced visible.</li>
+  </ul>
+
+  <h2>Ship it on GitHub Pages</h2>
+  <p>Every site here is static, so hosting is three commands:</p>
+  <pre><code>git init -b main && git add -A && git commit -m "ship"
+gh repo create formwork-aether --public --source=. --push
+gh api --method POST /repos/OWNER/formwork-aether/pages \
+  -f 'source[branch]=main' -f 'source[path]=/'</code></pre>
+  <p>Use <strong>relative paths</strong> (<code>./main.js</code>, not <code>/main.js</code>) because
+    project Pages live under <code>/repo-name/</code>. Add an empty <code>.nojekyll</code> file so
+    every asset serves verbatim.</p>
+
+  <div class="rule"></div>
+  <p>That's the whole recipe: one shader, glass panels, precise type, and a little scroll motion.
+    The other 24 sites each swap the central technique — particles, raymarching, kinetic type,
+    audio-reactive gradients — but the discipline is the same.</p>
+
+  <footer>Designed &amp; built by <strong>Formwork</strong> · Part of a 25-site showcase · <a href="../">Return to AETHER →</a></footer>
+</div>
+</body>
+</html>

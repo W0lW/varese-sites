@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>THE AWARD — Guide · How this was built</title>
+<meta name="description" content="How THE AWARD was designed and built by Formwork: a GSAP ScrollTrigger pinned horizontal act-sequence, clip reveals, velocity skew, and static hosting." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#0a0a0a;--ink:#f2ede2;--dim:#b3ad9f;--faint:#6f6a5f;--accent:#ff3b1d;--line:rgba(242,237,226,.14)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:"Space Mono",ui-monospace,monospace;line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(28px,6vw,80px) clamp(20px,5vw,32px)}
+  .top{display:flex;justify-content:space-between;align-items:center;font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:clamp(40px,8vh,90px)}
+  .top a{color:var(--dim)}
+  .brand{font-family:"Fraunces",serif;font-weight:900;font-size:1.3rem;letter-spacing:.02em;color:var(--ink);text-transform:none}
+  h1{font-family:"Fraunces",serif;font-weight:900;font-size:clamp(2.6rem,8vw,4.8rem);line-height:1;letter-spacing:-.02em;margin-bottom:1.2rem;font-variation-settings:"opsz" 144}
+  h1 em{color:var(--accent);font-style:italic;font-weight:600}
+  .lede{font-family:"Fraunces",serif;font-size:clamp(1.15rem,2.4vw,1.5rem);font-style:italic;color:var(--dim);max-width:56ch;margin-bottom:3.4rem;line-height:1.5}
+  h2{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(1.7rem,4vw,2.5rem);margin:3rem 0 1rem;letter-spacing:-.01em}
+  p{color:var(--dim);margin:0 0 1.1rem;max-width:64ch;font-size:.92rem}
+  .tag{display:inline-block;font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin-bottom:1.4rem}
+  ul,ol{color:var(--dim);margin:0 0 1.2rem 1.2rem;font-size:.92rem}
+  li{margin:.45rem 0}
+  strong{color:var(--ink);font-weight:700}
+  code{font-family:"Space Mono",monospace;font-size:.85em;background:rgba(255,255,255,.06);padding:.12em .4em;border-radius:3px;color:var(--ink)}
+  pre{background:#111110;border:1px solid var(--line);border-radius:6px;padding:18px 20px;overflow-x:auto;margin:0 0 1.4rem;font-size:.8rem;line-height:1.65}
+  pre code{background:none;padding:0;color:var(--dim)}
+  .rule{height:1px;background:var(--line);margin:3rem 0}
+  .stack{list-style:none;margin:0 0 1.2rem;padding:0;display:grid;gap:2px}
+  .stack li{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+  .stack b{color:var(--ink);font-weight:700;min-width:120px;display:inline-block}
+  footer{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--line);font-size:.78rem;color:var(--faint);letter-spacing:.08em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="../">THE AWARD</a>
+    <a href="../">← Back to site</a>
+  </div>
+
+  <span class="tag">Build guide · Site 15 of 25</span>
+  <h1>A manifesto, staged as a <em>title sequence.</em></h1>
+  <p class="lede">THE AWARD is one of 25 sites designed and built by Formwork to show what web
+    craft looks like when it takes itself seriously. Here is exactly how this one was made.</p>
+
+  <h2>The idea</h2>
+  <p>Most "manifesto" pages are a stack of centered paragraphs. We wanted the opposite — a
+    <strong>cinematic title sequence</strong> you scroll through, where five statements about craft
+    slide past the frame like acts in a film. The page reads its own argument out loud: the prize was
+    never the point, the work is. Editorial serif, a single vermilion, near-black grain — filmic on
+    purpose.</p>
+
+  <h2>The stack</h2>
+  <ul class="stack">
+    <li><b>Motion</b> GSAP 3.12.5 + ScrollTrigger — a pinned section with a scrubbed horizontal tween.</li>
+    <li><b>Type</b> Fraunces (variable display serif, optical sizing) with Space Mono for act numbers &amp; credits.</li>
+    <li><b>Palette</b> Near-black <code>#0a0a0a</code>, bone <code>#f2ede2</code>, one vermilion <code>#ff3b1d</code>.</li>
+    <li><b>Build</b> Plain HTML/CSS/JS in an IIFE — no framework, no bundler.</li>
+    <li><b>Host</b> GitHub Pages, straight from <code>main</code>.</li>
+  </ul>
+
+  <h2>The signature technique</h2>
+  <p>The whole page pivots on one move: <strong>pin the acts section, then translate a horizontal
+    track as the reader scrolls vertically</strong>. A single scrubbed tween drives everything, and each
+  act's headline is wiped in with a <code>clip-path</code> as it crosses the frame — using that same
+  tween as its <code>containerAnimation</code>, so the reveal is locked to horizontal position, not scroll.</p>
+  <pre><code>const horiz = gsap.to(track, {
+  x: () =&gt; -(track.scrollWidth - innerWidth), ease: 'none',
+  scrollTrigger: {
+    trigger: acts, start: 'top top', pin: true, scrub: 0.6,
+    end: () =&gt; '+=' + (track.scrollWidth - innerWidth),
+    onUpdate: self =&gt; {                 // progress bar + act counter
+      fill.style.transform = `scaleX(${self.progress})`;
+      curEl.textContent = ROMAN[Math.round(self.progress * (n - 1))];
+    }
+  }
+});
+gsap.fromTo(statement, { clipPath: 'inset(0 0 100% 0)' },
+  { clipPath: 'inset(0 0 0% 0)', ease: 'none',
+    scrollTrigger: { trigger: panel, containerAnimation: horiz,
+                     start: 'left 82%', end: 'left 34%', scrub: true } });</code></pre>
+  <p>A thin progress bar and a roman-numeral counter are updated in the tween's <code>onUpdate</code>.
+    The marquee band is skewed live by <strong>scroll velocity</strong> — the classic
+    <code>getVelocity()</code> trick, applied to an outer wrapper so it never fights the CSS marquee
+    animation underneath.</p>
+
+  <h2>Details that matter</h2>
+  <ul>
+    <li><strong>Fails open.</strong> The acts are a normal vertical stack by default; the horizontal
+      layout is switched on only after GSAP loads. If the CDN dies, you get a readable manifesto, not a blank strip.</li>
+    <li><strong>Reduced motion.</strong> <code>prefers-reduced-motion</code> forces all content visible,
+      kills the pin, the marquee, and the grain, and leaves the acts stacked vertically.</li>
+    <li><strong>Robust intro.</strong> The hero animates via a <code>.loaded</code> class on a double
+      <code>requestAnimationFrame</code> plus a 400ms failsafe, so it is never stuck blank.</li>
+    <li><strong>Optical sizing.</strong> Fraunces' <code>opsz</code> axis is pinned to 144 on the giant
+      statements for razor-thin display contrast, and left automatic elsewhere.</li>
+  </ul>
+
+  <h2>Ship it on GitHub Pages</h2>
+  <p>Every site here is static, so hosting is three commands:</p>
+  <pre><code>git init -b main &amp;&amp; git add -A &amp;&amp; git commit -m "ship"
+gh repo create formwork-award --public --source=. --push
+gh api --method POST /repos/OWNER/formwork-award/pages \
+  -f 'source[branch]=main' -f 'source[path]=/'</code></pre>
+  <p>Use <strong>relative paths</strong> (<code>./main.js</code>, not <code>/main.js</code>) because project
+    Pages live under <code>/repo-name/</code>. Add an empty <code>.nojekyll</code> file so every asset serves verbatim.</p>
+
+  <div class="rule"></div>
+  <p>That's the recipe: one pinned tween, five acts, a velocity-skewed marquee, and static hosting.
+    The other 24 sites each swap the central technique, but the discipline is the same.</p>
+
+  <footer>Designed &amp; built by <strong>Formwork</strong> · Part of a 25-site showcase · <a href="../">Return to THE AWARD →</a></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ATELIER NOIR — Guide · How this was built</title>
+<meta name="description" content="How the ATELIER NOIR site was designed and built by Formwork: a horizontal drag-scroll editorial gallery with inertia, wheel-to-horizontal reading and ground/type parallax." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,500&family=Archivo:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f2ede4;--paper-2:#e8e0d2;--ink:#0e0e0e;--dim:rgba(14,14,14,.72);
+    --faint:rgba(14,14,14,.45);--accent:#5c1a1a;--line:rgba(14,14,14,.16);
+    --serif:"Playfair Display",Georgia,serif;--sans:"Archivo",system-ui,sans-serif;--mono:"Space Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:400;line-height:1.68;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:780px;margin:0 auto;padding:clamp(30px,6vw,84px) clamp(20px,5vw,32px)}
+  .top{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:clamp(40px,8vh,86px)}
+  .top a{color:var(--dim)}
+  .brand{font-family:var(--serif);font-weight:800;font-style:italic;font-size:1.35rem;letter-spacing:.01em;color:var(--ink)}
+  .tag{display:inline-block;font-family:var(--mono);font-size:.7rem;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin-bottom:1.5rem}
+  h1{font-family:var(--serif);font-weight:800;font-size:clamp(2.5rem,8vw,4.6rem);line-height:1.02;letter-spacing:-.02em;margin-bottom:1.3rem}
+  h1 em{color:var(--accent);font-style:italic;font-weight:600}
+  .lede{font-family:var(--serif);font-size:clamp(1.15rem,2.4vw,1.5rem);color:var(--dim);max-width:56ch;margin-bottom:3.4rem;font-style:italic}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.7rem,4vw,2.5rem);margin:3rem 0 1rem;letter-spacing:-.01em}
+  p{color:var(--dim);margin:0 0 1.1rem;max-width:64ch}
+  ul,ol{color:var(--dim);margin:0 0 1.2rem 1.2rem}
+  li{margin:.45rem 0}
+  strong{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.84em;background:var(--paper-2);padding:.12em .4em;border-radius:3px;color:var(--ink)}
+  pre{background:#161310;border:1px solid var(--line);border-radius:6px;padding:18px 20px;overflow-x:auto;margin:0 0 1.4rem;font-size:.8rem;line-height:1.65}
+  pre code{background:none;padding:0;color:#e8e0d2}
+  .rule{height:1px;background:var(--line);margin:3rem 0}
+  .stack{list-style:none;margin:0 0 1.2rem;padding:0;display:grid;gap:0}
+  .stack li{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .stack b{color:var(--ink);font-weight:600;min-width:132px;display:inline-block}
+  footer{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--ink);font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;color:var(--faint)}
+  footer strong{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="../">Atelier&nbsp;Noir</a>
+    <a href="../">← Back to the issue</a>
+  </div>
+
+  <span class="tag">Build guide · Site 06 of 25</span>
+  <h1>An editorial you read <em>sideways</em>.</h1>
+  <p class="lede">ATELIER NOIR is one of 25 sites designed and built by Formwork to demonstrate
+    web design, motion and taste. Here is exactly how this one was made — and how you can do the same.</p>
+
+  <h2>The idea</h2>
+  <p>The brief was a high-fashion maison with <strong>no photography</strong> — a magazine that
+    dresses itself in type and colour instead of images. So the "looks" are duotone gradient plates:
+    each a full-height composition of an oversized Didone title, a line of editorial copy, and its
+    credits. You don't scroll them; you <strong>drag</strong> them, the way you'd turn the pages of
+    an oversized portfolio laid flat on a table.</p>
+
+  <h2>The stack</h2>
+  <ul class="stack">
+    <li><b>Signature</b> A horizontal drag-scroll gallery — pointer drag, inertia, wheel-to-horizontal, parallax. Hand-written, no carousel library.</li>
+    <li><b>Motion</b> GSAP + ScrollTrigger for the serif reveals; everything in the gallery is vanilla JS.</li>
+    <li><b>Type</b> Playfair Display (the Didone display face), Archivo (grotesk captions), Space&nbsp;Mono (the small-caps details).</li>
+    <li><b>Palette</b> Cream paper, deep ink, one oxblood accent, and six muted duotone plates.</li>
+    <li><b>Build</b> Plain HTML/CSS/JS — no bundler, no framework. Host is GitHub Pages.</li>
+  </ul>
+
+  <h2>The signature technique</h2>
+  <p>The gallery viewport is a native <code>overflow-x:auto</code> container — which is the whole
+    trick to robustness: if the script never runs, all six looks are still reachable by ordinary
+    scrolling. JavaScript then <em>enhances</em> that base. A pointer drag writes
+    <code>scrollLeft</code> directly and records velocity; on release, that velocity decays frame by
+    frame for inertia. A single <code>requestAnimationFrame</code> loop also offsets each plate's
+    background and its type by different amounts, so the ground drifts against the title as a plate
+    crosses the screen.</p>
+  <p>The detail that makes it feel right is the wheel handler. A vertical wheel becomes a horizontal
+    read — but only until you hit an edge, where the event is handed back to the page so the rest of
+    the site scrolls normally:</p>
+  <pre><code>vp.addEventListener('wheel', e =&gt; {
+  const max   = maxScroll();
+  const delta = Math.abs(e.deltaY) &gt;= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+  const atStart = vp.scrollLeft &lt;= 0;
+  const atEnd   = vp.scrollLeft &gt;= max - 1;
+  if ((delta &lt; 0 &amp;&amp; atStart) || (delta &gt; 0 &amp;&amp; atEnd)) return; // hand back to the page
+  e.preventDefault();
+  vp.scrollLeft += delta;                    // vertical wheel → horizontal read
+}, { passive: false });</code></pre>
+
+  <h2>Details that matter</h2>
+  <ul>
+    <li><strong>The "Drag" cursor</strong> — a dot that swells into a labelled disc over the gallery, and squeezes while you pull. It is only shown (and the native cursor only hidden) once JS confirms a fine pointer, so a failure never leaves you cursor-less.</li>
+    <li><strong>Touch is left alone</strong> — drag is bound to the mouse only; phones use native momentum scroll, with <code>touch-action:pan-x</code> so a vertical swipe still scrolls the page.</li>
+    <li><strong>Reduced motion</strong> — with <code>prefers-reduced-motion</code> the gallery collapses into a plain vertical stack, the cursor and parallax switch off, and every reveal is forced visible.</li>
+    <li><strong>Never a blank hero</strong> — the cover's masthead reveal is a CSS transition keyed on a <code>.loaded</code> class added on a double <code>rAF</code>, with a 400ms failsafe.</li>
+  </ul>
+
+  <h2>Ship it on GitHub Pages</h2>
+  <p>Every site here is static, so hosting is three commands:</p>
+  <pre><code>git init -b main &amp;&amp; git add -A &amp;&amp; git commit -m "ship"
+gh repo create formwork-atelier --public --source=. --push
+gh api --method POST /repos/OWNER/formwork-atelier/pages \
+  -f 'source[branch]=main' -f 'source[path]=/'</code></pre>
+  <p>Use <strong>relative paths</strong> (<code>./main.js</code>, not <code>/main.js</code>) because project
+    Pages live under <code>/repo-name/</code>. Add an empty <code>.nojekyll</code> file so every asset serves verbatim.</p>
+
+  <div class="rule"></div>
+  <p>That's the whole recipe: one native scroll container, a little velocity maths, strong type and
+    static hosting. The other 24 sites each swap the central technique — shaders, particles, kinetic
+    type, isometric 3D — but the discipline is the same.</p>
+
+  <footer>Designed &amp; built by <strong>Formwork</strong> · Part of a 25-site showcase · <a href="../">Return to ATELIER NOIR →</a></footer>
+</div>
+</body>
+</html>

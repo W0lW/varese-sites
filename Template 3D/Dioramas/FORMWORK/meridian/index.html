@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MERIDIAN — Nine bars, held like a note</title>
+<meta name="description" content="MERIDIAN builds home and professional espresso equipment tuned to the tenth of a gram and the tenth of a degree — nine bars, held like a note. A spec sheet you can feel." />
+<meta name="theme-color" content="#0B0908" />
+<meta property="og:title" content="MERIDIAN — Nine bars, held like a note" />
+<meta property="og:description" content="Precision espresso equipment. A live pressure gauge, a rolling readout, and a spec sheet you can feel." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<a class="skip" href="#hero">Skip to content</a>
+
+<!-- SIGNATURE: extraction line — scroll-linked copper fill down the left edge -->
+<div class="extraction" aria-hidden="true">
+  <span class="extraction-fill" id="extractionFill"></span>
+  <span class="extraction-pct" id="extractionPct">0%</span>
+</div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="./" aria-label="MERIDIAN home">
+    <span class="brand-word">MERIDIAN</span>
+  </a>
+  <span class="nav-badge" aria-hidden="true">EST. 1987 · OS v2.4.1</span>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#method">Method</a>
+    <a href="#process">Process</a>
+    <a href="#machines">Machines</a>
+    <a href="#care">Care</a>
+    <a href="./guide/">Guide</a>
+  </nav>
+</header>
+
+<main>
+  <!-- ==================== HERO ==================== -->
+  <section class="hero" id="hero">
+    <img class="hero-img" src="./assets/hero.jpg" width="1920" height="1080" alt="A matte-black MERIDIAN espresso machine photographed close, portafilter locked into the group head." />
+    <div class="hero-scrim" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow">Precision espresso equipment</p>
+        <h1 class="hero-title">Nine bars. <em>Held like a note.</em></h1>
+        <p class="hero-sub">Home and professional machines tuned to the tenth of a gram and the tenth
+          of a degree — so every shot lands the same way the last one did.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#machines">Explore the machines</a>
+          <a class="btn btn-ghost" href="#process">How it&rsquo;s made <span aria-hidden="true">&darr;</span></a>
+        </div>
+      </div>
+
+      <!-- SIGNATURE: live pressure gauge + machine-display readout -->
+      <figure class="gauge-panel" role="img" aria-label="Live pressure gauge running an extraction cycle: pressure ramps to nine bars and holds while the shot timer and yield count up.">
+        <div class="gauge-frame">
+          <canvas id="gauge" width="360" height="360" aria-hidden="true"></canvas>
+          <span class="gauge-cap" aria-hidden="true">BAR</span>
+        </div>
+        <div class="readout" aria-hidden="true">
+          <div class="readout-cell">
+            <span class="readout-label">TIMER</span>
+            <span class="readout-val" id="rTimer">0.0<span class="readout-unit">s</span></span>
+          </div>
+          <div class="readout-cell">
+            <span class="readout-label">PRESSURE</span>
+            <span class="readout-val" id="rPressure">0.0<span class="readout-unit">bar</span></span>
+          </div>
+          <div class="readout-cell">
+            <span class="readout-label">YIELD</span>
+            <span class="readout-val" id="rYield">0<span class="readout-unit">g</span></span>
+          </div>
+        </div>
+      </figure>
+    </div>
+
+    <!-- stat strip: odometer readouts -->
+    <ul class="stats" aria-label="Machine at a glance">
+      <li class="stat">
+        <span class="stat-val odo" data-odo="9.0" data-roll="1">9.0</span>
+        <span class="stat-unit">bar</span>
+        <span class="stat-label">Extraction pressure</span>
+      </li>
+      <li class="stat">
+        <span class="stat-val odo" data-odo="93.5" data-roll="1">93.5</span>
+        <span class="stat-unit">&deg;C</span>
+        <span class="stat-label">Brew temperature</span>
+      </li>
+      <li class="stat">
+        <span class="stat-val odo" data-odo="&pm;0.1" data-roll="1">&pm;0.1</span>
+        <span class="stat-unit">g</span>
+        <span class="stat-label">Dose accuracy</span>
+      </li>
+      <li class="stat">
+        <span class="stat-val odo" data-odo="27" data-roll="1">27</span>
+        <span class="stat-unit">s</span>
+        <span class="stat-label">Reference shot</span>
+      </li>
+    </ul>
+  </section>
+
+  <div class="ruler" role="separator" aria-hidden="true"></div>
+
+  <!-- ==================== METHOD ==================== -->
+  <section id="method" class="method">
+    <div class="section-head">
+      <p class="eyebrow">Choose your method</p>
+      <h2>One machine, <em>three rituals.</em></h2>
+      <p class="section-lead">The same nine bars behind the group head will pull a ristretto, feather a
+        pour-over, or steep overnight. Pick a method — the recipe rolls into place.</p>
+    </div>
+
+    <div class="segmented" role="tablist" aria-label="Brew method">
+      <span class="seg-thumb" id="segThumb" aria-hidden="true"></span>
+      <button class="seg" role="tab" id="tab-espresso" aria-selected="true" aria-controls="brewPanel" tabindex="0" data-method="espresso">Espresso</button>
+      <button class="seg" role="tab" id="tab-pourover" aria-selected="false" aria-controls="brewPanel" tabindex="-1" data-method="pourover">Pour-over</button>
+      <button class="seg" role="tab" id="tab-coldbrew" aria-selected="false" aria-controls="brewPanel" tabindex="-1" data-method="coldbrew">Cold Brew</button>
+    </div>
+
+    <div class="brew" id="brewPanel" role="tabpanel" tabindex="0" aria-labelledby="tab-espresso">
+      <!-- left: brew card / machine printout -->
+      <div class="brew-card">
+        <div class="brew-card-head">
+          <span class="brew-card-title" id="brewTitle">ESPRESSO</span>
+          <span class="brew-card-code" id="brewCode">PROG&nbsp;01</span>
+        </div>
+        <dl class="spec">
+          <div class="spec-row"><dt>Dose</dt><dd class="odo" data-key="dose" data-odo="18 g">18 g</dd></div>
+          <div class="spec-row"><dt>Grind</dt><dd class="spec-text" data-key="grind">fine</dd></div>
+          <div class="spec-row"><dt>Water</dt><dd class="odo" data-key="water" data-odo="40 g">40 g</dd></div>
+          <div class="spec-row"><dt>Temp</dt><dd class="odo" data-key="temp" data-odo="93.5 &deg;C">93.5 &deg;C</dd></div>
+          <div class="spec-row"><dt>Time</dt><dd class="odo" data-key="time" data-odo="27 s">27 s</dd></div>
+          <div class="spec-row"><dt>Yield</dt><dd class="odo" data-key="yield" data-odo="36 g">36 g</dd></div>
+        </dl>
+        <ol class="recipe" id="recipe">
+          <li>Purge the group, seat an 18&nbsp;g basket, tamp flat.</li>
+          <li>Pull at nine bars; first drops fall near nine seconds.</li>
+          <li>Stop at 36&nbsp;g in the cup, about 27&nbsp;seconds out.</li>
+        </ol>
+      </div>
+      <!-- right: crossfading method image -->
+      <div class="brew-art">
+        <img class="brew-img is-active" data-method="espresso" src="./assets/method-espresso.jpg" width="1200" height="800" loading="lazy" alt="A double espresso pulling into a glass, tiger-striped crema forming." />
+        <img class="brew-img" data-method="pourover" src="./assets/method-pourover.jpg" width="1200" height="800" loading="lazy" alt="A gooseneck kettle pouring a slow spiral over a paper-filtered pour-over cone." />
+        <img class="brew-img" data-method="coldbrew" src="./assets/method-coldbrew.jpg" width="1200" height="800" loading="lazy" alt="A tall glass carafe of cold brew steeping, coarse grounds suspended in cold water." />
+      </div>
+    </div>
+  </section>
+
+  <div class="ruler" role="separator" aria-hidden="true"></div>
+
+  <!-- ==================== PROCESS ==================== -->
+  <section id="process" class="process">
+    <div class="section-head">
+      <p class="eyebrow">How it&rsquo;s made</p>
+      <h2>Bean to cup, <em>in six moves.</em></h2>
+      <p class="section-lead">Nothing here is left to feel. Each step is measured, logged, and repeatable —
+        which is the only way the last step tastes like it should.</p>
+    </div>
+
+    <div class="walk">
+      <!-- left: numbered stepper -->
+      <ol class="stepper" id="stepper" aria-label="Process steps">
+        <li>
+          <button class="step is-active" type="button" data-step="0" aria-current="step">
+            <span class="step-num">01</span>
+            <span class="step-body"><span class="step-name">Bean</span>
+              <span class="step-detail">Single-origin lots, graded and hand-sorted for defects.</span></span>
+          </button>
+        </li>
+        <li>
+          <button class="step" type="button" data-step="1">
+            <span class="step-num">02</span>
+            <span class="step-body"><span class="step-name">Roast</span>
+              <span class="step-detail">Profiled to the second on a 12&nbsp;kg drum, then cooled fast.</span></span>
+          </button>
+        </li>
+        <li>
+          <button class="step" type="button" data-step="2">
+            <span class="step-num">03</span>
+            <span class="step-body"><span class="step-name">Grind</span>
+              <span class="step-detail">Stepless burrs set to the micron for the chosen method.</span></span>
+          </button>
+        </li>
+        <li>
+          <button class="step" type="button" data-step="3">
+            <span class="step-num">04</span>
+            <span class="step-body"><span class="step-name">Dose</span>
+              <span class="step-detail">18&nbsp;g &pm;0.1&nbsp;g, distributed even and tamped level.</span></span>
+          </button>
+        </li>
+        <li>
+          <button class="step" type="button" data-step="4">
+            <span class="step-num">05</span>
+            <span class="step-body"><span class="step-name">Extract</span>
+              <span class="step-detail">Nine bars, held steady while the shot finds its rhythm.</span></span>
+          </button>
+        </li>
+        <li>
+          <button class="step" type="button" data-step="5">
+            <span class="step-num">06</span>
+            <span class="step-body"><span class="step-name">Serve</span>
+              <span class="step-detail">Poured at temperature into a warmed, weighed cup.</span></span>
+          </button>
+        </li>
+      </ol>
+
+      <!-- right: sticky image panel -->
+      <div class="walk-panel">
+        <div class="walk-figure">
+          <img class="walk-img is-active" data-step="0" src="./assets/step-bean.jpg" width="1200" height="900" loading="lazy" alt="Green and roasted coffee beans sorted on a steel tray." />
+          <img class="walk-img" data-step="1" src="./assets/step-roast.jpg" width="1200" height="900" loading="lazy" alt="Beans tumbling in the glass door of a drum roaster, mid-roast." />
+          <img class="walk-img" data-step="2" src="./assets/step-grind.jpg" width="1200" height="900" loading="lazy" alt="Ground coffee falling from stepless conical burrs." />
+          <img class="walk-img" data-step="3" src="./assets/step-dose.jpg" width="1200" height="900" loading="lazy" alt="A leveled dose of coffee in a portafilter on a scale reading 18.0 grams." />
+          <img class="walk-img" data-step="4" src="./assets/step-extract.jpg" width="1200" height="900" loading="lazy" alt="Espresso extracting from a bottomless portafilter in a steady stream." />
+          <img class="walk-img" data-step="5" src="./assets/step-serve.jpg" width="1200" height="900" loading="lazy" alt="A finished espresso poured into a warm ceramic cup." />
+          <span class="walk-progress" id="walkProgress" aria-hidden="true"></span>
+        </div>
+        <p class="walk-caption" id="walkCaption" aria-live="polite">Step 01 — Bean · single-origin lots, graded and hand-sorted.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ruler" role="separator" aria-hidden="true"></div>
+
+  <!-- ==================== MACHINES ==================== -->
+  <section id="machines" class="machines">
+    <div class="section-head">
+      <p class="eyebrow">Three machines</p>
+      <h2>Pick the one <em>you&rsquo;ll grow into.</em></h2>
+      <p class="section-lead">Every machine holds nine bars. What changes is how much coffee you can ask of it
+        before it needs a breath — from one kitchen counter to a full service bar.</p>
+    </div>
+
+    <div class="tiers">
+      <article class="tier">
+        <div class="tier-art">
+          <img src="./assets/tier-home.jpg" width="900" height="1200" loading="lazy" alt="MK-01 Home, a compact single-boiler MERIDIAN espresso machine." />
+        </div>
+        <p class="tier-model">MK-01</p>
+        <h3 class="tier-name">Home</h3>
+        <p class="tier-desc">A single-boiler machine for the barista who measures the water and weighs
+          the beans. Small footprint, serious about temperature.</p>
+        <dl class="tier-spec">
+          <div><dt>Boiler</dt><dd>single &middot; 1.6 L</dd></div>
+          <div><dt>Pressure</dt><dd>9 bar</dd></div>
+          <div><dt>PID</dt><dd>&pm;0.5 &deg;C</dd></div>
+          <div><dt>Footprint</dt><dd>24 cm</dd></div>
+        </dl>
+        <p class="tier-price"><span class="odo" data-odo="$1,450" data-roll="1">$1,450</span></p>
+        <a class="btn btn-primary tier-cta" href="#care">Reserve <span aria-hidden="true">&rarr;</span></a>
+      </article>
+
+      <article class="tier tier-featured">
+        <span class="tier-flag">MOST BUILT</span>
+        <div class="tier-art">
+          <img src="./assets/tier-pro.jpg" width="900" height="1200" loading="lazy" alt="MK-02 Pro, a dual-boiler MERIDIAN espresso machine with a saturated group." />
+        </div>
+        <p class="tier-model">MK-02</p>
+        <h3 class="tier-name">Pro</h3>
+        <p class="tier-desc">Dual boiler and a saturated group — steam and extraction hold their own line,
+          so back-to-back shots taste like the first.</p>
+        <dl class="tier-spec">
+          <div><dt>Boiler</dt><dd>dual &middot; 3.4 L</dd></div>
+          <div><dt>Pressure</dt><dd>9 bar</dd></div>
+          <div><dt>PID</dt><dd>&pm;0.1 &deg;C</dd></div>
+          <div><dt>Footprint</dt><dd>34 cm</dd></div>
+        </dl>
+        <p class="tier-price"><span class="odo" data-odo="$3,900" data-roll="1">$3,900</span></p>
+        <a class="btn btn-primary tier-cta" href="#care">Reserve <span aria-hidden="true">&rarr;</span></a>
+      </article>
+
+      <article class="tier">
+        <div class="tier-art">
+          <img src="./assets/tier-commercial.jpg" width="900" height="1200" loading="lazy" alt="MK-03 Commercial, a three-group plumbed MERIDIAN espresso machine for a service bar." />
+        </div>
+        <p class="tier-model">MK-03</p>
+        <h3 class="tier-name">Commercial</h3>
+        <p class="tier-desc">Three groups, plumbed and volumetric, built to run a rush without flinching.
+          For the bar that never really closes.</p>
+        <dl class="tier-spec">
+          <div><dt>Groups</dt><dd>three</dd></div>
+          <div><dt>Boiler</dt><dd>14 L</dd></div>
+          <div><dt>Pressure</dt><dd>9 bar</dd></div>
+          <div><dt>Flow</dt><dd>volumetric</dd></div>
+        </dl>
+        <p class="tier-price"><span class="odo" data-odo="$11,200" data-roll="1">$11,200</span></p>
+        <a class="btn btn-primary tier-cta" href="#care">Reserve <span aria-hidden="true">&rarr;</span></a>
+      </article>
+    </div>
+  </section>
+
+  <div class="ruler" role="separator" aria-hidden="true"></div>
+
+  <!-- ==================== CARE ==================== -->
+  <section id="care" class="care">
+    <div class="section-head">
+      <p class="eyebrow">Keep it running</p>
+      <h2>A machine is a <em>relationship.</em></h2>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <p class="plan-price">Included</p>
+        <h3 class="plan-name">Essential</h3>
+        <p class="plan-line">Lifetime firmware and the full maintenance guides. Every machine ships with it.</p>
+      </div>
+      <div class="plan">
+        <p class="plan-price"><span class="odo" data-odo="$12" data-roll="1">$12</span><span class="plan-per">/mo</span></p>
+        <h3 class="plan-name">Extended</h3>
+        <p class="plan-line">Wear parts and gaskets covered, with priority turnaround at the bench.</p>
+      </div>
+      <div class="plan">
+        <p class="plan-price"><span class="odo" data-odo="$49" data-roll="1">$49</span><span class="plan-per">/mo</span></p>
+        <h3 class="plan-name">Resident</h3>
+        <p class="plan-line">An on-site technician on call — for commercial bars that can&rsquo;t go dark.</p>
+      </div>
+    </div>
+    <div class="care-cta">
+      <a class="btn btn-primary" href="mailto:service@meridian.example">Talk to a technician</a>
+    </div>
+  </section>
+</main>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a class="brand" href="./" aria-label="MERIDIAN home"><span class="brand-word">MERIDIAN</span></a>
+      <p class="footer-blurb">Precision espresso equipment, built to be measured — and to hold its line.</p>
+    </div>
+    <nav class="footer-cols" aria-label="Footer">
+      <div class="footer-col">
+        <p class="fc-h">Explore</p>
+        <a href="#method">Method</a>
+        <a href="#process">Process</a>
+        <a href="#machines">Machines</a>
+        <a href="#care">Care</a>
+        <a href="./guide/">Guide</a>
+      </div>
+      <div class="footer-col footer-col-badges">
+        <p class="fc-h">Hardware</p>
+        <div class="badges">
+          <span class="badge badge-outline">OPEN HARDWARE</span>
+          <span class="badge">OS <span class="odo" data-odo="2.4.1" data-roll="1">2.4.1</span></span>
+          <span class="badge">MIT</span>
+        </div>
+      </div>
+    </nav>
+  </div>
+  <div class="footer-bottom">
+    <span>MERIDIAN is a fictional brand — site 26 of 27 in the Formwork collection</span>
+    <span><a href="https://bswxyz.github.io/formwork/">the full collection &rarr;</a></span>
+  </div>
+</footer>
+
+<script src="./main.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PHOSPHOR — Guide · How this was built</title>
+<meta name="description" content="How the PHOSPHOR terminal site was built with Formwork: a CSS CRT overlay, a typed boot sequence, and a real interactive command line." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#020402;--p:#4dff88;--dim:#2ea85a;--faint:#1c6b3a;--accent:#ffb000;--line:rgba(77,255,136,.18)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--p);font-family:"IBM Plex Mono",monospace;line-height:1.7;text-shadow:0 0 6px rgba(77,255,136,.4)}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--faint)}a:hover{background:var(--accent);color:var(--bg);text-shadow:none}
+  .crt{position:fixed;inset:0;z-index:200;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0,transparent 2px,rgba(0,0,0,.28) 3px);background-size:100% 3px}
+  .wrap{max-width:740px;margin:0 auto;padding:clamp(28px,6vw,80px) clamp(20px,5vw,32px);position:relative;z-index:2}
+  .top{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;color:var(--dim);margin-bottom:clamp(40px,8vh,80px)}
+  .top a{color:var(--dim);border:0}
+  .brand{color:var(--p);font-size:1.1rem}
+  .tag{display:inline-block;font-size:.76rem;letter-spacing:.1em;color:var(--accent);margin-bottom:1.2rem}
+  h1{font-family:"VT323",monospace;font-size:clamp(2.8rem,9vw,5.2rem);line-height:.95;margin-bottom:1.2rem;text-shadow:0 0 16px rgba(77,255,136,.4)}
+  h1 em{color:var(--accent);font-style:normal}
+  .lede{font-size:clamp(1.05rem,2.2vw,1.3rem);color:var(--dim);max-width:58ch;margin-bottom:3rem}
+  h2{font-family:"VT323",monospace;font-size:clamp(1.8rem,4.5vw,2.8rem);margin:2.6rem 0 1rem;color:var(--p)}
+  h2::before{content:"$ ";color:var(--dim)}
+  p{color:var(--dim);margin:0 0 1.1rem;max-width:66ch}
+  strong{color:var(--p);font-weight:500}
+  ul{color:var(--dim);margin:0 0 1.2rem 1.2rem}li{margin:.4rem 0}
+  code{color:var(--accent);background:rgba(77,255,136,.08);padding:.1em .4em;border-radius:2px}
+  pre{background:rgba(6,14,8,.6);border:1px solid var(--line);border-radius:4px;padding:16px 18px;overflow-x:auto;margin:0 0 1.4rem;font-size:.82rem;line-height:1.6;text-shadow:none}
+  pre code{color:var(--dim);background:none;padding:0}
+  .rule{height:1px;background:var(--line);margin:2.6rem 0}
+  footer{margin-top:3.4rem;padding-top:1.6rem;border-top:1px solid var(--faint);font-size:.8rem;color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="crt" aria-hidden="true"></div>
+<div class="wrap">
+  <div class="top"><a class="brand" href="../">◈ PHOSPHOR</a><a href="../">← back to site</a></div>
+  <span class="tag">build guide · site 07 of 25</span>
+  <h1>A terminal that <em>boots</em>.</h1>
+  <p class="lede">PHOSPHOR is one of 25 sites built by Formwork. There's no 3D and no canvas here —
+    just CSS light tricks and a little state machine that makes a web page feel like a CRT.</p>
+
+  <h2>the idea</h2>
+  <p>Everyone remembers green-on-black terminals as <em>warmer</em> than they were. PHOSPHOR leans
+    into that nostalgia: a boot log you can actually read, a glowing banner, and a command line that
+    answers back. The whole personality comes from light, type, and timing.</p>
+
+  <h2>the CRT look</h2>
+  <p>Three stacked, pointer-transparent layers over the page do all the work:</p>
+  <ul>
+    <li><strong>Scanlines</strong> — a <code>repeating-linear-gradient</code> of thin dark bands.</li>
+    <li><strong>Vignette</strong> — a radial gradient darkening the corners like curved glass.</li>
+    <li><strong>Flicker</strong> — a faint green wash whose opacity steps a few times a second.</li>
+  </ul>
+  <pre><code>.scan{ background:
+  repeating-linear-gradient(0deg, transparent 0 2px, rgba(0,0,0,.28) 3px);
+  background-size:100% 3px; }</code></pre>
+  <p>Every glowing element just gets a green <code>text-shadow</code> — that's the phosphor bloom.</p>
+
+  <h2>the boot + the shell</h2>
+  <p>A tiny loop prints the boot lines one at a time on a jittered timer, drops a VT323 banner, then
+    hands control to a real command parser. Input goes to an off-screen <code>&lt;input&gt;</code>
+    mirrored to a fake caret, so it works with a keyboard <em>and</em> a phone:</p>
+  <pre><code>const [name, ...args] = cmd.split(/\s+/);
+const fn = COMMANDS[name.toLowerCase()];
+fn ? print(fn(args)) : print(`command not found: ${name}`);</code></pre>
+  <p>Try <code>help</code>, <code>neofetch</code>, <code>whoami</code>, or <code>guide</code> on the site.
+    Under <code>prefers-reduced-motion</code> the boot prints instantly and the flicker stops.</p>
+
+  <h2>ship it on github pages</h2>
+  <pre><code>git init -b main &amp;&amp; git add -A &amp;&amp; git commit -m "ship"
+gh repo create formwork-phosphor --public --source=. --push
+gh api --method POST /repos/OWNER/formwork-phosphor/pages \
+  -f 'source[branch]=main' -f 'source[path]=/'</code></pre>
+
+  <div class="rule"></div>
+  <p>No frameworks, no images — a couple of gradients, one monospace font, and a fifty-line shell.</p>
+  <footer>designed &amp; built by <strong>Formwork</strong> · part of a 25-site showcase · <a href="../">return to PHOSPHOR →</a></footer>
+</div>
+</body>
+</html>

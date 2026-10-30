@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script>document.documentElement.classList.add('js')</script>
+<title>PHOSPHOR OS — an operating system for people who miss the future</title>
+<meta name="description" content="PHOSPHOR is a fictional operating system rendered as a living CRT terminal — boot sequence, scanlines, phosphor glow, and a real command line." />
+<meta name="theme-color" content="#020402" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<div class="crt" aria-hidden="true"><div class="scan"></div><div class="glow"></div><div class="flicker"></div></div>
+
+<header class="nav">
+  <a class="brand" href="./">◈ PHOSPHOR<span class="cur">_</span></a>
+  <nav class="nav-links">
+    <a href="#system">system</a>
+    <a href="#programs">programs</a>
+    <a href="./guide/">guide</a>
+    <span class="status" aria-hidden="true">● ONLINE</span>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="terminal" id="terminal">
+      <div class="term-bar" aria-hidden="true"><span></span><span></span><span></span><p>tty0 — phosphor@localhost</p></div>
+      <div class="term-body" id="termBody">
+        <pre class="boot" id="boot" aria-label="Boot log"></pre>
+        <pre class="ascii" id="ascii" aria-hidden="true"></pre>
+        <div class="lines" id="lines"></div>
+        <div class="prompt-line" id="promptLine" hidden>
+          <span class="ps1">phosphor@localhost:~$</span>
+          <span class="input" id="cmdEcho"></span><span class="caret">▊</span>
+        </div>
+        <input id="cmd" class="cmd-input" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="terminal command input" />
+      </div>
+    </div>
+    <p class="hint reveal">type <b>help</b> and press <b>enter</b> · or just start scrolling ↓</p>
+  </section>
+
+  <section id="system" class="doc">
+    <p class="doc-tag">$ man phosphor</p>
+    <h2 class="glitch" data-text="PHOSPHOR(1)">PHOSPHOR(1)</h2>
+    <div class="doc-grid">
+      <div><h3>NAME</h3><p>phosphor — an operating system for people who miss the future that never shipped.</p></div>
+      <div><h3>SYNOPSIS</h3><p>A single-user environment where every window is a text window and the cursor never stops blinking. No notifications. No feed. Just you and the machine.</p></div>
+      <div><h3>DESCRIPTION</h3><p>Green light on black glass. A boot sequence you can read. Software that respects your attention because it barely has a UI to distract you with.</p></div>
+    </div>
+  </section>
+
+  <section id="programs" class="doc alt">
+    <p class="doc-tag">$ ls /usr/bin</p>
+    <h2>Programs</h2>
+    <ul class="prog-list">
+      <li><span class="p-name">compose</span><span class="p-desc">a writing room with no toolbar</span><span class="p-size">14K</span></li>
+      <li><span class="p-name">signal</span><span class="p-desc">messages that arrive once, then vanish</span><span class="p-size">22K</span></li>
+      <li><span class="p-name">atlas</span><span class="p-desc">a map of everything you've read</span><span class="p-size">61K</span></li>
+      <li><span class="p-name">metronome</span><span class="p-desc">time, made visible and quiet</span><span class="p-size">8K</span></li>
+      <li><span class="p-name">phosphor-fm</span><span class="p-desc">a radio that only plays at night</span><span class="p-size">33K</span></li>
+    </ul>
+  </section>
+
+  <section class="doc manifesto">
+    <p class="doc-tag">$ cat /etc/manifesto</p>
+    <blockquote class="reveal">
+      <p>“We wanted the computer to feel like a <em>place</em> again —</p>
+      <p>a small, green, glowing room where the only thing asking for your</p>
+      <p>attention is the blinking cursor, waiting for you to begin.”</p>
+    </blockquote>
+  </section>
+</main>
+
+<footer class="footer">
+  <pre class="foot-ascii" aria-hidden="true">╔═══════════════════════════════╗
+║  PHOSPHOR OS · build 2.6.0    ║
+╚═══════════════════════════════╝</pre>
+  <div class="foot-bottom">
+    <span>© 2026 PHOSPHOR SYSTEMS</span>
+    <span>designed &amp; built by Formwork · <a href="./guide/">how this was built →</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="./main.js"></script>
+</body>
+</html>

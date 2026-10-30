@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VELOCITY — AI code review that keeps up with your commits</title>
+<meta name="description" content="VELOCITY reviews every pull request the instant it opens — catching bugs, security holes and regressions before a human looks. Merge with confidence, not hope." />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="VELOCITY — AI code review at the speed of your commits" />
+<meta property="og:description" content="Every pull request, reviewed in seconds. Bugs, security, regressions — caught before a human looks." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<a class="skip" href="#hero">Skip to content</a>
+
+<header class="nav" id="nav">
+  <a class="brand" href="./" aria-label="VELOCITY home">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M4 4l7 8-7 8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 4l7 8-7 8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/></svg>
+    </span>
+    <span class="brand-word">VELOCITY</span>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#features">Product</a>
+    <a href="#pipeline">Pipeline</a>
+    <a href="#proof">Customers</a>
+    <a href="./guide/">Guide</a>
+    <a class="ghstar" href="#cta" aria-label="Star on GitHub, 24.9 thousand stars">
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor"><path d="M8 .25l2.06 4.17 4.6.67-3.33 3.25.79 4.58L8 10.98l-4.12 2.17.79-4.58L1.34 5.09l4.6-.67L8 .25z"/></svg>
+      <span class="ghstar-n">24.9k</span>
+    </a>
+    <a class="nav-cta magnetic" href="#cta">Start free</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" id="hero">
+    <canvas id="grid" aria-hidden="true"></canvas>
+    <div class="hero-grid-fade" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <a class="badge reveal" href="#pipeline">
+          <span class="badge-dot" aria-hidden="true"></span>
+          <span class="badge-tag">v3.0</span>
+          Agentic review is live
+          <span class="badge-arrow" aria-hidden="true">→</span>
+        </a>
+        <h1 class="hero-title">
+          <span class="line"><span>Every pull request,</span></span>
+          <span class="line"><span>reviewed in</span> <em>seconds.</em></span>
+        </h1>
+        <p class="hero-sub reveal">VELOCITY reads every diff the moment it opens — flagging bugs,
+          security holes and regressions before a human ever looks. Ship on green, not on faith.</p>
+        <div class="hero-cta reveal">
+          <a class="btn btn-primary magnetic" href="#cta">Start reviewing free</a>
+          <button class="cmd" id="copyCmd" type="button" aria-label="Copy install command">
+            <span class="cmd-prompt" aria-hidden="true">$</span>
+            <span class="cmd-text">npx velocity init</span>
+            <span class="cmd-copy" id="copyState" aria-hidden="true">copy</span>
+          </button>
+        </div>
+        <ul class="hero-facts reveal" aria-label="At a glance">
+          <li><b>0.8s</b> median first comment</li>
+          <li><b>50+</b> languages</li>
+          <li><b>SOC 2</b> Type II</li>
+        </ul>
+      </div>
+
+      <!-- SIGNATURE: a live PR review that types itself out -->
+      <div class="term reveal" id="term" aria-label="Live pull-request review from VELOCITY">
+        <div class="term-bar">
+          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="term-file">src/api/<b>users.ts</b></span>
+          <span class="term-branch">fix/user-lookup</span>
+          <span class="term-status" aria-live="polite">
+            <span class="status-live"><span class="spin" aria-hidden="true"></span>reviewing</span>
+            <span class="status-done"><span class="tick" aria-hidden="true">✓</span>1 issue · resolved</span>
+          </span>
+        </div>
+        <div class="term-body">
+          <div class="code" role="img" aria-label="Diff of users.ts with a fix suggested by VELOCITY">
+            <div class="code-line" data-n="11" data-g="·"><span class="ln">11</span><span class="gut">·</span><span class="code-inner"><span class="k">export</span> <span class="k">async</span> <span class="k">function</span> <span class="fn">getUser</span>(id: <span class="ty">string</span>) {</span></div>
+            <div class="code-line del" data-n="12" data-g="-"><span class="ln">12</span><span class="gut">-</span><span class="code-inner">  <span class="k">const</span> q = <span class="s">`SELECT * FROM users WHERE id = <span class="danger">${id}</span>`</span></span></div>
+            <div class="code-line del" data-n="13" data-g="-"><span class="ln">13</span><span class="gut">-</span><span class="code-inner">  <span class="k">const</span> { rows } = <span class="k">await</span> db.<span class="fn">query</span>(q)</span></div>
+            <div class="code-line add" data-n="12" data-g="+"><span class="ln">12</span><span class="gut">+</span><span class="code-inner">  <span class="k">const</span> q = <span class="s">`SELECT * FROM users WHERE id = $1`</span></span></div>
+            <div class="code-line add" data-n="13" data-g="+"><span class="ln">13</span><span class="gut">+</span><span class="code-inner">  <span class="k">const</span> { rows } = <span class="k">await</span> db.<span class="fn">query</span>(q, [id])</span></div>
+            <div class="code-line" data-n="14" data-g="·"><span class="ln">14</span><span class="gut">·</span><span class="code-inner">  <span class="k">return</span> rows[<span class="num">0</span>]?.email ?? <span class="k">null</span></span></div>
+            <div class="code-line" data-n="15" data-g="·"><span class="ln">15</span><span class="gut">·</span><span class="code-inner">}</span></div>
+          </div>
+
+          <div class="term-comment" id="termComment">
+            <div class="tc-head">
+              <span class="tc-avatar" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none"><path d="M4 4l7 8-7 8M12 4l7 8-7 8" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span class="tc-name">velocity</span>
+              <span class="tc-bot">bot</span>
+              <span class="tc-time">reviewed in 0.8s</span>
+              <span class="tc-sev">HIGH</span>
+            </div>
+            <p class="tc-body"><b>SQL injection.</b> <code>id</code> is interpolated straight into the query,
+              so a value like <code>' OR '1'='1</code> returns the entire table. Bind it as a parameter instead —
+              I drafted the fix above.</p>
+            <div class="tc-actions">
+              <span class="tc-apply">✓ Suggestion applied</span>
+              <span class="tc-dismiss">Dismiss</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-cue reveal" aria-hidden="true"><span></span></div>
+  </section>
+
+  <!-- logo marquee -->
+  <section class="logos" aria-label="Teams shipping on VELOCITY">
+    <p class="logos-label">Trusted by teams shipping fast</p>
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>NORTHWIND</span><i>/</i><span>Hyperplane</span><i>/</i><span>LEDGERLY</span><i>/</i>
+        <span>Cobalt</span><i>/</i><span>FATHOM</span><i>/</i><span>Quanta</span><i>/</i>
+        <span>MERIDIAN</span><i>/</i><span>Driftwood</span><i>/</i><span>SUBSTRATE</span><i>/</i>
+        <span>Kelvin</span><i>/</i>
+        <span>NORTHWIND</span><i>/</i><span>Hyperplane</span><i>/</i><span>LEDGERLY</span><i>/</i>
+        <span>Cobalt</span><i>/</i><span>FATHOM</span><i>/</i><span>Quanta</span><i>/</i>
+        <span>MERIDIAN</span><i>/</i><span>Driftwood</span><i>/</i><span>SUBSTRATE</span><i>/</i>
+        <span>Kelvin</span><i>/</i>
+      </div>
+    </div>
+  </section>
+
+  <!-- feature row -->
+  <section id="features" class="features">
+    <div class="section-head">
+      <p class="kicker reveal">[ 01 ] Why teams switch</p>
+      <h2 class="reveal">Faster than the wait,<br>sharper than the checklist.</h2>
+    </div>
+    <div class="feat-grid">
+      <article class="feat reveal">
+        <div class="feat-metric"><span class="feat-num" data-count="0.8" data-suffix="s" data-dec="1">0.8s</span></div>
+        <h3>Reviews before CI boots</h3>
+        <p>The instant a PR opens, VELOCITY reads the diff in context and posts its first comment —
+          usually before your test runner has finished spinning up.</p>
+        <span class="feat-tag">// median latency</span>
+      </article>
+      <article class="feat reveal">
+        <div class="feat-metric"><span class="feat-num" data-count="98.3" data-suffix="%" data-dec="1">98.3%</span></div>
+        <h3>Real bugs, not nits</h3>
+        <p>Tuned on 40,000 merged regressions to catch logic errors, race conditions and injection —
+          and to stay quiet about the whitespace your linter already owns.</p>
+        <span class="feat-tag">// recall on benchmark</span>
+      </article>
+      <article class="feat reveal">
+        <div class="feat-metric"><span class="feat-num" data-count="6.5" data-suffix="h" data-dec="1">6.5h</span></div>
+        <h3>Hours back every week</h3>
+        <p>Per developer, per week — reclaimed from review threads, context-switching and the
+          "can someone take a look?" ping that stalls every merge.</p>
+        <span class="feat-tag">// saved / dev / week</span>
+      </article>
+    </div>
+  </section>
+
+  <!-- pipeline diagram -->
+  <section id="pipeline" class="pipeline">
+    <div class="section-head">
+      <p class="kicker reveal">[ 02 ] The pipeline</p>
+      <h2 class="reveal">From <em>push</em> to <em>merge</em>,<br>reviewed on the way through.</h2>
+      <p class="section-lead reveal">VELOCITY sits inside the path your code already takes. No new dashboard to babysit —
+        it reads, reasons and reports at each stage, then gets out of the way.</p>
+    </div>
+    <div class="pipe-scroll">
+      <div class="pipe-inner">
+        <svg id="pipeSvg" class="pipe-svg" viewBox="0 0 1160 300" role="img" aria-label="Pipeline: push, index, review, verify, merge — each stage annotated">
+          <defs>
+            <linearGradient id="edgeGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="var(--accent)"/>
+              <stop offset="1" stop-color="var(--accent-2)"/>
+            </linearGradient>
+          </defs>
+          <!-- edges -->
+          <g class="edges" fill="none" stroke="url(#edgeGrad)" stroke-width="2">
+            <line class="edge" x1="182" y1="150" x2="286" y2="150"/>
+            <line class="edge" x1="418" y1="150" x2="522" y2="150"/>
+            <line class="edge" x1="654" y1="150" x2="758" y2="150"/>
+            <line class="edge" x1="890" y1="150" x2="994" y2="150"/>
+          </g>
+          <circle class="pulse" r="4.5" cx="182" cy="150" fill="var(--accent-2)"/>
+          <!-- nodes -->
+          <g class="node" data-i="0">
+            <rect x="42" y="108" width="140" height="84" rx="12"/>
+            <text class="n-ico" x="64" y="134">›_</text>
+            <text class="n-title" x="64" y="156">Push</text>
+            <text class="n-sub" x="64" y="176">git push origin</text>
+          </g>
+          <g class="node" data-i="1">
+            <rect x="278" y="108" width="140" height="84" rx="12"/>
+            <text class="n-ico" x="300" y="134">◫</text>
+            <text class="n-title" x="300" y="156">Index</text>
+            <text class="n-sub" x="300" y="176">maps the repo graph</text>
+          </g>
+          <g class="node" data-i="2">
+            <rect x="514" y="108" width="140" height="84" rx="12"/>
+            <text class="n-ico" x="536" y="134">✶</text>
+            <text class="n-title" x="536" y="156">Review</text>
+            <text class="n-sub" x="536" y="176">reasons about intent</text>
+          </g>
+          <g class="node" data-i="3">
+            <rect x="750" y="108" width="140" height="84" rx="12"/>
+            <text class="n-ico" x="772" y="134">✓</text>
+            <text class="n-title" x="772" y="156">Verify</text>
+            <text class="n-sub" x="772" y="176">runs impacted tests</text>
+          </g>
+          <g class="node" data-i="4">
+            <rect x="986" y="108" width="140" height="84" rx="12"/>
+            <text class="n-ico" x="1008" y="134">⤳</text>
+            <text class="n-title" x="1008" y="156">Merge</text>
+            <text class="n-sub" x="1008" y="176">ships on green</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <p class="pipe-hint" aria-hidden="true">swipe the pipeline →</p>
+  </section>
+
+  <!-- metrics band -->
+  <section class="metrics" aria-label="VELOCITY by the numbers">
+    <div class="metrics-grid">
+      <div class="metric reveal">
+        <span class="metric-num" data-count="4200000" data-suffix="M" data-scale="1000000" data-dec="1">4.2M</span>
+        <span class="metric-label">pull requests reviewed</span>
+      </div>
+      <div class="metric reveal">
+        <span class="metric-num" data-count="1900000" data-suffix="M" data-scale="1000000" data-dec="1">1.9M</span>
+        <span class="metric-label">bugs caught before prod</span>
+      </div>
+      <div class="metric reveal">
+        <span class="metric-num" data-count="312000" data-suffix="K" data-scale="1000" data-dec="0">312K</span>
+        <span class="metric-label">engineer-hours saved</span>
+      </div>
+      <div class="metric reveal">
+        <span class="metric-num" data-count="8400" data-suffix="" data-scale="1" data-dec="0" data-comma="1">8,400</span>
+        <span class="metric-label">teams shipping faster</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- testimonial -->
+  <section id="proof" class="proof">
+    <blockquote class="quote reveal">
+      <p>“We archived our <em>#waiting-on-review</em> channel. VELOCITY comments on a PR before we've
+        finished writing the description — and it catches the edge cases our staff engineers skim past.”</p>
+      <footer>
+        <span class="q-avatar" aria-hidden="true">PN</span>
+        <span class="q-who"><b>Priya Nair</b><i>VP Engineering · Northwind</i></span>
+      </footer>
+    </blockquote>
+  </section>
+
+  <!-- big CTA -->
+  <section id="cta" class="cta-band">
+    <div class="cta-inner">
+      <p class="kicker reveal">[ 03 ] Ship on green</p>
+      <h2 class="cta-title reveal">Put your reviews<br>on <em>autopilot.</em></h2>
+      <p class="cta-sub reveal">Install in a minute, review your next PR for free. No card, no seat minimums,
+        no migration — VELOCITY plugs into the repos you already have.</p>
+      <div class="hero-cta reveal">
+        <a class="btn btn-primary magnetic" href="#cta">Start reviewing free</a>
+        <button class="cmd" id="copyCmd2" type="button" aria-label="Copy install command">
+          <span class="cmd-prompt" aria-hidden="true">$</span>
+          <span class="cmd-text">npx velocity init</span>
+          <span class="cmd-copy" id="copyState2" aria-hidden="true">copy</span>
+        </button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a class="brand" href="./" aria-label="VELOCITY home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M4 4l7 8-7 8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 4l7 8-7 8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity=".45"/></svg>
+        </span>
+        <span class="brand-word">VELOCITY</span>
+      </a>
+      <p class="footer-blurb">AI code review that reads like your best engineer — and never sleeps.</p>
+    </div>
+    <nav class="footer-cols" aria-label="Footer">
+      <div class="footer-col">
+        <p class="fc-h">Product</p>
+        <a href="#features">Review engine</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#cta">Pricing</a>
+      </div>
+      <div class="footer-col">
+        <p class="fc-h">Resources</p>
+        <a href="./guide/">Build guide</a>
+        <a href="#pipeline">How it works</a>
+        <a href="#proof">Customers</a>
+      </div>
+      <div class="footer-col">
+        <p class="fc-h">Company</p>
+        <a href="#hero">Manifesto</a>
+        <a href="#cta">Careers</a>
+        <a href="#cta">Security</a>
+      </div>
+    </nav>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 VELOCITY LABS</span>
+    <span>Designed &amp; built by Formwork · <a href="./guide/">How this was built →</a></span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="./main.js"></script>
+</body>
+</html>

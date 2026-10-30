@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CLAY — Guide · How this was built</title>
+<meta name="description" content="How the CLAY site was designed and built by Formwork: a pure-CSS claymorphism system, sine-driven floating shapes, and static hosting on GitHub Pages." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --accent:#b9a2ff;          /* CLAY's accent */
+    --grape:#7c5cff;
+    --cream:#fdf6ee;--cream-2:#fff9f1;
+    --ink:#2c2838;--dim:#6b6478;--faint:#9b93a8;
+    --line:rgba(124,92,255,.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--cream);color:var(--ink);
+    font-family:"Nunito",system-ui,-apple-system,sans-serif;font-weight:500;line-height:1.68;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--grape)}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:760px;margin:0 auto;padding:clamp(28px,6vw,80px) clamp(20px,5vw,32px)}
+  .top{display:flex;justify-content:space-between;align-items:center;
+    font-family:"Fredoka",sans-serif;font-size:.95rem;color:var(--dim);margin-bottom:clamp(36px,7vh,72px)}
+  .brand{display:inline-flex;align-items:center;gap:8px;font-family:"Fredoka",sans-serif;
+    font-weight:600;font-size:1.5rem;color:var(--ink)}
+  .brand span{width:14px;height:14px;border-radius:50%;background:var(--grape);
+    box-shadow:inset 2px 2px 3px rgba(255,255,255,.6),inset -2px -3px 4px rgba(38,20,64,.3)}
+  h1{font-family:"Fredoka",sans-serif;font-weight:600;font-size:clamp(2.4rem,7vw,4rem);
+    line-height:1.02;letter-spacing:-.02em;margin-bottom:1.2rem}
+  h1 em{color:var(--grape);font-style:normal}
+  .lede{font-size:clamp(1.1rem,2.2vw,1.32rem);color:var(--dim);max-width:56ch;margin-bottom:3rem}
+  h2{font-family:"Fredoka",sans-serif;font-weight:600;font-size:clamp(1.6rem,4vw,2.3rem);
+    margin:2.8rem 0 1rem;letter-spacing:-.01em}
+  p{color:var(--dim);margin:0 0 1.1rem;max-width:64ch}
+  strong{color:var(--ink);font-weight:700}
+  .tag{display:inline-block;font-family:"Fredoka",sans-serif;font-weight:600;font-size:.85rem;
+    color:var(--grape);background:rgba(124,92,255,.1);padding:6px 15px;border-radius:999px;margin-bottom:1.4rem}
+  ul{color:var(--dim);margin:0 0 1.2rem 1.1rem}
+  li{margin:.45rem 0}
+  code{font-family:"JetBrains Mono",monospace;font-size:.85em;background:rgba(124,92,255,.1);
+    padding:.14em .42em;border-radius:6px;color:var(--ink)}
+  pre{background:var(--cream-2);border:1px solid var(--line);border-radius:18px;padding:20px 22px;
+    overflow-x:auto;margin:0 0 1.4rem;font-size:.82rem;line-height:1.6;
+    box-shadow:10px 14px 30px -18px rgba(124,92,255,.5),inset 3px 4px 8px rgba(255,255,255,.7)}
+  pre code{background:none;padding:0;color:var(--dim)}
+  .chips{display:flex;flex-wrap:wrap;gap:14px;margin:1rem 0 1.4rem}
+  .chip{width:64px;height:64px;border-radius:24px;
+    box-shadow:10px 14px 24px -10px var(--csh),inset 5px 6px 12px rgba(255,255,255,.7),inset -6px -9px 16px rgba(38,20,64,.14)}
+  .stack{list-style:none;margin:0 0 1.2rem;padding:0}
+  .stack li{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .stack b{color:var(--ink);font-weight:700;min-width:118px;display:inline-block;font-family:"Fredoka",sans-serif}
+  .rule{height:2px;background:repeating-linear-gradient(90deg,var(--accent) 0 10px,transparent 10px 20px);
+    opacity:.4;margin:3rem 0;border-radius:2px}
+  footer{margin-top:3.4rem;padding-top:2rem;border-top:2px dashed var(--line);
+    font-size:.92rem;color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="../"><span></span>clay</a>
+    <a href="../">← Back to site</a>
+  </div>
+
+  <span class="tag">Build guide · Site 11 of 25</span>
+  <h1>Journaling that feels like <em>play</em>.</h1>
+  <p class="lede">CLAY is one of 25 sites designed and built by Formwork to show off web design,
+    motion and taste. Here's exactly how this squishy one came together — and how you can make
+    the same thing.</p>
+
+  <h2>The idea</h2>
+  <p>The brief was one word: <strong>joy</strong>. CLAY is a fictional journaling app that
+    "feels like play," so the whole site had to feel touchable — like a jar of soft toys you
+    want to press with your thumb. That pointed straight at <strong>claymorphism</strong>: puffy,
+    rounded, candy-coloured shapes that look moulded from clay, floating over warm cream.</p>
+
+  <h2>The stack</h2>
+  <ul class="stack">
+    <li><b>Shapes</b> Pure CSS — no images, no 3D. Every blob, star and button is a box-shadow trick.</li>
+    <li><b>Motion</b> ~140 lines of vanilla JS: one <code>requestAnimationFrame</code> loop for bob, parallax &amp; the poke spring.</li>
+    <li><b>Type</b> Fredoka (rounded display) paired with Nunito (rounded body).</li>
+    <li><b>Deps</b> Zero runtime libraries. Only the two web fonts load over the network.</li>
+    <li><b>Host</b> Static files on GitHub Pages, straight from <code>main</code>.</li>
+  </ul>
+
+  <h2>The signature: clay from three shadows</h2>
+  <p>There's no secret asset. A "clay" surface is just a bright pastel fill wearing
+    <strong>three shadows at once</strong>: a soft outer drop shadow for weight, an
+    <em>inset</em> light highlight in the top-left, and an <em>inset</em> dark press in the
+    bottom-right. Together they read as a lump of clay lit from above.</p>
+  <div class="chips">
+    <span class="chip" style="background:#b9a2ff;--csh:rgba(124,92,255,.42)"></span>
+    <span class="chip" style="background:#8fe3c6;--csh:rgba(56,190,150,.4)"></span>
+    <span class="chip" style="background:#ffb59e;--csh:rgba(236,116,84,.38)"></span>
+    <span class="chip" style="background:#9ecbff;--csh:rgba(96,150,224,.42)"></span>
+    <span class="chip" style="background:#ffd76e;--csh:rgba(226,168,40,.4)"></span>
+  </div>
+  <pre><code>.clay{
+  background: var(--tone);
+  box-shadow:
+    16px 22px 40px -10px var(--sh),        /* outer soft drop  */
+    inset 7px 9px 16px rgba(255,255,255,.72),  /* top-left light */
+    inset -9px -13px 22px rgba(38,20,64,.14);  /* bottom-right press */
+}</code></pre>
+  <p>Stars and hearts can't be drawn with a box, so they're tiny inline SVGs that reuse the same
+    logic: a base fill, two shared radial gradients for highlight and press, and a CSS
+    <code>drop-shadow()</code> that hugs the outline. The "squish" on buttons and cards is the
+    same shadow set, animated — hover lifts and inflates it, <code>:active</code> collapses it
+    inward so the whole thing presses into the page.</p>
+  <p>The hero shapes go one step further: <strong>poke one and it springs</strong>. A click sets a
+    negative "squish" value that an under-damped spring pulls back to rest each frame — compress,
+    overshoot, settle. Feeding that scalar into a squash-and-stretch scale (wider when pressed,
+    taller on the rebound) is what sells it as real clay:</p>
+  <pre><code>// per frame: spring the squish back toward 0
+const acc = -K * s.squish - C * s.squishV;
+s.squishV += acc * dt;
+s.squish  += s.squishV * dt;
+// squash &amp; stretch — volume-ish preserving
+const sx = 1 - s.squish * 0.6;   // wider when compressed
+const sy = 1 + s.squish * 0.9;   // flatter when compressed</code></pre>
+
+  <h2>Details that matter</h2>
+  <ul>
+    <li><strong>Bob, parallax &amp; poke</strong> — each hero shape floats on its own sine wave (different amplitude, speed and phase), drifts toward the cursor by a per-shape depth, and springs when you click or tap it — all in one <code>requestAnimationFrame</code> loop that pauses off-screen.</li>
+    <li><strong>The mood garden</strong> — thirty clay dots, one per day, bloom in on scroll (staggered by a single <code>--i</code> custom property) and bob on their own CSS loops. Poke any day and a pure-CSS squash-and-stretch keyframe fires — the same idea as the hero, kept lightweight so all thirty stay smooth.</li>
+    <li><strong>Never blank</strong> — the hero intro is CSS keyed on a <code>.loaded</code> class added on a double <code>requestAnimationFrame</code> with a 400&nbsp;ms failsafe, so it can't hang.</li>
+    <li><strong>JS-gated hiding</strong> — content is only hidden once a <code>js</code> class lands on <code>&lt;html&gt;</code>; if the script never runs, everything simply shows.</li>
+    <li><strong>Reduced motion</strong> — <code>prefers-reduced-motion</code> stops the bob, freezes the shapes and makes every hover instant.</li>
+  </ul>
+
+  <h2>Ship it on GitHub Pages</h2>
+  <p>Everything here is static, so hosting is three commands:</p>
+  <pre><code>git init -b main && git add -A && git commit -m "ship clay"
+gh repo create formwork-clay --public --source=. --push
+gh api --method POST /repos/OWNER/formwork-clay/pages \
+  -f 'source[branch]=main' -f 'source[path]=/'</code></pre>
+  <p>Use <strong>relative paths</strong> (<code>./main.js</code>, not <code>/main.js</code>) because
+    project Pages live under <code>/repo-name/</code>. Drop in an empty <code>.nojekyll</code> file so
+    every asset serves verbatim, and you're live.</p>
+
+  <div class="rule"></div>
+  <p>That's the whole recipe: three shadows, a sine wave, two rounded fonts and static hosting.
+    The other 24 sites each swap the central trick — shaders, kinetic type, particles — but the
+    discipline stays the same: one idea, executed until it feels effortless.</p>
+
+  <footer>Designed &amp; built by <strong>Formwork</strong> · Part of a 25-site showcase ·
+    <a href="../">Return to CLAY →</a></footer>
+</div>
+</body>
+</html>
