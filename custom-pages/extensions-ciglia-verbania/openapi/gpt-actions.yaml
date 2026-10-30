@@ -1,0 +1,128 @@
+openapi: 3.1.0
+info:
+  title: Extensions Ciglia Verbania — Booking API
+  version: 0.1.0
+  description: Private assistant API for Lola. Reads real availability, lists appointments and manages calendar blocks. All dates use Europe/Rome.
+servers:
+  - url: https://YOUR_PROJECT_REF.supabase.co/functions/v1/booking-api
+security:
+  - OwnerApiKey: []
+paths:
+  /availability:
+    get:
+      operationId: getAvailability
+      summary: Check real available appointment slots
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema: { type: string, format: date }
+          description: Local date in Europe/Rome, YYYY-MM-DD.
+        - name: service_id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Available slots
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  date: { type: string, format: date }
+                  timezone: { type: string, example: Europe/Rome }
+                  slots:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        starts_at: { type: string, format: date-time }
+                        ends_at: { type: string, format: date-time }
+  /appointments:
+    get:
+      operationId: listAppointments
+      summary: List appointments in a date range
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, confirmed, cancelled] }
+      responses:
+        "200": { description: Appointments in the requested range }
+    post:
+      operationId: createAppointment
+      summary: Create an appointment after rechecking availability
+      description: Rejects overlaps. Use only after an explicit booking request or owner instruction.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [service_id, starts_at, customer_name]
+              properties:
+                service_id: { type: string, format: uuid }
+                starts_at: { type: string, format: date-time }
+                customer_name: { type: string, minLength: 2, maxLength: 120 }
+                customer_email: { type: string, format: email }
+                notes: { type: string, maxLength: 1000 }
+      responses:
+        "201": { description: Appointment created }
+        "409": { description: Slot no longer available }
+  /blocks:
+    get:
+      operationId: listCalendarBlocks
+      summary: List owner calendar blocks
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          required: true
+          schema: { type: string, format: date }
+      responses:
+        "200": { description: Calendar blocks }
+    post:
+      operationId: createCalendarBlock
+      summary: Block a date or time range for the owner
+      description: Only after Lola explicitly asks to block the stated period.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [starts_at, ends_at, reason]
+              properties:
+                starts_at: { type: string, format: date-time }
+                ends_at: { type: string, format: date-time }
+                reason: { type: string, maxLength: 240 }
+      responses:
+        "201": { description: Calendar block created }
+  /blocks/{block_id}:
+    delete:
+      operationId: deleteCalendarBlock
+      summary: Remove an existing owner block
+      parameters:
+        - name: block_id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "204": { description: Block removed }
+components:
+  securitySchemes:
+    OwnerApiKey:
+      type: apiKey
+      in: header
+      name: x-owner-api-key
