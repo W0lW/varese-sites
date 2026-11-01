@@ -217,6 +217,7 @@ function inspectPage(file) {
   const categorySource = businessCategorySources.get(slug) || {};
   const categoryText = record?.settore || extraRecord?.settore || "";
   const auditedOverride = businessCategoryOverrides.get(slug) || "";
+  const h1 = (html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/i) || [""])[0].replace(/<[^>]+>/g, " ").replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim();
   const categoryKey = (auditedOverride && auditedOverride !== "needs_review" ? auditedOverride : "") || categorySource.category ||
     inferAuditCategoryKey(categoryText, [record?.nome, extraRecord?.nome, extraRecord?.titolo_pagina, title, h1].filter(Boolean).join(" "), template);
   if (!categoryKey || categoryKey === "needs_review") findings.push({ code: "BUSINESS_CATEGORY_NEEDS_REVIEW", sample: "Category inferred from limited business data; manual review recommended" });
@@ -294,7 +295,6 @@ function inspectPage(file) {
     const match = visible.match(re);
     if (match) findings.push({ code, sample: visible.slice(Math.max(0, match.index - 45), Math.min(visible.length, match.index + match[0].length + 45)).replace(/\s+/g, " ").slice(0, 160) });
   }
-  const h1 = (html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/i) || [""])[0].replace(/<[^>]+>/g, " ").replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim();
   const intro = (html.match(/<p\b[^>]*class=["'][^"']*\b(?:sub|lead|lede)\b[^"']*["'][^>]*>[\s\S]*?<\/p>/i) || [""])[0].replace(/<[^>]+>/g, " ").replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim();
   return {
     slug, findings, title: title.replace(/<[^>]+>/g, "").replace(/&amp;/gi, "&").trim(), h1, template, intro,
