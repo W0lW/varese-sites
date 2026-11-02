@@ -1,0 +1,3 @@
+[submodule "template-sources/3d-scrolling-product-showcase"]
+	path = template-sources/3d-scrolling-product-showcase
+	url = https://github.com/Dieg0arc/3D-scrolling-practice.git
