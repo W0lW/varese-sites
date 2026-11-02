@@ -1,0 +1,958 @@
+<!doctype html>
+<!--
+  Free website template by 8B: https://8b.com/templates/ombrelle/
+  Source: https://github.com/8bsite/restaurant-website-template
+  MIT License (code) https://8b.com/ · Photos: Unsplash License, see CREDITS.md · Fonts: Google Fonts (OFL)
+  One HTML file, no build step. Notes for people and AI agents: README.md and AGENTS.md.
+  Scroll motion: CSS scroll-driven animations and an inline script, no libraries. A GSAP build of this page: index.gsap.html.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ombrelle — Brasserie &amp; Bar on Linden Square, noon to midnight</title>
+<meta name="description" content="Ombrelle is a brasserie and bar on Linden Square, open from noon to midnight: shellfish, pasta and the fish of the day at lunch and dinner, spritz and small plates on the terrace after five.">
+<meta name="generator" content="8B Templates">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ombrelle — Brasserie &amp; Bar on Linden Square, noon to midnight">
+<meta property="og:description" content="Ombrelle is a brasserie and bar on Linden Square, open from noon to midnight: shellfish, pasta and the fish of the day at lunch and dinner, spritz and small plates on the terrace after five.">
+<meta property="og:image" content="https://your-domain.example/preview.png" data-8b-placeholder="og-image">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2064%2064'%3E%3Crect%20width%3D'64'%20height%3D'64'%20rx%3D'14'%20fill%3D'%23999b69'%2F%3E%3Ctext%20x%3D'32'%20y%3D'45'%20font-family%3D'Arial%2CHelvetica%2Csans-serif'%20font-size%3D'38'%20font-weight%3D'700'%20text-anchor%3D'middle'%20fill%3D'%23141412'%3EO%3C%2Ftext%3E%3C%2Fsvg%3E" data-8b-placeholder="favicon">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+/* latin-ext */
+@font-face {
+  font-family: 'Schibsted Grotesk';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9Iayoxdg.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Schibsted Grotesk';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/schibstedgrotesk/v7/Jqz55SSPQuCQF3t8uOwiUL-taUTtap9Gayo.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style data-8b-part="layers">
+@layer tokens, base, atoms, layout, sections, scenes;
+</style>
+<style data-8b-part="tokens">
+@layer tokens {
+:root {
+  --color-1: #f8f7f3;
+  --color-2: #141412;
+  --color-3: #999b69;
+  --color-4: #1c1d15;
+  --color-5: #5c5e33;
+  --color-6: #5b5b55;
+  --color-7: #2c3019;
+  --color-8: #f0a64a;
+  --font-1: "Schibsted Grotesk", "Schibsted Grotesk Fallback", "Helvetica Neue", Arial, sans-serif;
+  --shadow-1: 0 1px 0 color-mix(in oklab, var(--color-2) 12%, transparent);
+  --space-1: 8px;
+  --space-2: clamp(16px, 3.2vw, 44px);
+}
+}
+</style>
+<style data-8b-part="base">
+@layer base {
+@font-face { font-family: "Schibsted Grotesk Fallback"; src: local("Arial"), local("ArialMT"), local("Helvetica"); font-weight: 100 549; size-adjust: 97%; ascent-override: 101%; descent-override: 26.8%; line-gap-override: 0%; }
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--color-1); color: var(--color-2); font-family: var(--font-1); font-size: 16px; line-height: 1.5; font-weight: 400; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+img { display: block; max-width: 100%; }
+figure, blockquote, dl, dd { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+h1, h2, h3, p { margin: 0; }
+a { color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+}
+</style>
+<style data-8b-part="system">
+@layer atoms {
+.m-text { font-family: var(--font-1); font-size: 16px; font-weight: 400; line-height: 1.5; letter-spacing: 0; text-transform: none; font-style: normal; }
+.m-text-2 { font-family: var(--font-1); font-size: clamp(44px, 6vw, 96px); font-weight: 400; line-height: .9; letter-spacing: -.035em; text-transform: uppercase; font-style: normal; }
+.m-text-3 { font-family: var(--font-1); font-size: 12.5px; font-weight: 500; line-height: 1.25; letter-spacing: .03em; text-transform: uppercase; font-style: normal; }
+.m-text-4 { font-family: var(--font-1); font-size: 14px; font-weight: 400; line-height: 1.45; letter-spacing: 0; text-transform: none; font-style: normal; }
+.m-text-5 { font-family: var(--font-1); font-size: 18px; font-weight: 500; line-height: 1.2; letter-spacing: -.005em; text-transform: none; font-style: normal; }
+.m-text-6 { font-family: var(--font-1); font-size: clamp(27px, 3.3vw, 46px); font-weight: 400; line-height: 1.08; letter-spacing: -.022em; text-transform: none; font-style: normal; }
+.m-link { position: relative; display: inline-block; font-family: var(--font-1); font-size: 12.5px; font-weight: 500; line-height: 1.25; letter-spacing: .03em; text-transform: uppercase; font-style: normal; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; padding: 6px 2px; isolation: isolate; overflow: clip; }
+.m-link::before { content: ""; position: absolute; inset: -40% -30%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, currentColor, transparent); opacity: .2; transform: translateX(-110%); pointer-events: none; }
+.m-link-2 { position: relative; display: inline-block; font-family: var(--font-1); font-size: 12.5px; font-weight: 500; line-height: 1.25; letter-spacing: .03em; text-transform: uppercase; font-style: normal; text-decoration: none; padding: 3px 2px; isolation: isolate; overflow: clip; }
+.m-link-2::before { content: ""; position: absolute; inset: -40% -30%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, currentColor, transparent); opacity: .2; transform: translateX(-110%); pointer-events: none; }
+.m-link-2[aria-current] { color: var(--color-5); }
+.m-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 14px 22px; border: 1px solid var(--color-2); border-radius: 0; background: var(--color-2); color: var(--color-1); font-family: var(--font-1); font-size: 12.5px; font-weight: 500; line-height: 1.2; letter-spacing: .04em; text-transform: uppercase; text-decoration: none; cursor: pointer; overflow: clip; isolation: isolate; }
+.m-btn::before { content: ""; position: absolute; left: -20%; bottom: -60%; width: 140%; aspect-ratio: 1; border-radius: 50%; background: var(--color-1); transform: scale(0); transform-origin: 15% 85%; z-index: -1; }
+.m-btn__label { position: relative; }
+.m-btn:focus-visible { outline-color: var(--color-2); }
+.m-btn-2 { position: relative; display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 14px 22px; border: 1px solid var(--color-1); border-radius: 0; background: var(--color-1); color: var(--color-2); font-family: var(--font-1); font-size: 12.5px; font-weight: 500; line-height: 1.2; letter-spacing: .04em; text-transform: uppercase; text-decoration: none; cursor: pointer; overflow: clip; isolation: isolate; }
+.m-btn-2::before { content: ""; position: absolute; left: -20%; bottom: -60%; width: 140%; aspect-ratio: 1; border-radius: 50%; background: var(--color-4); transform: scale(0); transform-origin: 15% 85%; z-index: -1; }
+.m-btn-2__label { position: relative; }
+.m-btn-2:focus-visible { outline-color: var(--color-1); }
+.m-field { display: grid; gap: 6px; }
+.m-field__label { font-family: var(--font-1); font-size: 12.5px; font-weight: 500; line-height: 1.25; letter-spacing: .03em; text-transform: uppercase; font-style: normal; }
+.m-field__control { width: 100%; min-height: 46px; padding: 10px 0; border: 0; border-bottom: 1px solid var(--color-2); border-radius: 0; background: transparent; color: var(--color-2); font-family: var(--font-1); font-size: 17px; line-height: 1.3; appearance: none; }
+.m-field__control:focus-visible { outline: 2px solid var(--color-2); outline-offset: 4px; }
+textarea.m-field__control { min-height: 92px; resize: vertical; }
+select.m-field__control { background-image: linear-gradient(45deg, transparent 50%, var(--color-2) 50%), linear-gradient(-45deg, transparent 50%, var(--color-2) 50%); background-size: 6px 6px; background-position: calc(100% - 10px) 55%, calc(100% - 4px) 55%; background-repeat: no-repeat; padding-right: 24px; }
+@media (hover: hover) {
+  .m-link::before, .m-link-2::before { transition: transform .6s cubic-bezier(.3, .7, .2, 1); }
+  .m-link:hover::before, .m-link-2:hover::before { transform: translateX(110%); }
+  .m-btn::before, .m-btn-2::before { transition: transform .55s cubic-bezier(.3, .7, .2, 1); }
+  .m-btn__label, .m-btn-2__label { transition: color .35s; }
+  .m-btn:hover::before, .m-btn-2:hover::before { transform: scale(1); }
+  .m-btn:hover .m-btn__label { color: var(--color-2); }
+  .m-btn-2:hover .m-btn-2__label { color: var(--color-1); }
+}
+}
+</style>
+<style data-8b-part="section:nav">
+@layer sections {
+#nav { position: fixed; inset: 0 0 auto 0; z-index: 50; height: 0; }
+#nav .nav__bar { position: absolute; inset: 0 0 auto 0; display: flex; justify-content: space-between; align-items: flex-start; padding: 14px var(--space-2) 12px; pointer-events: none; transition: transform .45s cubic-bezier(.3, .7, .2, 1), background-color .3s; }
+#nav .nav__bar > * { pointer-events: auto; }
+#nav .nav__mark { font-size: 28px; line-height: .9; letter-spacing: -.035em; text-decoration: none; padding-top: 4px; opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s; }
+#nav .nav__list { display: flex; flex-wrap: wrap; justify-content: flex-end; column-gap: clamp(14px, 1.7vw, 24px); margin-top: 3px; }
+#nav .nav__list .m-link-2 { display: block; padding: 1px 2px; }
+#nav .nav__toggle { display: none; min-height: 40px; padding: 8px 2px; border: 0; background: transparent; cursor: pointer; }
+#nav[data-state="shown"] .nav__bar { background: var(--color-1); box-shadow: var(--shadow-1); }
+#nav[data-state="shown"] .nav__mark { opacity: 1; visibility: visible; }
+#nav[data-state="hidden"] .nav__bar { transform: translateY(-105%); }
+#nav .nav__menu { position: fixed; inset: 0; z-index: 2; display: flex; flex-direction: column; justify-content: space-between; padding: 18px var(--space-2) 28px; background: var(--color-3); color: var(--color-2); }
+#nav .nav__menu[hidden] { display: none; }
+#nav .nav__menu-top { display: flex; justify-content: space-between; align-items: flex-start; }
+#nav .nav__menu-list { display: grid; gap: 4px; }
+#nav .nav__menu-list a { font-size: clamp(40px, 12vw, 64px); line-height: .95; text-decoration: none; }
+#nav .nav__close { min-height: 40px; padding: 8px 2px; border: 0; background: transparent; cursor: pointer; }
+@media (min-width: 720px) {
+  #nav[data-form="full"] .nav__list { margin-top: max(0px, calc(clamp(14px, 1.7vw, 24px) + .84vw - 18.5px)); }
+}
+@media (min-width: 1200px) {
+  #nav[data-form="full"] .nav__list { display: grid; justify-items: end; text-align: right; margin-top: calc(clamp(14px, 1.7vw, 24px) + .52vw - 14px); }
+  #nav[data-form="full"] .nav__list .m-link-2 { font-size: max(12.5px, 1vw); padding: 0 2px; }
+}
+@media (max-width: 719.98px) {
+  #nav .nav__bar nav { display: none; }
+  #nav .nav__toggle { display: inline-block; }
+  #nav .nav__mark { font-size: 24px; }
+}
+}
+</style>
+<style data-8b-part="section:opening">
+@layer sections {
+#opening { position: relative; overflow: clip; background: var(--color-1); }
+#opening .op__hero { position: sticky; top: 0; z-index: 0; display: flex; flex-direction: column; height: 100vh; height: 100svh; min-height: 520px; }
+#opening .op__band { flex: none; padding: clamp(14px, 1.7vw, 24px) var(--space-2) clamp(14px, 1.6vw, 22px); }
+#opening .op__mark { font-size: calc(35vw / (var(--len) * .6)); overflow: clip; padding-bottom: .02em; }
+#opening .op__mark-in { display: block; }
+#opening .op__photo { position: relative; flex: 1; min-height: 0; overflow: clip; }
+#opening .op__frame { position: absolute; inset: 0; overflow: clip; }
+#opening .op__frame img { width: 100%; height: 100%; object-fit: cover; object-position: 62% 50%; }
+#opening .op__light { position: absolute; inset: 0; background: radial-gradient(130% 100% at 92% 0%, var(--color-8), transparent 82%); mix-blend-mode: multiply; opacity: 0; pointer-events: none; }
+#opening .op__shade { position: absolute; left: 3%; top: 17%; width: 31%; aspect-ratio: 1.1; pointer-events: none; mix-blend-mode: multiply; }
+#opening .op__shade-in, #opening .op__shade-sway { width: 100%; height: 100%; }
+#opening .op__shade-disc { position: relative; }
+#opening .op__shade-disc { width: 100%; height: 100%; opacity: .5; filter: blur(9px); }
+#opening .op__shade-disc::before { content: ""; position: absolute; inset: 0; background: var(--color-7); clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%); }
+#opening .op__label { position: absolute; left: var(--space-2); top: clamp(16px, 2.4vw, 34px); font-size: clamp(17px, 1.95vw, 27px); line-height: 1.04; }
+#opening .op__cta { position: absolute; left: var(--space-2); bottom: clamp(16px, 2.6vw, 36px); display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+#opening .op__next { position: relative; z-index: 1; background: var(--color-1); }
+#opening .op__intro { display: grid; grid-template-columns: minmax(0, 31fr) minmax(0, 30fr) minmax(0, 39fr); column-gap: clamp(16px, 2.2vw, 32px); padding: clamp(40px, 4.8vw, 66px) var(--space-2) clamp(48px, 5.6vw, 78px); }
+#opening .op__title { font-size: min(7vw, calc(29vw / (var(--len) * .6))); align-self: start; }
+#opening .op__title .line { display: inline-block; }
+#opening .op__copy { display: grid; gap: 22px; justify-items: start; max-width: 34ch; padding-top: 4px; }
+#opening .op__pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-1); }
+#opening .op__pair figure { position: relative; }
+#opening .op__pair .op__shot { aspect-ratio: 362 / 440; overflow: clip; }
+#opening .op__pair img { width: 100%; height: 100%; object-fit: cover; }
+#opening .op__pair figcaption { display: flex; justify-content: space-between; gap: 12px; padding: 12px var(--space-2) 16px; }
+#opening .op__pair figure + figure figcaption { flex-direction: row-reverse; text-align: right; }
+@media (max-width: 719.98px) {
+  #opening .op__mark { font-size: calc(64vw / (var(--len) * .6)); }
+  #opening .op__frame img { object-position: 14% 50%; }
+  #opening .op__shade { left: -10%; top: 12%; width: 70%; }
+  #opening .op__label { font-size: 18px; background: var(--color-1); padding: 6px 8px 5px; margin-left: -8px; }
+  #opening .op__cta p { background: var(--color-1); padding: 5px 8px; }
+  #opening .op__cta { right: var(--space-2); gap: 14px; }
+  #opening .op__intro { grid-template-columns: 1fr; row-gap: 22px; padding-top: 36px; padding-bottom: 40px; }
+  #opening .op__title { font-size: calc(78vw / (var(--len) * .6)); }
+  #opening .op__pair .op__shot { aspect-ratio: 3 / 4.4; }
+  #opening .op__pair figcaption { display: grid; gap: 2px; padding: 10px 12px 14px; }
+  #opening .op__pair figure + figure figcaption { text-align: right; justify-items: end; }
+}
+@media (min-width: 720px) and (max-aspect-ratio: 13/10) {
+  #opening .op__label { background: var(--color-1); padding: 6px 10px 5px; margin-left: -10px; }
+  #opening .op__cta p { background: var(--color-1); padding: 5px 8px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  #opening .op__frame { animation: op-rise 1.1s cubic-bezier(.2, .7, .2, 1) backwards; }
+  #opening .op__mark-in { animation: op-mark .95s cubic-bezier(.2, .7, .2, 1) backwards; }
+  #opening .op__label, #opening .op__cta { animation: op-lift .8s .3s cubic-bezier(.2, .7, .2, 1) backwards; }
+  #opening .op__shade-in { animation: op-shade 1.1s .1s cubic-bezier(.2, .7, .2, 1) backwards; }
+  #opening .op__shade-sway { animation: op-sway 4.6s ease-in-out infinite alternate; }
+  @keyframes op-rise { from { clip-path: inset(16% 0 0 0); transform: scale(1.06); } }
+  @keyframes op-mark { from { transform: translateY(62%); } }
+  @keyframes op-lift { from { opacity: 0; transform: translateY(14px); } }
+  @keyframes op-shade { from { opacity: 0; transform: scale(.7); } }
+  @keyframes op-sway { from { transform: translate(-9%, -3%) rotate(-7deg) scale(1.03); } to { transform: translate(9%, 5%) rotate(6deg) scale(.95); } }
+}
+}
+</style>
+<style data-8b-part="section:about">
+@layer sections {
+#about { position: relative; overflow: clip; display: grid; place-items: center; min-height: 100vh; min-height: 100svh; padding: 18vh var(--space-2); isolation: isolate; }
+#about .ab__field { position: absolute; inset: 0; z-index: -1; background: var(--color-3); }
+#about .ab__inner { display: grid; grid-template-columns: max-content minmax(0, 27ch); column-gap: clamp(20px, 2.4vw, 34px); align-items: start; transform: translateX(4vw); }
+#about .ab__title { width: max-content; font-size: clamp(40px, 5.4vw, 84px); line-height: .94; }
+#about .ab__title .line { display: block; text-align: justify; text-align-last: justify; }
+#about .ab__copy { display: grid; gap: 28px; justify-items: start; padding-top: 2px; }
+@media (max-width: 719.98px) {
+  #about { padding: 16vh var(--space-2); }
+  #about .ab__inner { grid-template-columns: 1fr; row-gap: 28px; transform: none; }
+  #about .ab__title { font-size: clamp(36px, 12vw, 60px); }
+}
+}
+</style>
+<style data-8b-part="section:moments">
+@layer sections {
+#moments { overflow: clip; padding-top: clamp(56px, 7vw, 100px); }
+#moments .mo__head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; padding: 0 var(--space-2) clamp(28px, 3.4vw, 48px); }
+#moments .mo__title { font-size: min(7vw, calc(56vw / (var(--len) * .6))); }
+#moments .mo__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-1); }
+#moments .mo__photo { position: relative; aspect-ratio: 1; overflow: clip; }
+#moments .mo__photo img { width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 719.98px) {
+  #moments .mo__head { flex-direction: column; align-items: flex-start; gap: 14px; }
+  #moments .mo__title { font-size: calc(88vw / (var(--len) * .6)); }
+  #moments .mo__grid { grid-template-columns: 1fr 1fr; }
+}
+}
+</style>
+<style data-8b-part="section:day">
+@layer sections {
+#day { position: relative; }
+#day .dy__pin { padding-top: clamp(64px, 8vw, 120px); }
+#day .dy__head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 30ch); align-items: end; gap: 24px; padding: 0 var(--space-2) clamp(28px, 3.4vw, 48px); }
+#day .dy__title { font-size: min(7vw, calc(50vw / (var(--len) * .6))); }
+#day .dy__track { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+#day .dy__panel { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto 1fr; align-content: start; gap: 14px; padding: 22px clamp(14px, 1.4vw, 22px) 26px; }
+#day .dy__panel:nth-child(3) { background: var(--color-3); }
+#day .dy__panel:nth-child(4), #day .dy__panel:nth-child(5) { background: var(--color-4); color: var(--color-1); }
+#day .dy__name { font-size: clamp(30px, 2.7vw, 44px); }
+#day .dy__photo { position: relative; aspect-ratio: 4 / 5; overflow: clip; margin-top: 6px; }
+#day .dy__photo img { width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 959.98px) {
+  #day .dy__head { grid-template-columns: 1fr; }
+  #day .dy__track { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 719.98px) {
+  #day .dy__title { font-size: calc(86vw / (var(--len) * .6)); }
+  #day .dy__track { grid-template-columns: 1fr; }
+  #day .dy__panel { padding: 28px var(--space-2) 32px; }
+  #day .dy__photo { aspect-ratio: 4 / 3; }
+}
+}
+</style>
+<style data-8b-part="section:carte">
+@layer sections {
+#carte { overflow: clip; padding: clamp(72px, 9vw, 140px) var(--space-2) clamp(72px, 9vw, 140px); }
+#carte .ca__head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 32ch); align-items: end; gap: 24px; padding-bottom: clamp(32px, 4vw, 60px); border-bottom: 1px solid var(--color-2); }
+#carte .ca__title { font-size: min(7vw, calc(62vw / (var(--len) * .6))); }
+#carte .ca__note { color: var(--color-6); }
+#carte .ca__body { display: grid; grid-template-columns: minmax(0, 31fr) minmax(0, 69fr); column-gap: clamp(20px, 3vw, 48px); padding-top: clamp(28px, 3vw, 44px); }
+#carte .ca__aside { position: sticky; top: 96px; align-self: start; display: grid; gap: 22px; }
+#carte .ca__index { display: grid; justify-items: start; gap: 2px; }
+#carte .ca__photo { position: relative; aspect-ratio: 4 / 5; overflow: clip; max-width: 340px; }
+#carte .ca__photo img { width: 100%; height: 100%; object-fit: cover; }
+#carte .ca__courses { display: grid; gap: clamp(36px, 4vw, 60px); }
+#carte .ca__course { scroll-margin-top: 110px; }
+#carte .ca__course > h3 { padding-bottom: 12px; }
+#carte .ca__item { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 24px; row-gap: 3px; padding: 14px 0 15px; border-top: 1px solid color-mix(in oklab, var(--color-2) 18%, transparent); }
+#carte .ca__item .m-text-4 { color: var(--color-6); grid-column: 1; }
+#carte .ca__price { grid-column: 2; grid-row: 1; text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 719.98px) {
+  #carte .ca__head { grid-template-columns: 1fr; }
+  #carte .ca__title { font-size: calc(88vw / (var(--len) * .6)); }
+  #carte .ca__body { grid-template-columns: 1fr; row-gap: 36px; }
+  #carte .ca__aside { position: static; grid-template-columns: 1fr 1fr; align-items: start; }
+}
+}
+</style>
+<style data-8b-part="section:market">
+@layer sections {
+#market { overflow: clip; padding: clamp(72px, 9vw, 140px) 0 clamp(72px, 8vw, 120px); background: var(--color-1); }
+#market .mk__head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 34ch); align-items: end; gap: 24px; padding: 0 var(--space-2) clamp(32px, 4vw, 56px); }
+#market .mk__title { font-size: min(7vw, calc(40vw / (var(--len) * .6))); }
+#market .mk__spread { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-1); }
+#market .mk__item { display: grid; align-content: start; gap: 14px; }
+#market .mk__print { position: relative; aspect-ratio: 1; overflow: clip; }
+#market .mk__print img { width: 100%; height: 100%; object-fit: cover; }
+#market .mk__note { display: grid; gap: 4px; padding: 0 clamp(10px, 1.2vw, 18px); }
+#market .mk__note .m-text-4 + .m-text-4 { color: var(--color-6); }
+@media (max-width: 719.98px) {
+  #market .mk__head { grid-template-columns: 1fr; }
+  #market .mk__title { font-size: calc(80vw / (var(--len) * .6)); }
+  #market .mk__spread { grid-template-columns: 1fr 1fr; row-gap: 28px; }
+  #market .mk__item:first-child { grid-column: 1 / -1; }
+  #market .mk__item:first-child .mk__print { aspect-ratio: 16 / 10; }
+}
+}
+</style>
+<style data-8b-part="section:bar">
+@layer sections {
+#bar { overflow: clip; background: var(--color-4); color: var(--color-1); padding: clamp(80px, 10vw, 150px) var(--space-2); }
+#bar .br__grid { display: grid; grid-template-columns: minmax(0, 46fr) minmax(0, 54fr); column-gap: clamp(24px, 4vw, 64px); align-items: start; }
+#bar .br__title { font-size: min(8vw, calc(40vw / (var(--len) * .6))); }
+#bar .br__text { display: grid; gap: 28px; }
+#bar .br__lede { max-width: 40ch; color: var(--color-3); }
+#bar .br__card { display: grid; gap: 30px; padding-top: 10px; }
+#bar .br__group > h3 { color: var(--color-3); padding-bottom: 8px; }
+#bar .br__item { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 20px; row-gap: 2px; padding: 12px 0 13px; border-top: 1px solid color-mix(in oklab, var(--color-1) 22%, transparent); }
+#bar .br__item .m-text-4 { color: var(--color-3); }
+#bar .br__price { grid-column: 2; grid-row: 1; text-align: right; font-variant-numeric: tabular-nums; }
+#bar .br__photos { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-1); padding-top: clamp(0px, 8vw, 120px); }
+#bar .br__photo { position: relative; overflow: clip; aspect-ratio: 3 / 4; }
+#bar .br__photo:first-child { grid-column: 1 / -1; aspect-ratio: 4 / 4.2; width: 78%; justify-self: end; }
+#bar .br__photo img { width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 719.98px) {
+  #bar .br__grid { grid-template-columns: 1fr; row-gap: 44px; }
+  #bar .br__title { font-size: calc(82vw / (var(--len) * .6)); }
+  #bar .br__photos { padding-top: 0; }
+  #bar .br__photo:first-child { width: 100%; }
+}
+}
+</style>
+<style data-8b-part="section:terrace">
+@layer sections {
+#terrace { overflow: clip; padding: clamp(80px, 10vw, 150px) 0 0; }
+#terrace .te__grid { display: grid; grid-template-columns: minmax(0, 42fr) minmax(0, 58fr); column-gap: clamp(24px, 4vw, 64px); align-items: start; padding: 0 var(--space-2) clamp(56px, 7vw, 100px); }
+#terrace .te__text { display: grid; gap: 26px; justify-items: start; }
+#terrace .te__title { font-size: clamp(40px, 5.2vw, 80px); line-height: .94; width: max-content; max-width: 100%; }
+#terrace .te__title .line { display: block; text-align: justify; text-align-last: justify; }
+#terrace .te__areas { display: grid; width: 100%; }
+#terrace .te__area { display: grid; grid-template-columns: 26px minmax(0, 1fr); column-gap: 14px; row-gap: 2px; padding: 13px 0 14px; border-top: 1px solid color-mix(in oklab, var(--color-2) 18%, transparent); }
+#terrace .te__area .m-text-4 { grid-column: 2; color: var(--color-6); }
+#terrace .te__key { grid-row: 1 / 3; width: 18px; height: 18px; margin-top: 2px; }
+#terrace .te__key--parasol { border-radius: 50%; background: conic-gradient(var(--color-3) 0 12.5%, var(--color-5) 12.5% 25%, var(--color-3) 25% 37.5%, var(--color-5) 37.5% 50%, var(--color-3) 50% 62.5%, var(--color-5) 62.5% 75%, var(--color-3) 75% 87.5%, var(--color-5) 87.5%); }
+#terrace .te__key--room { border: 1.5px solid var(--color-2); }
+#terrace .te__key--counter { height: 6px; margin-top: 8px; background: var(--color-2); }
+#terrace .te__key--back { background: repeating-linear-gradient(45deg, var(--color-2) 0 1.5px, transparent 1.5px 5px); border: 1.5px solid var(--color-2); }
+#terrace .te__plan { position: relative; display: grid; grid-template-rows: auto auto; gap: clamp(14px, 1.6vw, 22px); padding: clamp(16px, 2vw, 28px); border: 1px solid color-mix(in oklab, var(--color-2) 22%, transparent); }
+#terrace .te__square { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(12px, 2.2vw, 34px); padding: clamp(10px, 1.6vw, 24px); }
+#terrace .te__parasol { aspect-ratio: 1; border-radius: 50%; background: conic-gradient(var(--color-3) 0 12.5%, var(--color-5) 12.5% 25%, var(--color-3) 25% 37.5%, var(--color-5) 37.5% 50%, var(--color-3) 50% 62.5%, var(--color-5) 62.5% 75%, var(--color-3) 75% 87.5%, var(--color-5) 87.5%); }
+#terrace .te__house { display: grid; grid-template-columns: 1fr 34%; gap: clamp(10px, 1.4vw, 20px); height: clamp(110px, 13vw, 190px); }
+#terrace .te__room { position: relative; border: 1.5px solid var(--color-2); }
+#terrace .te__counter { position: absolute; left: 12%; right: 12%; top: 22%; height: 7px; background: var(--color-2); transform-origin: left center; }
+#terrace .te__back { border: 1.5px solid var(--color-2); background: repeating-linear-gradient(45deg, var(--color-6) 0 1.5px, transparent 1.5px 9px); }
+#terrace .te__band { position: relative; aspect-ratio: 21 / 8; overflow: clip; }
+#terrace .te__band img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; }
+@media (max-width: 719.98px) {
+  #terrace .te__grid { grid-template-columns: 1fr; row-gap: 40px; }
+  #terrace .te__title { font-size: clamp(36px, 11.5vw, 56px); }
+  #terrace .te__plan { order: -1; }
+  #terrace .te__band { aspect-ratio: 4 / 3; }
+}
+}
+</style>
+<style data-8b-part="section:reviews">
+@layer sections {
+#reviews { overflow: clip; padding: clamp(80px, 10vw, 150px) var(--space-2); border-top: 1px solid var(--color-2); }
+#reviews .rv__title { padding-bottom: clamp(36px, 5vw, 72px); }
+#reviews .rv__list { display: grid; gap: clamp(64px, 9vw, 130px); }
+#reviews .rv__item { max-width: 17em; font-size: clamp(27px, 3.3vw, 46px); }
+#reviews .rv__item:nth-child(2) { margin-left: auto; }
+#reviews .rv__item:nth-child(3) { margin-left: 16%; }
+#reviews .rv__item figure { display: grid; gap: 20px; }
+#reviews .rv__item figcaption { color: var(--color-6); }
+@media (max-width: 719.98px) {
+  #reviews .rv__item:nth-child(3) { margin-left: 0; }
+}
+}
+</style>
+<style data-8b-part="section:contact">
+@layer sections {
+#contact { overflow: clip; padding: clamp(80px, 10vw, 150px) var(--space-2); background: var(--color-1); border-top: 1px solid var(--color-2); }
+#contact .ct__grid { display: grid; grid-template-columns: minmax(0, 44fr) minmax(0, 56fr); column-gap: clamp(24px, 5vw, 80px); align-items: start; }
+#contact .ct__title { font-size: min(7.4vw, calc(40vw / (var(--len) * .6))); }
+#contact .ct__side { display: grid; gap: 28px; }
+#contact .ct__info { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: 22px; row-gap: 12px; padding-top: 10px; }
+#contact .ct__info dt { padding-top: 3px; color: var(--color-6); }
+#contact .ct__info a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+#contact .ct__form { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 22px; padding-top: 8px; }
+#contact .ct__wide { grid-column: 1 / -1; }
+#contact .ct__send { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+#contact .ct__done { grid-column: 1 / -1; padding: 16px 18px; background: var(--color-3); }
+#contact .ct__done[hidden] { display: none; }
+@media (max-width: 879.98px) {
+  #contact .ct__grid { grid-template-columns: 1fr; row-gap: 48px; }
+  #contact .ct__title { font-size: calc(80vw / (var(--len) * .6)); }
+}
+@media (max-width: 479.98px) {
+  #contact .ct__form { grid-template-columns: 1fr; }
+}
+}
+</style>
+<style data-8b-part="section:footer">
+@layer sections {
+#footer { overflow: clip; background: var(--color-4); color: var(--color-1); padding: clamp(64px, 8vw, 110px) var(--space-2) 28px; }
+#footer .ft__cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; padding-bottom: clamp(48px, 7vw, 110px); }
+#footer .ft__col { display: grid; align-content: start; justify-items: start; gap: 6px; }
+#footer .ft__col > .m-text-3 { color: var(--color-3); padding-bottom: 6px; }
+#footer .ft__mark { font-size: calc((100vw - 2 * var(--space-2)) / (var(--len) * .6)); line-height: .8; white-space: nowrap; }
+#footer .ft__legal { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding-top: 22px; color: var(--color-3); }
+@media (max-width: 719.98px) {
+  #footer .ft__cols { grid-template-columns: 1fr 1fr; }
+}
+}
+</style>
+<style data-8b-part="motion">
+@layer scenes {
+[data-8b-live] [data-8b-motion~="flush"] { view-timeline: --motion-flush block; view-timeline-inset: 0; animation-name: motion-flush-translate; animation-timeline: --motion-flush; animation-range: cover 0% cover 42vh; animation-timing-function: cubic-bezier(0.3333, 1, 0.6667, 1); animation-fill-mode: both; transform: none; }
+[data-8b-live] [data-8b-motion~="cut"] { animation-name: motion-cut-clippath; animation-duration: 1.05s; animation-delay: calc(0s + var(--cut-delay, 0s)); animation-timing-function: cubic-bezier(0.76, 0, 0.24, 1); animation-fill-mode: both; animation-play-state: paused; }
+[data-8b-live] [data-8b-motion~="cut"].is-in { animation-play-state: running; }
+[data-8b-live] [data-8b-motion~="cut"] img { animation-name: motion-cut-img-scale; animation-duration: 1.4s; animation-delay: calc(0s + var(--cut-delay, 0s)); animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1); animation-fill-mode: both; animation-play-state: paused; transform: none; }
+[data-8b-live] [data-8b-motion~="cut"].is-in img { animation-play-state: running; }
+[data-8b-live] [data-8b-motion~="shade"] { view-timeline: --motion-shade block; view-timeline-inset: 0; }
+[data-8b-live] [data-8b-motion~="shade"]::after { content: ''; position: absolute; left: -25%; top: -30%; width: 90%; aspect-ratio: 1.2; border-radius: 50%; pointer-events: none; mix-blend-mode: multiply; background: radial-gradient(closest-side, var(--color-7) 55%, transparent); opacity: .45; animation-name: motion-shade; animation-timeline: --motion-shade; animation-range: cover 0% cover 100%; animation-timing-function: linear; animation-fill-mode: both; }
+@keyframes motion-shade { 0% { translate: -45% -20%; scale: 0.85; } 100% { translate: 95% 60%; scale: 1.25; } }
+@keyframes motion-flush-translate { 0% { translate: 20vw 0px; } 100% { translate: 0px 0px; } }
+@keyframes motion-cut-clippath { 0% { clip-path: inset(0% 49.5%); } 100% { clip-path: inset(0%); } }
+@keyframes motion-cut-img-scale { 0% { scale: 1.16; } 100% { scale: 1; } }
+}
+</style>
+<style data-8b-part="scene:opening">
+@layer scenes {
+[data-8b-live] #opening { view-timeline: --opening-t1 block; view-timeline-inset: 0; }
+[data-8b-live] #opening .op__shade, [data-8b-live] #opening .op__frame > img, [data-8b-live] #opening .op__light, [data-8b-live] #opening .op__title > span:nth-of-type(-n+2), [data-8b-live] #opening .op__pair > figure:nth-of-type(-n+2), [data-8b-live] #opening .op__pair > figure:nth-of-type(-n+2) > figcaption { animation-timeline: --opening-t1; animation-fill-mode: both; }
+[data-8b-live] #opening .op__shade { animation-range: cover 100vh cover calc(72% - 44vh); animation-timing-function: linear; transform: none; }
+[data-8b-live] #opening .op__frame > img { animation-name: opening-div-op-frame-img-scale; animation-range: cover 100vh cover calc(72% - 44vh); animation-timing-function: linear; transform: none; }
+[data-8b-live] #opening .op__light { animation-name: opening-div-op-light-opacity; animation-range: cover calc(2% + 96vh) cover calc(62% - 24vh); animation-timing-function: linear; }
+[data-8b-live] #opening .op__title > span:nth-of-type(1) { animation-range: cover calc(3% + 94vh) cover calc(33.9091% + 32.1818vh); animation-timing-function: cubic-bezier(0.3333, 1, 0.6667, 1); transform: none; }
+[data-8b-live] #opening .op__title > span:nth-of-type(2) { animation-range: cover calc(6.0909% + 87.8182vh) cover calc(37% + 26vh); animation-timing-function: cubic-bezier(0.3333, 1, 0.6667, 1); transform: none; }
+[data-8b-live] #opening .op__pair > figure:nth-of-type(-n+2) { animation-timing-function: cubic-bezier(0.3333, 0.6667, 0.6667, 1); }
+[data-8b-live] #opening .op__pair > figure:nth-of-type(1) { animation-range: cover calc(28% + 44vh) cover calc(88% - 76vh); transform: none; }
+[data-8b-live] #opening .op__pair > figure:nth-of-type(2) { animation-range: cover calc(28% + 44vh) cover calc(92% - 84vh); transform: none; }
+[data-8b-live] #opening .op__pair > figure:nth-of-type(-n+2) > figcaption { animation-range: cover calc(74% - 48vh) cover calc(88% - 76vh); animation-timing-function: cubic-bezier(0.3333, 1, 0.6667, 1), cubic-bezier(0.3333, 1, 0.6667, 1), linear; }
+[data-8b-live] #opening .op__pair > figure:nth-of-type(1) > figcaption { animation-name: opening-div-op-pair-figcaption-translate, opening-div-op-pair-figcaption-opacity, opening-div-op-pair-figcaption-visibility; transform: none; }
+[data-8b-live] #opening .op__pair > figure:nth-of-type(2) > figcaption { animation-name: opening-div-op-pair-figcaption-translate-2, opening-div-op-pair-figcaption-opacity, opening-div-op-pair-figcaption-visibility; transform: none; }
+@keyframes opening-div-op-shade-translate-d { 0% { translate: 0px 0px; } 100% { translate: 128% 18%; } }
+@keyframes opening-div-op-shade-translate-m { 0% { translate: 0px 0px; } 100% { translate: 30% 70%; } }
+@keyframes opening-div-op-shade-rotate-d { 0% { rotate: 0deg; } 100% { rotate: 9deg; } }
+@keyframes opening-div-op-shade-rotate-m { 0% { rotate: 0deg; } 100% { rotate: 24deg; } }
+@keyframes opening-div-op-shade-scale-d { 0% { scale: 1; } 100% { scale: 2.3 1.1; } }
+@keyframes opening-div-op-shade-scale-m { 0% { scale: 1; } 100% { scale: 1.6 1.1; } }
+@keyframes opening-div-op-frame-img-scale { 0% { scale: 1; } 100% { scale: 1.1; } }
+@keyframes opening-div-op-light-opacity { 0% { opacity: 0; } 100% { opacity: 0.72; } }
+@keyframes opening-span-line-translate-d { 0% { translate: 165.662% 0px; } 100% { translate: 0px 0px; } }
+@keyframes opening-span-line-translate-m { 0% { translate: 61.594% 0px; } 100% { translate: 0px 0px; } }
+@keyframes opening-span-line-translate-2-d { 0% { translate: -112.396% 0px; } 100% { translate: 0px 0px; } }
+@keyframes opening-span-line-translate-2-m { 0% { translate: -41.794% 0px; } 100% { translate: 0px 0px; } }
+@keyframes opening-div-op-pair-figure-translate-d { 0% { translate: -5.031% 9%; } 100% { translate: 0px 0px; } }
+@keyframes opening-div-op-pair-figure-translate-m { 0% { translate: -10px 6%; } 100% { translate: 0px 0px; } }
+@keyframes opening-div-op-pair-figure-translate-2-d { 0% { translate: 5.031% 22%; } 100% { translate: 0px 0px; } }
+@keyframes opening-div-op-pair-figure-translate-2-m { 0% { translate: 10px 14%; } 100% { translate: 0px 0px; } }
+@keyframes opening-div-op-pair-figcaption-translate { 0% { translate: 36px 0px; } 100% { translate: 0px 0px; } }
+@keyframes opening-div-op-pair-figcaption-opacity { 0% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes opening-div-op-pair-figcaption-visibility { 0% { visibility: hidden; } 0.002% { visibility: visible; animation-timing-function: cubic-bezier(0.3333, 1, 0.6667, 1); } 100% { visibility: visible; } }
+@keyframes opening-div-op-pair-figcaption-translate-2 { 0% { translate: -36px 0px; } 100% { translate: 0px 0px; } }
+@media (min-width: 720px) {
+  [data-8b-live] #opening .op__shade { animation-name: opening-div-op-shade-translate-d, opening-div-op-shade-rotate-d, opening-div-op-shade-scale-d; }
+  [data-8b-live] #opening .op__title > span:nth-of-type(1) { animation-name: opening-span-line-translate-d; }
+  [data-8b-live] #opening .op__title > span:nth-of-type(2) { animation-name: opening-span-line-translate-2-d; }
+  [data-8b-live] #opening .op__pair > figure:nth-of-type(1) { animation-name: opening-div-op-pair-figure-translate-d; }
+  [data-8b-live] #opening .op__pair > figure:nth-of-type(2) { animation-name: opening-div-op-pair-figure-translate-2-d; }
+}
+@media (max-width: 719px) {
+  [data-8b-live] #opening .op__shade { animation-name: opening-div-op-shade-translate-m, opening-div-op-shade-rotate-m, opening-div-op-shade-scale-m; }
+  [data-8b-live] #opening .op__title > span:nth-of-type(1) { animation-name: opening-span-line-translate-m; }
+  [data-8b-live] #opening .op__title > span:nth-of-type(2) { animation-name: opening-span-line-translate-2-m; }
+  [data-8b-live] #opening .op__pair > figure:nth-of-type(1) { animation-name: opening-div-op-pair-figure-translate-m; }
+  [data-8b-live] #opening .op__pair > figure:nth-of-type(2) { animation-name: opening-div-op-pair-figure-translate-2-m; }
+}
+}
+</style>
+<style data-8b-part="scene:about">
+@layer scenes {
+[data-8b-live] #about { view-timeline: --about-t1 block; view-timeline-inset: 0; }
+[data-8b-live] #about .ab__field, [data-8b-live] #about .m-text-2 > span:nth-of-type(-n+3), [data-8b-live] #about .ab__copy { animation-timeline: --about-t1; animation-fill-mode: both; }
+[data-8b-live] #about .ab__field { animation-name: about-div-ab-field-clippath; animation-range: cover 0% cover calc(50% - 2vh); animation-timing-function: linear; }
+[data-8b-live] #about .m-text-2 > span:nth-of-type(-n+3) { animation-timing-function: cubic-bezier(0.3333, 1, 0.6667, 1); }
+[data-8b-live] #about .m-text-2 > span:nth-of-type(1) { animation-range: cover calc(11.011% - 0.4404vh) cover calc(42.042% - 1.6817vh); transform: none; }
+[data-8b-live] #about .m-text-2 > span:nth-of-type(2) { animation-range: cover calc(14.014% - 0.5606vh) cover calc(45.045% - 1.8018vh); transform: none; }
+[data-8b-live] #about .m-text-2 > span:nth-of-type(3) { animation-range: cover calc(17.017% - 0.6807vh) cover calc(48.048% - 1.9219vh); transform: none; }
+[data-8b-live] #about .ab__copy { animation-name: about-div-ab-copy-translate, about-div-ab-copy-opacity, about-div-ab-copy-visibility; animation-range: cover calc(31.031% - 1.2412vh) cover calc(46.046% - 1.8418vh); animation-timing-function: cubic-bezier(0.3333, 1, 0.6667, 1), cubic-bezier(0.3333, 1, 0.6667, 1), linear; transform: none; }
+@keyframes about-div-ab-field-clippath { 0% { clip-path: circle(9% at 50% 62%); animation-timing-function: cubic-bezier(0.3333, 0, 0.6667, 0); } 82.082% { clip-path: circle(75% at 50% 50%); } 99.9% { clip-path: circle(75% at 50% 50%); } 100% { clip-path: none; } }
+@keyframes about-span-line-translate-d { 0% { translate: 32vw 0px; } 100% { translate: 0px 0px; } }
+@keyframes about-span-line-translate-2-d { 0% { translate: -32vw 0px; } 100% { translate: 0px 0px; } }
+@keyframes about-span-line-translate-3-d { 0% { translate: 20vw 0px; } 100% { translate: 0px 0px; } }
+@keyframes about-div-ab-copy-translate { 0% { translate: 0px 60px; } 100% { translate: 0px 0px; } }
+@keyframes about-div-ab-copy-opacity { 0% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes about-div-ab-copy-visibility { 0% { visibility: hidden; } 0.002% { visibility: visible; animation-timing-function: cubic-bezier(0.3333, 1, 0.6667, 1); } 100% { visibility: visible; } }
+[data-8b-live] #about .m-text-2 > span:nth-of-type(1) { animation-name: about-span-line-translate-d; }
+[data-8b-live] #about .m-text-2 > span:nth-of-type(2) { animation-name: about-span-line-translate-2-d; }
+[data-8b-live] #about .m-text-2 > span:nth-of-type(3) { animation-name: about-span-line-translate-3-d; }
+}
+</style>
+<style data-8b-part="scene:day">
+@layer scenes {
+@media (prefers-reduced-motion: no-preference) {
+  [data-8b-live] #day .dy__pin { display: flex; flex-direction: column; height: 100vh; height: 100svh; overflow: clip; padding-top: clamp(84px, 9vh, 120px); }
+  [data-8b-live] #day .dy__head { flex: none; padding-bottom: clamp(18px, 3vh, 36px); }
+  [data-8b-live] #day .dy__track { display: flex; flex: 1; min-height: 0; width: max-content; padding: 0 var(--space-2); }
+  [data-8b-live] #day .dy__panel { width: min(64vw, 900px); height: 100%; background: transparent; color: inherit; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); grid-template-rows: auto auto 1fr; column-gap: clamp(18px, 2.4vw, 36px); padding: 0 clamp(28px, 4vw, 64px) clamp(24px, 4vh, 48px) 0; }
+  [data-8b-live] #day .dy__time { grid-column: 1; grid-row: 1; }
+  [data-8b-live] #day .dy__name { grid-column: 1; grid-row: 2; font-size: clamp(40px, 5.2vw, 82px); }
+  [data-8b-live] #day .dy__text { grid-column: 1; grid-row: 3; align-self: end; max-width: 30ch; }
+  [data-8b-live] #day .dy__photo { grid-column: 2; grid-row: 1 / 4; aspect-ratio: auto; height: 100%; margin: 0; }
+  [data-8b-live] #day .dy__photo img { width: 116%; max-width: none; margin-left: -8%; }
+}
+@media (prefers-reduced-motion: no-preference) and (max-width: 719.98px) {
+  [data-8b-live] #day .dy__pin { padding-top: 76px; }
+  [data-8b-live] #day .dy__head p { display: none; }
+  [data-8b-live] #day .dy__panel { width: 84vw; grid-template-columns: 1fr; grid-template-rows: auto auto minmax(0, 1fr) auto; padding: 0 20px 28px 0; row-gap: 12px; }
+  [data-8b-live] #day .dy__time { grid-row: 1; }
+  [data-8b-live] #day .dy__name { grid-row: 2; font-size: clamp(34px, 11vw, 48px); }
+  [data-8b-live] #day .dy__photo { grid-column: 1; grid-row: 3; height: 100%; }
+  [data-8b-live] #day .dy__text { grid-row: 4; }
+}
+}
+@layer scenes {
+[data-8b-live] #day .dy-pin-room { view-timeline: --day-t1 block; view-timeline-inset: 0; }
+[data-8b-live] #day .dy-pin-room > .dy-pin-room-space { height: var(--day-distance, 0px); }
+[data-8b-live] #day .dy__pin { position: sticky; top: 0%; animation-name: day-pin-ground, day-pin-ink; animation-timeline: --day-t1; animation-range: cover 100vh cover calc(100vh + max(1px, var(--day-distance, 0px) * 0.68)), cover 100vh cover calc(100vh + max(1px, var(--day-distance, 0px) * 0.635)); animation-timing-function: linear; animation-fill-mode: both; }
+[data-8b-live] #day .dy__track { animation-name: day-track; animation-timeline: --day-t1; animation-range: cover 100vh cover calc(100vh + max(1px, var(--day-distance, 0px))); animation-timing-function: linear; animation-fill-mode: both; transform: none; }
+[data-8b-live] #day .dy__track > li > .dy__photo > img { animation-name: day-photo-in, day-photo-out; animation-timeline: --day-t1, --day-t1; animation-range: cover calc(100vh + var(--day-in-start, 0px)) cover calc(100vh + var(--day-in-end, 1px)), cover calc(100vh + var(--day-out-start, 0px)) cover calc(100vh + var(--day-out-end, 1px)); animation-timing-function: linear; animation-fill-mode: backwards, forwards; transform: none; }
+@keyframes day-track { 0% { translate: 0px 0px; } 100% { translate: calc(-1 * var(--day-distance, 0px)) 0px; } }
+@keyframes day-pin-ground { 0% { background-color: var(--color-1); } 29.4118% { background-color: var(--color-1); } 73.5294% { background-color: var(--color-3); } 85.2941% { background-color: var(--color-3); } 100% { background-color: var(--color-4); } }
+@keyframes day-pin-ink { 0% { color: var(--color-2); } 96.8504% { color: var(--color-2); } 100% { color: var(--color-1); } }
+@keyframes day-photo-in { 0% { translate: calc(var(--day-in-from, -7) * 1%) 0px; } 100% { translate: calc(var(--day-in-to, 0) * 1%) 0px; } }
+@keyframes day-photo-out { 0% { translate: calc(var(--day-out-from, 0) * 1%) 0px; } 100% { translate: calc(var(--day-out-to, 7) * 1%) 0px; } }
+}
+</style>
+<style data-8b-part="scene:market">
+@layer scenes {
+[data-8b-live] #market .mk__spread > li > .mk__print { z-index: calc(var(--n) - var(--i)); }
+[data-8b-live] #market { --ease-power2-inout: linear(0, 0.0001, 0.0005, 0.0017, 0.004, 0.0078, 0.0135, 0.0214, 0.032, 0.0456, 0.0625, 0.0832, 0.108, 0.1373, 0.1715, 0.2109, 0.256, 0.3071, 0.3645, 0.4287, 0.5, 0.5713, 0.6355, 0.6929, 0.744, 0.7891, 0.8285, 0.8627, 0.892, 0.9168, 0.9375, 0.9544, 0.968, 0.9786, 0.9865, 0.9922, 0.996, 0.9983, 0.9995, 0.9999, 1); }
+[data-8b-live] #market .mk__spread { view-timeline: --market-t1 block; view-timeline-inset: 0; }
+[data-8b-live] #market .mk__spread > li > .mk__print { animation-timeline: --market-t1; animation-range: cover calc(8vh - 0.6vh * var(--i) + 3% * var(--i)) cover calc(31% + 3% * var(--i) + 1.8vh - 0.6vh * var(--i)); animation-fill-mode: both; transform: none; }
+[data-8b-live] #market .mk__spread > li > .mk__note { animation-name: market-div-mk-note-translate, market-div-mk-note-opacity, market-div-mk-note-visibility; animation-timeline: --market-t1; animation-range: cover calc(31% + 2% * var(--i) + 1.8vh - 0.4vh * var(--i)) cover calc(42% + 2% * var(--i) - 0.4vh - 0.4vh * var(--i)); animation-timing-function: cubic-bezier(0.3333, 1, 0.6667, 1), cubic-bezier(0.3333, 1, 0.6667, 1), linear; animation-fill-mode: both; transform: none; }
+@keyframes market-print-translate { 0% { translate: var(--market-x, 0px) var(--market-y, 0px); } 100% { translate: 0px 0px; } }
+@keyframes market-figure-mk-print-rotate { 0% { rotate: var(--market-figure-mk-print-rotate-from, -7deg); } 100% { rotate: 0deg; } }
+@keyframes market-figure-mk-print-scale { 0% { scale: 0.82; } 100% { scale: 1; } }
+@keyframes market-div-mk-note-translate { 0% { translate: 0px 24px; } 100% { translate: 0px 0px; } }
+@keyframes market-div-mk-note-opacity { 0% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes market-div-mk-note-visibility { 0% { visibility: hidden; } 0.002% { visibility: visible; animation-timing-function: cubic-bezier(0.3333, 1, 0.6667, 1); } 100% { visibility: visible; } }
+[data-8b-live] #market .mk__spread > li > .mk__print { animation-name: market-print-translate, market-figure-mk-print-rotate, market-figure-mk-print-scale; animation-timing-function: var(--ease-power2-inout), cubic-bezier(0.65, 0, 0.35, 1), cubic-bezier(0.65, 0, 0.35, 1); }
+}
+</style>
+<style data-8b-part="scene:terrace">
+@layer scenes {
+[data-8b-live] { --ease-10566a: linear(0, 0.1064, 0.2058, 0.2984, 0.3844, 0.4641, 0.5376, 0.6052, 0.6672, 0.7237, 0.775, 0.8213, 0.8628, 0.8998, 0.9324, 0.9609, 0.9856, 1.0066, 1.0242, 1.0386, 1.05, 1.0587, 1.0648, 1.0686, 1.0704, 1.0703, 1.0686, 1.0655, 1.0612, 1.056, 1.05, 1.0435, 1.0368, 1.03, 1.0234, 1.0172, 1.0116, 1.0069, 1.0032, 1.0008, 1); }
+[data-8b-live] #terrace .te__plan { view-timeline: --terrace-t1 block; view-timeline-inset: 0; }
+[data-8b-live] #terrace .te__square > .te__parasol, [data-8b-live] #terrace .te__room, [data-8b-live] #terrace .te__back, [data-8b-live] #terrace .te__counter { animation-timeline: --terrace-t1; animation-fill-mode: both; }
+[data-8b-live] #terrace .te__square > .te__parasol { animation-name: terrace-span-te-parasol-scale, terrace-span-te-parasol-rotate; animation-range: cover calc(12vh - 2.963vh * var(--i) + 4.004% * var(--i)) cover calc(34.034% + 4.004% * var(--i) - 13.1852vh - 2.9629vh * var(--i)); animation-timing-function: var(--ease-10566a); transform: none; }
+[data-8b-live] #terrace .te__room { animation-name: terrace-div-te-room-clippath; animation-range: cover calc(50.0501% - 25.037vh) cover calc(80.0801% - 47.2593vh); animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+[data-8b-live] #terrace .te__back { animation-name: terrace-div-te-back-clippath; animation-range: cover calc(66.0661% - 36.8889vh) cover calc(90.0901% - 54.6667vh); animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+[data-8b-live] #terrace .te__counter { animation-name: terrace-span-te-counter-scale; animation-range: cover calc(68.0681% - 38.3704vh) cover calc(88.0881% - 53.1852vh); animation-timing-function: cubic-bezier(0.3333, 1, 0.6667, 1); transform: none; }
+@keyframes terrace-span-te-parasol-scale { 0% { scale: 0.06; } 0.002% { scale: 0.0612; } 100% { scale: 1; } }
+@keyframes terrace-span-te-parasol-rotate { 0% { rotate: -150deg; } 0.002% { rotate: -149.806deg; } 100% { rotate: 0deg; } }
+@keyframes terrace-div-te-room-clippath { 0% { clip-path: inset(0% 100% 0% 0%); } 100% { clip-path: inset(0%); } }
+@keyframes terrace-div-te-back-clippath { 0% { clip-path: inset(0% 0% 100%); } 100% { clip-path: inset(0%); } }
+@keyframes terrace-span-te-counter-scale { 0% { scale: 0 1; } 0.002% { scale: 0.0015 1; } 100% { scale: 1; } }
+}
+</style>
+<style data-8b-part="scene:reviews">
+@layer scenes {
+[data-8b-live] #reviews .rv__list > li { view-timeline: --reviews-item block; view-timeline-inset: 0; }
+[data-8b-live] #reviews .rv__list > li > figure > blockquote, [data-8b-live] #reviews .rv__list > li > figure > .m-text-3 { animation-timeline: --reviews-item; animation-range: cover 0% cover 100%; animation-timing-function: linear; animation-fill-mode: both; transform: none; }
+@keyframes reviews-quote { 0% { translate: calc(var(--reviews-dir) * var(--reviews-travel)) 0px; animation-timing-function: cubic-bezier(0.3333, 0.6667, 0.6667, 1); } 38% { translate: 0px 0px; } 62% { translate: 0px 0px; animation-timing-function: cubic-bezier(0.3333, 0, 0.6667, 0.3333); } 100% { translate: calc(var(--reviews-dir) * var(--reviews-travel) * -0.7) 0px; } }
+@keyframes reviews-by { 0% { translate: calc(var(--reviews-dir) * var(--reviews-travel) * -0.6) 0px; animation-timing-function: cubic-bezier(0.3333, 0.6667, 0.6667, 1); } 38% { translate: 0px 0px; } 62% { translate: 0px 0px; animation-timing-function: cubic-bezier(0.3333, 0, 0.6667, 0.3333); } 100% { translate: calc(var(--reviews-dir) * var(--reviews-travel) * 0.4) 0px; } }
+[data-8b-live] #reviews .rv__list > li { --reviews-dir: calc(1 - 2 * mod(var(--i, 0), 2)); --reviews-travel: min(16vw, 240px); }
+[data-8b-live] #reviews .rv__list > li > figure > blockquote { animation-name: reviews-quote; }
+[data-8b-live] #reviews .rv__list > li > figure > .m-text-3 { animation-name: reviews-by; }
+}
+</style>
+<style data-8b-part="scene:footer">
+@layer scenes {
+[data-8b-live] #footer .ft__mark { view-timeline: --footer-mark block; view-timeline-inset: 0; }
+[data-8b-live] #footer .ft__mark .c { display: inline-block; white-space: pre; animation-name: footer-mark-close; animation-timeline: --footer-mark; animation-range: entry 0% entry calc(100% + 4vh); animation-timing-function: cubic-bezier(0.3333, 1, 0.6667, 1); animation-fill-mode: both; }
+@keyframes footer-mark-close { 0% { translate: calc((var(--i) - (var(--n) - 1) / 2) * min(4.5vw, 64px)) 0px; } 100% { translate: 0px 0px; } }
+}
+</style>
+
+<style id="compatibility-fallback">
+/* Static fallback for older Safari / iPad webviews */
+html { scroll-behavior: auto !important; }
+*, *::before, *::after { animation: none !important; transition: none !important; }
+#nav { position: absolute; }
+#nav .nav__bar { transform: none !important; }
+#nav .nav__mark { opacity: 1 !important; visibility: visible !important; }
+#day .dy__pin { position: static !important; }
+#day .dy__track { display: grid !important; grid-template-columns: repeat(2,minmax(0,1fr)) !important; overflow: visible !important; }
+#day .dy__panel { min-width: 0; }
+img { content-visibility: auto; }
+@media (max-width: 719.98px) {
+  #day .dy__track { grid-template-columns: 1fr !important; }
+  #moments .mo__grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+</style>
+</head>
+<body>
+<!-- navigation: header: wordmark, five section links (Book a table last); compact bar on scroll up; phone menu overlay -->
+<header id="nav" data-8b-section="navigation" data-state="top" data-form="full">
+  <div class="nav__bar">
+    <a class="nav__mark m-text-2" href="#opening" aria-label="Ombrelle, back to the top">Ombrelle</a>
+    <nav aria-label="Main">
+      <ul class="nav__list" data-8b-items=":scope > li">
+        <li><a class="m-link-2" href="#opening" aria-current="page">Home</a></li>
+        <li><a class="m-link-2" href="#carte">Menu</a></li>
+        <li><a class="m-link-2" href="#about">About</a></li>
+        <li><a class="m-link-2" href="#terrace">Terrace</a></li>
+        <li><a class="m-link-2" href="#contact">Book a table</a></li>
+      </ul>
+    </nav>
+    <button class="nav__toggle m-text-3" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
+  </div>
+  <div class="nav__menu" id="menu" hidden>
+    <div class="nav__menu-top">
+      <p class="m-text-3">Ombrelle — brasserie &amp; bar</p>
+      <button class="nav__close m-text-3" type="button">Close</button>
+    </div>
+    <ul class="nav__menu-list" data-8b-items=":scope > li">
+      <li><a class="m-text-2" href="#opening">Home</a></li>
+      <li><a class="m-text-2" href="#carte">Menu</a></li>
+      <li><a class="m-text-2" href="#about">About</a></li>
+      <li><a class="m-text-2" href="#terrace">Terrace</a></li>
+      <li><a class="m-text-2" href="#contact">Book a table</a></li>
+    </ul>
+    <p class="m-text-4">14 Linden Square · open daily 12:00–00:00</p>
+  </div>
+</header>
+<main>
+<!-- opening: first screen: huge wordmark, full-bleed dish photo, Book a table; then the menus intro and a photo pair (demo: brasserie and bar) (animation: scene:opening) -->
+<section id="opening" data-8b-section="opening">
+  <div class="op__hero">
+    <div class="op__band">
+      <h1 class="m-text-2 op__mark" style="--len:8"><span class="op__mark-in">Ombrelle</span></h1>
+    </div>
+    <div class="op__photo">
+      <div class="op__frame">
+        <img src="https://images.unsplash.com/photo-1717251883191-9a1411878790?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8Mnx8b3lzdGVycyUyMG9uJTIwaWNlJTIwb3ZlcmhlYWR8ZW58MXwwfHx8MTc5MTMyMjE3MHww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=1600&amp;q=60" alt="Oysters on crushed ice with lemon wedges in a round pan on a white slatted table, seen from above" width="1600" height="1067" fetchpriority="high">
+      </div>
+      <div class="op__light" aria-hidden="true"></div>
+      <div class="op__shade" aria-hidden="true"><div class="op__shade-in"><div class="op__shade-sway"><div class="op__shade-disc"></div></div></div></div>
+      <p class="op__label m-text-2">Brasserie<br>&amp; bar</p>
+      <div class="op__cta">
+        <a class="m-btn" href="#contact"><span class="m-btn__label">Book a table</span></a>
+        <p class="m-text-3">14 Linden Square<br>Noon to midnight, daily</p>
+      </div>
+    </div>
+  </div>
+  <div class="op__next">
+    <div class="op__intro">
+      <h2 class="m-text-2 op__title" style="--len:9"><span class="line">Two</span> <span class="line">menus</span></h2>
+      <div class="op__copy">
+        <p class="m-text">One kitchen, two services. From noon the brasserie sends out shellfish on ice, pasta from the pass and the fish that came in at dawn. From five the bar takes the terrace: spritz, vermouth and small plates until the last glass.</p>
+        <a class="m-link" href="#carte">Explore the menus</a>
+      </div>
+    </div>
+    <div class="op__pair">
+      <figure>
+        <div class="op__shot"><img src="https://images.unsplash.com/photo-1626232441076-a2a5ada2256a?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8M3x8b2N0b3B1cyUyMGRpc2h8ZW58MXwxfHx8MTc5MTMyMjE0OHww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=640&amp;q=60" alt="Grilled octopus with dots of saffron aioli on a blue glazed plate" width="1600" height="2400" loading="lazy"></div>
+        <figcaption><span class="m-text-3">Brasserie</span><span class="m-text-3">12:00–15:00 · 19:30–23:00</span></figcaption>
+      </figure>
+      <figure>
+        <div class="op__shot"><img src="https://images.unsplash.com/photo-1694830730275-407b17c52508?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8OHx8Y29ja3RhaWwlMjBnbGFzcyUyMGhhcmQlMjBzaGFkb3d8ZW58MXwxfHx8MTc5MTMyMjE0N3ww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=640&amp;q=60" alt="A ribbed wine glass casting long shadows across a white table in low sun" width="1600" height="2400" loading="lazy"></div>
+        <figcaption><span class="m-text-3">Bar</span><span class="m-text-3">17:00–00:00</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- about: olive full-width block: three-line justified heading and a short story (animation: scene:about) -->
+<section id="about" data-8b-section="about">
+  <div class="ab__field" aria-hidden="true"></div>
+  <div class="ab__inner">
+    <h2 class="m-text-2 ab__title"><span class="line">Lunch that</span><span class="line">runs into</span><span class="line">the evening</span></h2>
+    <div class="ab__copy">
+      <p class="m-text">Ombrelle began as six tables and two parasols on Linden Square. The parasols are bigger now and the kitchen is open to the room, but the habit stayed: people come for lunch, order another coffee and are still here when the lamps go on.</p>
+      <a class="m-link" href="#terrace">About the house</a>
+    </div>
+  </div>
+</section>
+
+<!-- moments: photo grid of six with a Follow us link (social feed) -->
+<section id="moments" data-8b-section="moments">
+  <div class="mo__head">
+    <h2 class="m-text-2 mo__title" data-8b-motion="flush" style="--len:16">Ombrelle moments</h2>
+    <a data-8b-placeholder="social" class="m-link" href="https://www.instagram.com/" rel="noopener">Follow us</a>
+  </div>
+  <ul class="mo__grid" data-8b-items=":scope > li">
+    <li><figure class="mo__photo" data-8b-motion="cut shade" style="--cut-delay: 0s"><img src="https://images.unsplash.com/photo-1719573019827-d06944a0c2be?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8MXx8d2FpdGVyJTIwY2FycnlpbmclMjBwbGF0ZXN8ZW58MXwxfHx8MTc5MTMyMjE5OXww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=490&amp;q=60" alt="A waiter in a white jacket carries a tray of plates between terrace tables" width="1600" height="2400" loading="lazy"></figure></li>
+    <li><figure class="mo__photo" data-8b-motion="cut" style="--cut-delay: 0.08s"><img src="https://images.unsplash.com/photo-1625943554499-342838b9c37f?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8M3x8ZnJpZW5kcyUyMHRvYXN0aW5nJTIwd2luZSUyMHJlc3RhdXJhbnR8ZW58MXwyfHx8MTc5MTMyMjE5OHww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=490&amp;q=60" alt="Guests sharing a skillet, a grilled steak and red wine at a table" width="1600" height="1600" loading="lazy"></figure></li>
+    <li><figure class="mo__photo" data-8b-motion="cut" style="--cut-delay: 0.16s"><img src="https://images.unsplash.com/photo-1725541592916-83dc6c458b53?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8MXx8c3ByaXR6JTIwY29ja3RhaWwlMjBzaGFkb3d8ZW58MXwxfHx8MTc5MTMyMjEyOXww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=490&amp;q=60" alt="An orange spritz glowing in late sunlight" width="1600" height="2473" loading="lazy"></figure></li>
+    <li><figure class="mo__photo" data-8b-motion="cut" style="--cut-delay: 0s"><img src="https://images.unsplash.com/photo-1715249792880-51e8984907a6?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8MXx8ZnJpZW5kcyUyMHRvYXN0aW5nJTIwd2luZSUyMHJlc3RhdXJhbnR8ZW58MXwyfHx8MTc5MTMyMjE5OHww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=490&amp;q=60" alt="Black and white: a hand lifting a glass of white wine over a plate" width="1600" height="1600" loading="lazy"></figure></li>
+    <li><figure class="mo__photo" data-8b-motion="cut shade" style="--cut-delay: 0.08s"><img src="https://images.unsplash.com/photo-1731475761027-0b6b33b74547?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8NXx8ZnJpZW5kcyUyMHRvYXN0aW5nJTIwd2luZSUyMHJlc3RhdXJhbnR8ZW58MXwyfHx8MTc5MTMyMjE5OHww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=490&amp;q=60" alt="Friends laughing around a crowded table" width="1600" height="1627" loading="lazy"></figure></li>
+    <li><figure class="mo__photo" data-8b-motion="cut" style="--cut-delay: 0.16s"><img src="https://images.unsplash.com/photo-1711536644694-66ae63f62f75?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8NHx8ZnJpZW5kcyUyMHRvYXN0aW5nJTIwd2luZSUyMHJlc3RhdXJhbnR8ZW58MXwyfHx8MTc5MTMyMjE5OHww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=490&amp;q=60" alt="Two glasses of red wine raised in a toast beside a candle" width="1600" height="1600" loading="lazy"></figure></li>
+  </ul>
+</section>
+
+<!-- day: opening hours as a horizontal track of five services, ground going from day to night (demo: Lunch, Coffee hour, Aperitivo, Dinner, Last glass) (animation: scene:day) -->
+<section id="day" data-8b-section="day">
+  <div class="dy__pin">
+    <div class="dy__head">
+      <h2 class="m-text-2 dy__title" style="--len:16">Noon to midnight</h2>
+      <p class="m-text">The house changes five times a day. The card, the light and the music follow the clock; the tables stay where they are.</p>
+    </div>
+    <ol class="dy__track" data-8b-items=":scope > li" data-8b-fixed="5">
+      <li class="dy__panel">
+        <p class="m-text-3 dy__time">12:00–15:00</p>
+        <h3 class="m-text-2 dy__name">Lunch</h3>
+        <p class="m-text dy__text">The full brasserie card. Shellfish on ice, a pasta from the pass, the fish of the day with whatever the market sent.</p>
+        <figure class="dy__photo"><img src="https://images.unsplash.com/photo-1710775694428-5f6e66ae6a4c?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8NHx8bXVzc2VscyUyMG92ZXJoZWFkfGVufDF8MHx8fDE3OTEzMjIxNDV8MA&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=640&amp;q=60" alt="A white plate of mussels with grilled bread and a slice of lemon" width="1600" height="1067" loading="lazy"></figure>
+      </li>
+      <li class="dy__panel">
+        <p class="m-text-3 dy__time">15:00–17:00</p>
+        <h3 class="m-text-2 dy__name">Coffee hour</h3>
+        <p class="m-text dy__text">Espresso, a slice of lemon tart, the terrace in half shade. The kitchen rests; the coffee keeps going.</p>
+        <figure class="dy__photo"><img src="https://images.unsplash.com/photo-1622192308862-8032a315dd16?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8NHx8ZXNwcmVzc28lMjBhbmQlMjB0YXJ0JTIwb24lMjB0YWJsZXxlbnwxfDJ8fHwxNzkxMzIyMTc3fDA&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=570&amp;q=60" alt="Two espresso cups on red and yellow saucers and a small plate of biscuits on a pale wooden table" width="1600" height="1600" loading="lazy"></figure>
+      </li>
+      <li class="dy__panel">
+        <p class="m-text-3 dy__time">17:00–19:30</p>
+        <h3 class="m-text-2 dy__name">Aperitivo</h3>
+        <p class="m-text dy__text">Spritz, vermouth on ice, olives warmed with orange zest and a plate of fried sardines to share.</p>
+        <figure class="dy__photo"><img src="https://images.unsplash.com/photo-1682159173219-b0d72e875b25?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8Nnx8c3ByaXR6JTIwY29ja3RhaWwlMjBzaGFkb3d8ZW58MXwxfHx8MTc5MTMyMjEyOXww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=570&amp;q=60" alt="A hand holding a red spritz over a marble table in evening sun" width="1600" height="2400" loading="lazy"></figure>
+      </li>
+      <li class="dy__panel">
+        <p class="m-text-3 dy__time">19:30–23:00</p>
+        <h3 class="m-text-2 dy__name">Dinner</h3>
+        <p class="m-text dy__text">The card again, now by candlelight. Book ahead for the terrace on warm nights.</p>
+        <figure class="dy__photo"><img src="https://images.unsplash.com/photo-1772479020020-9bd8d2f577d0?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8M3x8Y2FuZGxlJTIwZGlubmVyJTIwdGFibGUlMjByZXN0YXVyYW50JTIwbmlnaHR8ZW58MXwwfHx8MTc5MTMyMjE3OHww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=640&amp;q=60" alt="A candlelit dinner table with plates of pasta and salad" width="1600" height="1067" loading="lazy"></figure>
+      </li>
+      <li class="dy__panel">
+        <p class="m-text-3 dy__time">23:00–00:00</p>
+        <h3 class="m-text-2 dy__name">Last glass</h3>
+        <p class="m-text dy__text">The kitchen closes and the bar keeps a short card of cheese, anchovy toast and something to finish the night.</p>
+        <figure class="dy__photo"><img src="https://images.unsplash.com/photo-1786520403993-e1dfdc0864b5?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8NHx8Y2FuZGxlJTIwZGlubmVyJTIwdGFibGUlMjByZXN0YXVyYW50JTIwbmlnaHR8ZW58MXwwfHx8MTc5MTMyMjE3OHww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=640&amp;q=60" alt="A bottle and a glass on a dark table against the last light over the rooftops" width="1600" height="1067" loading="lazy"></figure>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- carte: the menu: courses with dishes, short descriptions and prices, sticky course index and one photo -->
+<section id="carte" data-8b-section="carte">
+  <div class="ca__head">
+    <h2 class="m-text-2 ca__title" data-8b-motion="flush" style="--len:18">The brasserie card</h2>
+    <p class="m-text-4 ca__note">Served 12:00–15:00 and 19:30–23:00. Prices in euros, service included. Ask us about allergens; the kitchen can change most plates.</p>
+  </div>
+  <div class="ca__body">
+    <div class="ca__aside">
+      <nav class="ca__index" aria-label="Courses">
+        <a class="m-link-2" href="#carte-shellfish">Shellfish</a>
+        <a class="m-link-2" href="#carte-pass">From the pass</a>
+        <a class="m-link-2" href="#carte-fish">The fish</a>
+        <a class="m-link-2" href="#carte-sweet">Sweet</a>
+      </nav>
+      <figure class="ca__photo" data-8b-motion="cut" style="--cut-delay: 0s"><img src="https://images.unsplash.com/photo-1693820206774-d4a769355142?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8N3x8cGFzdGElMjBwbGF0ZSUyMG92ZXJoZWFkJTIwd2hpdGUlMjB0YWJsZXxlbnwxfDB8fHwxNzkxMzIyMTI4fDA&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=620&amp;q=60" alt="A plate of spaghetti with herbs on a white plate, seen from above" width="1600" height="1280" loading="lazy"></figure>
+    </div>
+    <div class="ca__courses" data-8b-items=":scope > .ca__course">
+      <div class="ca__course" id="carte-shellfish">
+        <h3 class="m-text-3">Shellfish</h3>
+        <ul class="ca__list" data-8b-items=":scope > li">
+          <li class="ca__item"><p class="m-text-5">Oysters No. 3, by six</p><p class="m-text-4">Lemon, shallot vinegar, rye bread</p><p class="m-text-5 ca__price"><data value="18">18</data></p></li>
+          <li class="ca__item"><p class="m-text-5">Mussels marinière</p><p class="m-text-4">White wine, parsley, a cone of fries</p><p class="m-text-5 ca__price"><data value="19">19</data></p></li>
+          <li class="ca__item"><p class="m-text-5">Clams on toast</p><p class="m-text-4">Garlic butter, chilli, sourdough</p><p class="m-text-5 ca__price"><data value="14">14</data></p></li>
+        </ul>
+      </div>
+      <div class="ca__course" id="carte-pass">
+        <h3 class="m-text-3">From the pass</h3>
+        <ul class="ca__list" data-8b-items=":scope > li">
+          <li class="ca__item"><p class="m-text-5">Spaghetti alle vongole</p><p class="m-text-4">Clams, white wine, parsley, a little heat</p><p class="m-text-5 ca__price"><data value="22">22</data></p></li>
+          <li class="ca__item"><p class="m-text-5">Tagliatelle with crab</p><p class="m-text-4">Lemon, brown butter, chives</p><p class="m-text-5 ca__price"><data value="24">24</data></p></li>
+          <li class="ca__item"><p class="m-text-5">Tomato risotto</p><p class="m-text-4">Cherry tomatoes, burrata, basil oil</p><p class="m-text-5 ca__price"><data value="19">19</data></p></li>
+        </ul>
+      </div>
+      <div class="ca__course" id="carte-fish">
+        <h3 class="m-text-3">The fish</h3>
+        <ul class="ca__list" data-8b-items=":scope > li">
+          <li class="ca__item"><p class="m-text-5">Bream of the day</p><p class="m-text-4">Grilled whole, fennel, olive oil</p><p class="m-text-5 ca__price"><data value="29">29</data></p></li>
+          <li class="ca__item"><p class="m-text-5">Sole meunière</p><p class="m-text-4">Brown butter, capers, boiled potatoes</p><p class="m-text-5 ca__price"><data value="36">36</data></p></li>
+          <li class="ca__item"><p class="m-text-5">Octopus a la plancha</p><p class="m-text-4">Saffron aioli, crushed potatoes</p><p class="m-text-5 ca__price"><data value="27">27</data></p></li>
+        </ul>
+      </div>
+      <div class="ca__course" id="carte-sweet">
+        <h3 class="m-text-3">Sweet</h3>
+        <ul class="ca__list" data-8b-items=":scope > li">
+          <li class="ca__item"><p class="m-text-5">Lemon tart</p><p class="m-text-4">Crème fraîche</p><p class="m-text-5 ca__price"><data value="9">9</data></p></li>
+          <li class="ca__item"><p class="m-text-5">Chocolate pot</p><p class="m-text-4">Sea salt, whipped cream</p><p class="m-text-5 ca__price"><data value="8">8</data></p></li>
+          <li class="ca__item"><p class="m-text-5">Affogato</p><p class="m-text-4">Vanilla ice cream, a shot of espresso</p><p class="m-text-5 ca__price"><data value="7">7</data></p></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- market: five ingredients or suppliers with photos and where each goes on the menu (demo: the day's deliveries) (animation: scene:market) -->
+<section id="market" data-8b-section="market">
+  <div class="mk__head">
+    <h2 class="m-text-2 mk__title" style="--len:12">This morning</h2>
+    <p class="m-text">What arrives at the kitchen door before seven decides half of the card. This is what came in today and where you will find it.</p>
+  </div>
+  <ul class="mk__spread" data-8b-items=":scope > li" data-8b-fixed="5">
+    <li class="mk__item" style="--market-figure-mk-print-rotate-from: -7deg">
+      <figure class="mk__print"><img src="https://images.unsplash.com/photo-1643790270274-587ff60144ee?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8MXx8ZnJlc2glMjBmaXNoJTIwb24lMjBpY2V8ZW58MXwyfHx8MTc5MTMyMjE5NXww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=550&amp;q=60" alt="Fresh sardines on crushed ice in a dark bowl, seen from above" width="1600" height="1621" loading="lazy"></figure>
+      <div class="mk__note"><p class="m-text-5">Sardines</p><p class="m-text-4">Night boats from the harbour</p><p class="m-text-4">Fried, on the bar card</p></div>
+    </li>
+    <li class="mk__item" style="--market-figure-mk-print-rotate-from: 5deg">
+      <figure class="mk__print"><img src="https://images.unsplash.com/photo-1527325752894-f1b38b396f40?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8MTN8fHRvbWF0b2VzJTIwdG9wJTIwdmlld3xlbnwxfDJ8fHwxNzkxMzIyMTk2fDA&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=270&amp;q=60" alt="A branch of cherry tomatoes on a grey plate, seen from above" width="1600" height="1600" loading="lazy"></figure>
+      <div class="mk__note"><p class="m-text-5">Cherry tomatoes</p><p class="m-text-4">A farm forty minutes inland</p><p class="m-text-4">Risotto, salad, the sauce for the clams</p></div>
+    </li>
+    <li class="mk__item" style="--market-figure-mk-print-rotate-from: -2deg">
+      <figure class="mk__print"><img src="https://images.unsplash.com/photo-1659729935628-2a1b6d1fbe19?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8MXx8bGVtb25zJTIwb3ZlcmhlYWR8ZW58MXwyfHx8MTc5MTMyMjE5NHww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=260&amp;q=60" alt="A bowl of lemons on a blue cloth, seen from above" width="1600" height="1600" loading="lazy"></figure>
+      <div class="mk__note"><p class="m-text-5">Lemons</p><p class="m-text-4">A grove on the coast</p><p class="m-text-4">The tart and every plate of shellfish</p></div>
+    </li>
+    <li class="mk__item" style="--market-figure-mk-print-rotate-from: 8deg">
+      <figure class="mk__print"><img src="https://images.unsplash.com/photo-1774569036877-ab5a9cca2757?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8MXx8c291cmRvdWdoJTIwYnJlYWQlMjBvdmVyaGVhZHxlbnwxfDJ8fHwxNzkxMzIyMTk3fDA&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=290&amp;q=60" alt="Slices of sourdough and a spoon of jam on a plate over a checked cloth" width="1600" height="1600" loading="lazy"></figure>
+      <div class="mk__note"><p class="m-text-5">Sourdough</p><p class="m-text-4">The bakery two streets away</p><p class="m-text-4">On every table, with salted butter</p></div>
+    </li>
+    <li class="mk__item" style="--market-figure-mk-print-rotate-from: -5deg">
+      <figure class="mk__print"><img src="https://images.unsplash.com/photo-1672076555485-0c51b5cb32d0?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8NXx8bXVzc2VscyUyMG92ZXJoZWFkfGVufDF8MHx8fDE3OTEzMjIxNDV8MA&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=410&amp;q=60" alt="Fresh clams heaped on a dark rock" width="1600" height="1068" loading="lazy"></figure>
+      <div class="mk__note"><p class="m-text-5">Clams</p><p class="m-text-4">Raked at low tide on the bay</p><p class="m-text-4">Spaghetti alle vongole, clams on toast</p></div>
+    </li>
+  </ul>
+</section>
+
+<!-- bar: dark bar section: drinks and small plates with prices, two bar photos -->
+<section id="bar" data-8b-section="bar">
+  <div class="br__grid">
+    <div class="br__text">
+      <h2 class="m-text-2 br__title" data-8b-motion="flush" style="--len:10">After five</h2>
+      <p class="m-text br__lede">At five the coffee machine goes quiet and the bar takes the terrace. Glasses are poured short and cold, and the kitchen sends small plates until midnight.</p>
+      <div class="br__card">
+        <div class="br__group">
+          <h3 class="m-text-3">Glasses</h3>
+          <ul data-8b-items=":scope > li">
+            <li class="br__item"><p class="m-text-5">Ombrelle spritz</p><p class="m-text-4">Bitter orange, prosecco, soda</p><p class="m-text-5 br__price"><data value="11">11</data></p></li>
+            <li class="br__item"><p class="m-text-5">Vermouth on ice</p><p class="m-text-4">Red or white, a green olive</p><p class="m-text-5 br__price"><data value="9">9</data></p></li>
+            <li class="br__item"><p class="m-text-5">Negroni</p><p class="m-text-4">Gin, bitter, sweet vermouth</p><p class="m-text-5 br__price"><data value="12">12</data></p></li>
+            <li class="br__item"><p class="m-text-5">White by the glass</p><p class="m-text-4">Whatever the house is pouring this week</p><p class="m-text-5 br__price"><data value="7">7</data></p></li>
+          </ul>
+        </div>
+        <div class="br__group">
+          <h3 class="m-text-3">Small plates</h3>
+          <ul data-8b-items=":scope > li">
+            <li class="br__item"><p class="m-text-5">Fried sardines</p><p class="m-text-4">Lemon, flaky salt</p><p class="m-text-5 br__price"><data value="9">9</data></p></li>
+            <li class="br__item"><p class="m-text-5">Warm olives</p><p class="m-text-4">Orange zest, thyme</p><p class="m-text-5 br__price"><data value="5">5</data></p></li>
+            <li class="br__item"><p class="m-text-5">Anchovy toast</p><p class="m-text-4">Cultured butter, chives</p><p class="m-text-5 br__price"><data value="8">8</data></p></li>
+            <li class="br__item"><p class="m-text-5">Three cheeses</p><p class="m-text-4">Honey, walnut bread</p><p class="m-text-5 br__price"><data value="14">14</data></p></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="br__photos">
+      <figure class="br__photo" data-8b-motion="cut" style="--cut-delay: 0s"><img src="https://images.unsplash.com/photo-1629274535685-846d95e04095?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8NXx8YmFydGVuZGVyJTIwcG91cmluZyUyMGNvY2t0YWlsfGVufDF8MXx8fDE3OTEzMjIxOTd8MA&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=660&amp;q=60" alt="A bartender pours a red cocktail from a shaker into a coupe on the bar" width="1600" height="1929" loading="lazy"></figure>
+      <figure class="br__photo" data-8b-motion="cut" style="--cut-delay: 0.08s"><img src="https://images.unsplash.com/photo-1670819917515-0bf72062d670?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8OXx8YmFydGVuZGVyJTIwcG91cmluZyUyMGNvY2t0YWlsfGVufDF8MXx8fDE3OTEzMjIxOTd8MA&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=380&amp;q=60" alt="A pale cocktail with a citrus wheel being poured in a dim bar" width="1600" height="2000" loading="lazy"></figure>
+    </div>
+  </div>
+</section>
+
+<!-- terrace: seating areas with seat counts beside a drawn plan of the house, wide photo of the square (animation: scene:terrace) -->
+<section id="terrace" data-8b-section="terrace">
+  <div class="te__grid">
+    <div class="te__text">
+      <h2 class="m-text-2 te__title"><span class="line">Under the</span><span class="line">parasols</span></h2>
+      <p class="m-text">Twelve parasols on the square, a room of sixty behind the glass and a counter for those who eat alone. The back room seats twenty for birthdays, long lunches and the occasional wedding.</p>
+      <ul class="te__areas" data-8b-items=":scope > li">
+        <li class="te__area"><span class="te__key te__key--parasol" aria-hidden="true"></span><p class="m-text-5">The terrace</p><p class="m-text-4">48 seats under twelve parasols, April to October</p></li>
+        <li class="te__area"><span class="te__key te__key--room" aria-hidden="true"></span><p class="m-text-5">The room</p><p class="m-text-4">60 seats behind the glass, all year</p></li>
+        <li class="te__area"><span class="te__key te__key--counter" aria-hidden="true"></span><p class="m-text-5">The counter</p><p class="m-text-4">14 stools facing the kitchen, no booking</p></li>
+        <li class="te__area"><span class="te__key te__key--back" aria-hidden="true"></span><p class="m-text-5">The back room</p><p class="m-text-4">Up to 20 guests, private lunches and dinners</p></li>
+      </ul>
+      <a class="m-link" href="#contact">Ask about the back room</a>
+    </div>
+    <div class="te__plan" aria-hidden="true">
+      <div class="te__square" data-8b-items=":scope > .te__parasol">
+        <span class="te__parasol"></span><span class="te__parasol"></span><span class="te__parasol"></span><span class="te__parasol"></span>
+        <span class="te__parasol"></span><span class="te__parasol"></span><span class="te__parasol"></span><span class="te__parasol"></span>
+        <span class="te__parasol"></span><span class="te__parasol"></span><span class="te__parasol"></span><span class="te__parasol"></span>
+      </div>
+      <div class="te__house">
+        <div class="te__room"><span class="te__counter"></span></div>
+        <div class="te__back"></div>
+      </div>
+    </div>
+  </div>
+  <figure class="te__band"><img src="https://images.unsplash.com/photo-1763494629170-69efbc5fe01f?ixid=M3w0Mzc5fDB8MXxzZWFyY2h8NHx8Y2FmZSUyMHRlcnJhY2UlMjB1bWJyZWxsYXMlMjBzcXVhcmV8ZW58MXwwfHx8MTc5MTMyMjE3Mnww&amp;ixlib=rb-4.1.0&amp;auto=format&amp;fit=crop&amp;w=1280&amp;q=60" alt="A town square lined with tall painted houses and a row of white café parasols" width="1600" height="647" loading="lazy"></figure>
+</section>
+
+<!-- reviews: three guest quotes set large, alternating sides (animation: scene:reviews) -->
+<section id="reviews" data-8b-section="reviews">
+  <h2 class="m-text-3 rv__title">Said at the table</h2>
+  <ul class="rv__list" data-8b-items=":scope > li">
+    <li class="rv__item"><figure><blockquote><p class="m-text-6">“We came for oysters at one and left after the second negroni. Nobody hurried us once.”</p></blockquote><figcaption class="m-text-3">Marta — a regular since the first summer</figcaption></figure></li>
+    <li class="rv__item"><figure><blockquote><p class="m-text-6">“The bream was perfect, the coffee better, and the shade moves exactly where you need it.”</p></blockquote><figcaption class="m-text-3">Jonas — Sunday lunch for four</figcaption></figure></li>
+    <li class="rv__item"><figure><blockquote><p class="m-text-6">“The kind of place where the waiter remembers you like the table by the plane tree.”</p></blockquote><figcaption class="m-text-3">Clara — lives two streets away</figcaption></figure></li>
+  </ul>
+</section>
+
+<!-- contact: booking form and the restaurant's details (address, hours, phone, email) -->
+<section id="contact" data-8b-section="contact">
+  <div class="ct__grid">
+    <div class="ct__side">
+      <h2 class="m-text-2 ct__title" data-8b-motion="flush" style="--len:12">Book a table</h2>
+      <p class="m-text">Tables for up to eight can be booked here; for the back room, write to us. The counter and half the terrace are kept for walk-ins.</p>
+      <dl class="ct__info">
+        <dt class="m-text-3">Address</dt><dd class="m-text">14 Linden Square</dd>
+        <dt class="m-text-3">Open</dt><dd class="m-text">Daily, 12:00–00:00</dd>
+        <dt class="m-text-3">Kitchen</dt><dd class="m-text">12:00–15:00 and 19:30–23:00</dd>
+        <dt class="m-text-3">Phone</dt><dd class="m-text"><a data-8b-placeholder="phone" href="tel:+442000000000">+44 20 0000 0000</a></dd>
+        <dt class="m-text-3">Email</dt><dd class="m-text"><a data-8b-placeholder="email" href="mailto:table@ombrelle.example">table@ombrelle.example</a></dd>
+      </dl>
+    </div>
+    <form data-8b-placeholder="form" class="ct__form" action="#" method="post" novalidate>
+      <label class="m-field ct__wide"><span class="m-field__label">Name</span><input class="m-field__control" name="name" type="text" autocomplete="name" required></label>
+      <label class="m-field ct__wide"><span class="m-field__label">Phone or email</span><input class="m-field__control" name="contact" type="text" autocomplete="email" required></label>
+      <label class="m-field"><span class="m-field__label">Date</span><input class="m-field__control" name="date" type="date" required></label>
+      <label class="m-field"><span class="m-field__label">Time</span><select class="m-field__control" name="time"><option>12:00</option><option>12:30</option><option>13:00</option><option>13:30</option><option>14:00</option><option>17:00</option><option>18:00</option><option>19:30</option><option selected>20:00</option><option>20:30</option><option>21:00</option><option>21:30</option><option>22:00</option></select></label>
+      <label class="m-field"><span class="m-field__label">Guests</span><select class="m-field__control" name="guests"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></label>
+      <label class="m-field"><span class="m-field__label">Where</span><select class="m-field__control" name="area"><option>Terrace, if the weather holds</option><option>The room</option><option>No preference</option></select></label>
+      <label class="m-field ct__wide"><span class="m-field__label">Anything we should know</span><textarea class="m-field__control" name="note" rows="3"></textarea></label>
+      <div class="ct__send ct__wide">
+        <button class="m-btn" type="submit"><span class="m-btn__label">Request a table</span></button>
+        <p class="m-text-4 ct__hint">We confirm every booking by phone or email within the hour.</p>
+      </div>
+      <p class="m-text ct__done" role="status" hidden>Thank you. Your request is with us, and we will confirm your table within the hour.</p>
+    </form>
+  </div>
+</section>
+</main>
+
+<!-- footer: night footer: four link columns, width-filling wordmark, copyright and the Design: 8B credit (animation: scene:footer) -->
+<footer id="footer" data-8b-section="footer">
+  <div class="ft__cols">
+    <div class="ft__col"><p class="m-text-3">Find us</p><p class="m-text-4">14 Linden Square</p><p class="m-text-4">Open daily, 12:00–00:00</p></div>
+    <div class="ft__col"><p class="m-text-3">Talk to us</p><a data-8b-placeholder="phone" class="m-link-2" href="tel:+442000000000">+44 20 0000 0000</a><a data-8b-placeholder="email" class="m-link-2" href="mailto:table@ombrelle.example">Email</a></div>
+    <div class="ft__col"><p class="m-text-3">The house</p><a class="m-link-2" href="#carte">Menu</a><a class="m-link-2" href="#day">Noon to midnight</a><a class="m-link-2" href="#terrace">Terrace</a></div>
+    <div class="ft__col"><p class="m-text-3">Elsewhere</p><a data-8b-placeholder="social" class="m-link-2" href="https://www.instagram.com/" rel="noopener">Instagram</a><a class="m-link-2" href="#contact">Book a table</a></div>
+  </div>
+  <p class="m-text-2 ft__mark" style="--len:8">Ombrelle</p>
+  <div class="ft__legal m-text-4"><p>© 2026 Ombrelle Brasserie &amp; Bar · Design: <a href="https://8b.com/" style="color:inherit" data-8b-credit>8B</a></p><p>Last orders at the bar 23:45</p></div>
+</footer>
+
+
+
+
+
+
+
+
+</body>
+</html>
