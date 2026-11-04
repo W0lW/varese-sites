@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#100f14">
+<meta name="description" content="Un test per adulti su intesa, desiderio, comunicazione, curiosità e confini nella sessualità.">
+<title>AFTER HOURS — Test di intesa</title>
+<style>
+:root{color-scheme:dark;--bg:#100f14;--panel:#1b1922;--line:#37313f;--txt:#f7f2f8;--muted:#b9afbf;--pink:#ff83b5;--violet:#b39aff;--gold:#f0c58b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,#45223d 0,transparent 34%),radial-gradient(ellipse at 100% 45%,#27234a 0,transparent 36%),var(--bg);color:var(--txt);font:16px/1.6 Inter,system-ui,-apple-system,sans-serif}
+main{width:min(820px,calc(100% - 32px));margin:auto;padding:48px 0 80px}.eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--pink);font-weight:850}
+h1{font-size:clamp(3rem,10vw,6.4rem);line-height:.88;letter-spacing:-.08em;margin:17px 0 20px}h1 span{color:var(--pink)}h2{letter-spacing:-.04em;line-height:1.18}.intro{max-width:680px;color:var(--muted);font-size:1.05rem}
+.notice{margin:25px 0;padding:16px 18px;border:1px solid #67445c;background:#291d2b;border-radius:16px;color:#ead8e5;font-size:.91rem}.notice strong{color:white}
+.panel{background:linear-gradient(145deg,#211d29,#191720);border:1px solid var(--line);border-radius:23px;padding:clamp(20px,5vw,36px);box-shadow:0 22px 70px #0005;margin-top:24px}
+.top{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:.85rem;margin:0 0 10px}.track{height:6px;background:#35303c;border-radius:9px;overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--pink));transition:width .25s}
+.tag{font-size:.72rem;color:var(--pink);font-weight:850;text-transform:uppercase;letter-spacing:.16em}.qnum{float:right;color:var(--muted);font-size:.82rem}#question{font-size:clamp(1.35rem,4vw,1.9rem);margin:13px 0 22px}
+.answers{display:grid;gap:10px}.answer{display:flex;gap:12px;align-items:flex-start;padding:14px 15px;border:1px solid var(--line);border-radius:14px;background:#ffffff04;cursor:pointer;transition:.18s}.answer:hover{border-color:#9a7298;background:#ffffff09}.answer:has(input:checked){border-color:var(--pink);background:#ff83b514}.answer input{accent-color:var(--pink);margin-top:5px;flex:none}.answer span{font-size:.96rem}
+.actions{display:flex;justify-content:space-between;gap:12px;margin-top:25px}.btn{border:0;border-radius:999px;padding:13px 22px;font-weight:850;font-size:.92rem;cursor:pointer}.primary{background:var(--pink);color:#21131b}.secondary{background:#34303b;color:var(--txt)}.btn:disabled{opacity:.35;cursor:not-allowed}
+.hidden{display:none!important}.result h2{font-size:clamp(1.8rem,5vw,2.7rem);margin:8px 0}.score{font-size:4rem;line-height:1;color:var(--pink);font-weight:950;letter-spacing:-.07em}.muted{color:var(--muted)}.resultbox{padding:17px;border:1px solid var(--line);border-radius:15px;background:#ffffff05;margin:14px 0}.resultbox h3{margin:0 0 7px}.bars{display:grid;gap:14px;margin:22px 0}.barrow{display:grid;grid-template-columns:155px 1fr 42px;align-items:center;gap:12px;font-size:.88rem}.bar{height:8px;background:#393441;border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--violet),var(--pink));border-radius:9px}
+.reflection{margin-top:30px}.reflection-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.reflect{padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:15px}.reflect b{display:block;margin-bottom:6px}.reflect p{font-size:.9rem;color:var(--muted);margin:0}
+footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:40px}a{color:var(--pink)}@media(max-width:560px){main{padding-top:34px}.reflection-grid{grid-template-columns:1fr}.barrow{grid-template-columns:112px 1fr 34px;gap:8px}.actions .btn{padding:12px 17px}}
+</style>
+</head>
+<body><main>
+<div class="eyebrow">Un test per adulti · 18+</div>
+<h1>AFTER<br>HOURS<span>.</span></h1>
+<p class="intro">Desiderio, complicità, curiosità e fiducia: un test per capire che tipo di intesa cerchi e come vivi la tua sessualità. Un mix tra psicologia quotidiana, domande dirette e un pizzico di provocazione.</p>
+<div class="notice"><strong>Prima di iniziare.</strong> Solo per maggiorenni. Non è un test clinico né misura quanto sei “bravo”, esperto o normale. Non esistono risposte giuste: desideri, frequenza e fantasie sono personali. Il consenso deve essere libero, reciproco e revocabile in ogni momento. Le risposte vengono elaborate solo in questa pagina: non sono inviate né salvate su un server.</div>
+<section id="start" class="panel">
+<div class="eyebrow">25 domande · circa 4 minuti</div><h2>Quanto siete in sintonia con ciò che desiderate?</h2>
+<p class="muted">Rispondi pensando a te, o alla relazione attuale se ne hai una. Se una domanda non ti rappresenta, scegli l'opzione più vicina oppure quella che descrive ciò che vorresti migliorare.</p>
+<button class="btn primary" id="begin">Inizia il test <span aria-hidden="true">→</span></button>
+</section>
+<section id="quiz" class="hidden">
+<div class="top"><span id="progressText">Domanda 1 di 25</span><span id="progressPct">4%</span></div><div class="track"><div class="fill" id="progress"></div></div>
+<div class="panel"><div class="tag" id="category"></div><span class="qnum" id="qnum">01 / 25</span><h2 id="question"></h2><div class="answers" id="answers"></div>
+<div class="actions"><button class="btn secondary" id="back">Indietro</button><button class="btn primary" id="next" disabled>Avanti</button></div></div>
+</section>
+<section id="result" class="panel hidden" aria-live="polite"></section>
+<section id="reflection" class="reflection hidden"><div class="eyebrow">Fuori punteggio</div><h2>Sei domande da portare nella vita reale</h2><p class="muted">Non devi rispondere qui. Sono spunti per una conversazione sincera, senza pressioni.</p>
+<div class="reflection-grid">
+<div class="reflect"><b>1. Desiderio</b><p>Che cosa ti fa sentire davvero desiderato: parole, gesti, iniziativa o attenzioni quotidiane?</p></div>
+<div class="reflect"><b>2. Curiosità</b><p>C'è qualcosa che ti incuriosisce ma che non hai mai avuto il coraggio di nominare?</p></div>
+<div class="reflect"><b>3. Confini</b><p>Qual è una cosa che per te è un no, e come vorresti che venisse rispettata?</p></div>
+<div class="reflect"><b>4. Ritmo</b><p>Come potete parlarvi se avete desideri o frequenze diverse, senza far sentire nessuno in difetto?</p></div>
+<div class="reflect"><b>5. Fiducia</b><p>Che cosa ti aiuta a sentirti al sicuro e libero di essere te stesso?</p></div>
+<div class="reflect"><b>6. Complicità</b><p>Quale piccolo cambiamento renderebbe la vostra intimità più vostra?</p></div>
+</div></section>
+<footer>AFTER HOURS · Nessun account, nessun invio di risposte. <br><a href="../test-relazioni/">Vai al test sulle relazioni</a></footer>
+</main>
+<script>
+const questions=[
+{c:"Comunicazione",q:"Quando qualcosa ti piace o non ti piace durante l'intimità, quanto riesci a dirlo?",a:["Lo dico con tranquillità e rispetto","Lo comunico, magari non subito","Faccio fatica: spero che l'altra persona capisca","Tendo a non parlarne"]},
+{c:"Desiderio",q:"Quanto conta per te sentirti desiderato, non solo cercato per il sesso?",a:["È fondamentale: voglio entrambe le cose","Conta molto, anche se non sempre lo mostro","Mi interessa soprattutto la chimica del momento","Non è un aspetto centrale per me"]},
+{c:"Curiosità",q:"Se il partner propone qualcosa di nuovo, come reagisci?",a:["Ne parliamo: se incuriosisce entrambi, perché no","Sono aperto, ma ho bisogno di tempo","Preferisco restare su ciò che conosco","Accetto anche se non mi convince, per non deludere"]},
+{c:"Fiducia",q:"Quanto ti senti libero di mostrarti vulnerabile con un partner?",a:["Molto: posso essere spontaneo senza paura","Abbastanza, quando c'è confidenza","Poco: temo il giudizio","Quasi per niente"]},
+{c:"Iniziativa",q:"Nella vostra intimità, come vivi l'iniziativa?",a:["Mi piace alternarci spontaneamente","Di solito prendo io l'iniziativa","Preferisco che la prenda l'altra persona","È un tema che crea imbarazzo o tensione"]},
+{c:"Confini e consenso",q:"Se cambi idea durante un momento intimo, cosa dovrebbe succedere?",a:["Ci si ferma senza pressioni: è normale","Lo dico e mi aspetto ascolto","Mi sentirei in colpa a interrompere","Temo che l'altra persona la prenda male"]},
+{c:"Complicità",q:"Quanto spazio date a baci, carezze e intimità senza che debbano portare per forza al sesso?",a:["Tanto: sono parte del piacere","Abbastanza, dipende dal momento","Poco: spesso si va dritti al punto","Non ci avevo mai pensato"]},
+{c:"Desiderio",q:"Se tu e il partner avete voglia in momenti diversi, come la gestite?",a:["Ne parliamo senza colpe e troviamo un equilibrio","Cerchiamo di venirci incontro","Uno dei due finisce spesso per sentirsi rifiutato","Diventa facilmente un litigio o una pressione"]},
+{c:"Curiosità",q:"Quanto ti senti a tuo agio a parlare di fantasie, anche senza volerle realizzare?",a:["Molto: parlarne non significa doverle fare","Abbastanza, con la persona giusta","Poco: temo di essere giudicato","Preferisco tenerle per me"]},
+{c:"Comunicazione",q:"Dopo un momento intimo, quanto vi viene naturale dirvi cosa vi è piaciuto?",a:["È spontaneo e reciproco","Capita, ma potremmo farlo di più","Quasi mai","Mi mette a disagio"]},
+{c:"Fiducia",q:"La gelosia o l'insicurezza influenzano la tua libertà nell'intimità?",a:["Raramente: c'è fiducia e rispetto","A volte, ma riesco a parlarne","Spesso: faccio fatica a lasciarmi andare","Molto: controllo o cerco continue conferme"]},
+{c:"Confini e consenso",q:"Quanto è facile per te chiedere all'altra persona che cosa desidera?",a:["Molto: mi interessa davvero saperlo","Abbastanza, se c'è confidenza","Mi imbarazza un po'","Penso che certe cose si debbano intuire"]},
+{c:"Complicità",q:"Quanto conta per te ridere, scherzare e non prendersi troppo sul serio?",a:["Moltissimo: alleggerisce e avvicina","È bello, ma dipende dal momento","Preferisco un'atmosfera sempre intensa","Mi preoccupa che rovini il momento"]},
+{c:"Desiderio",q:"Quanto senti che il tuo desiderio viene ascoltato nella relazione?",a:["Mi sento ascoltato e rispettato","In generale sì, con qualche difficoltà","Non sempre: faccio fatica a esprimermi","Spesso viene ignorato o minimizzato"]},
+{c:"Curiosità",q:"Per te sperimentare significa soprattutto…",a:["Conoscersi e scoprire insieme, senza obblighi","Cambiare atmosfera ogni tanto","Cercare esperienze sempre più intense","Non è qualcosa che mi interessa"]},
+{c:"Comunicazione",q:"Se c'è un momento imbarazzante o qualcosa non funziona, cosa fai?",a:["Ne parliamo o ci ridiamo su, senza colpe","Cerco di sdrammatizzare","Mi chiudo e cambio argomento","Mi sento inadeguato o penso di aver fallito"]},
+{c:"Fiducia",q:"Quanto ti senti rispettato quando esprimi un limite?",a:["Sempre: il mio no viene accolto","Quasi sempre","A volte devo ripeterlo","Mi capita di subire insistenza o pressioni"]},
+{c:"Iniziativa",q:"Quanto ti piace sorprendere il partner con gesti sensuali o romantici?",a:["Molto, se so che sono graditi","Ogni tanto, senza forzature","Non è il mio modo di esprimermi","Mi piacerebbe, ma non so da dove iniziare"]},
+{c:"Complicità",q:"Quanto riuscite a ritagliarvi tempo e attenzione senza distrazioni?",a:["Con intenzione e regolarità","Quando riusciamo","Raramente, la routine prende il sopravvento","Quasi mai: è una cosa che manca"]},
+{c:"Confini e consenso",q:"Come vivi l'idea di negoziare insieme limiti e curiosità prima di provare qualcosa?",a:["È un segno di fiducia e complicità","È utile, anche se un po' imbarazzante","Preferisco decidere sul momento","Mi sembra tolga spontaneità"]},
+{c:"Desiderio",q:"Quanto pesa l'atmosfera — parole, musica, contesto, tempo — nel tuo desiderio?",a:["Molto: contribuisce a creare connessione","Abbastanza","Poco: conta soprattutto l'attrazione","Non saprei, non ci faccio caso"]},
+{c:"Comunicazione",q:"Se una differenza di desiderio diventa ricorrente, come la affronti?",a:["Con una conversazione onesta, senza cercare colpe","Provo ad affrontarla, anche se è difficile","Aspetto che passi da sola","La vivo come un rifiuto personale o un dovere"]},
+{c:"Curiosità",q:"Quanto riesci a distinguere tra una fantasia e qualcosa che vuoi davvero vivere?",a:["Facilmente: posso fantasticare senza voler agire","Abbastanza, dipende dal tema","A volte faccio confusione","Non ne ho mai parlato con nessuno"]},
+{c:"Fiducia",q:"Dopo un disaccordo, quanto è facile ritrovare vicinanza senza sentirsi obbligati?",a:["Molto: rispettiamo i tempi di entrambi","Di solito ci riusciamo","Resta tensione per un po'","Uno dei due cede per chiudere la questione"]},
+{c:"Complicità",q:"Se dovessi scegliere una priorità per un'intimità appagante, quale sarebbe?",a:["Sentirmi visto, ascoltato e libero","Condivisione di desideri e attrazione","Spontaneità e gioco","Sicurezza, calma e tenerezza"]}
+];
+const cats=["Comunicazione","Desiderio","Curiosità","Fiducia","Iniziativa","Confini e consenso","Complicità"];
+const advice={
+"Comunicazione":["Parlatevi con naturalezza: anche una domanda semplice come “ti è piaciuto?” può aprire uno spazio nuovo.","Provate a nominare una preferenza alla volta, senza aspettare il momento perfetto.","Partite da frasi in prima persona: “mi piacerebbe…” o “mi sento…” sono meno accusatorie delle supposizioni.","Non dovete indovinare i pensieri dell'altro. Un dialogo rispettoso è più utile del silenzio."],
+"Desiderio":["Il desiderio sembra avere spazio e ascolto. Continuate a parlarne senza trasformarlo in una prestazione.","Confrontatevi sui momenti e sui modi in cui vi sentite più vicini: il desiderio può cambiare nel tempo.","Provate a distinguere il bisogno di contatto dal bisogno di sesso: entrambi meritano ascolto.","Nessuno deve sesso per dovere. Una conversazione senza pressioni può aiutare a capire cosa manca."],
+"Curiosità":["La curiosità può essere un gioco condiviso: ogni proposta resta facoltativa e reversibile.","Scegliete un tema da esplorare a parole, senza l'obbligo di passare all'azione.","Datevi tempo. Non serve fare qualcosa solo perché è nuovo o perché lo propone il partner.","Non devi condividere tutto: puoi proteggere la tua privacy e parlarne solo quando ti senti pronto."],
+"Fiducia":["La fiducia sembra una base presente. Mantenetela con coerenza e rispetto reciproco.","Condividere piccole insicurezze può rendere più semplice lasciarsi andare.","Provate a dire che cosa vi fa sentire al sicuro, senza giudicare le paure dell'altro.","La sicurezza emotiva viene prima di ogni esperimento: limiti e pressioni meritano attenzione."],
+"Iniziativa":["Un'alternanza spontanea può rendere l'intesa più viva: continuate a chiedervi cosa piace a entrambi.","Parlate di come vi piace ricevere e dare iniziativa: non esiste un ruolo obbligatorio.","Non c'è nulla di sbagliato nel preferire un ruolo più ricettivo o più attivo, se è una scelta libera.","Se l'iniziativa è fonte di ansia, potete parlarne fuori dal momento intimo e senza aspettative."],
+"Confini e consenso":["Ottimo punto di partenza: il consenso chiaro e continuo rende l'esperienza più sicura per tutti.","Rendere espliciti i limiti può sembrare poco spontaneo, ma spesso aumenta la tranquillità.","Allenatevi a chiedere e ascoltare: un sì esitante o ottenuto per pressione non è un sì libero.","Il tuo limite conta sempre. Se qualcuno insiste dopo un no, non è un problema di comunicazione da risolvere cedendo."],
+"Complicità":["Avete spazio per leggerezza e connessione: coltivate quei momenti anche fuori dalla camera da letto.","Piccoli rituali e tempo di qualità possono rafforzare la complicità.","Provate a creare momenti senza aspettative, in cui il contatto non debba necessariamente portare altrove.","Parlate di cosa vi manca nella routine: la vicinanza si può ricostruire con piccoli gesti condivisi."]}
+};
+const levels=[
+{max:24,title:"Intesa da esplorare",desc:"Le risposte suggeriscono che alcuni aspetti dell'intimità sono ancora poco chiari o difficili da comunicare. Non è un voto: può essere un invito a capire meglio cosa desideri e cosa ti fa sentire a tuo agio."},
+{max:49,title:"Complicità in costruzione",desc:"Ci sono basi e curiosità, ma anche aree in cui potreste conoscervi meglio. Piccole conversazioni sincere possono fare più differenza di grandi gesti."},
+{max:74,title:"Buona sintonia",desc:"Sembra esserci una discreta capacità di ascolto e condivisione. Potete rafforzare l'intesa continuando a rispettare tempi, desideri e differenze."},
+{max:100,title:"Intesa consapevole",desc:"Le risposte indicano una buona attenzione a comunicazione, fiducia e libertà reciproca. Non significa perfezione: la sintonia si costruisce e cambia nel tempo."}
+];
+let index=0;const answers=Array(questions.length).fill(null);const $=id=>document.getElementById(id);
+$("begin").addEventListener("click",()=>{$("start").classList.add("hidden");$("quiz").classList.remove("hidden");render()});
+function render(){const q=questions[index];$("category").textContent=q.c;$("qnum").textContent=String(index+1).padStart(2,"0")+" / "+questions.length;$("question").textContent=q.q;$("progressText").textContent="Domanda "+(index+1)+" di "+questions.length;const pct=Math.round(index/questions.length*100);$("progressPct").textContent=pct+"%";$("progress").style.width=pct+"%";$("answers").innerHTML="";
+q.a.forEach((label,i)=>{const l=document.createElement("label");l.className="answer";const input=document.createElement("input");input.type="radio";input.name="answer";input.value=i;input.checked=answers[index]===i;const span=document.createElement("span");span.textContent=label;l.append(input,span);input.addEventListener("change",()=>{answers[index]=i;$("next").disabled=false});$("answers").append(l)});
+$("back").disabled=index===0;$("next").disabled=answers[index]===null;$("next").textContent=index===questions.length-1?"Scopri il risultato":"Avanti"}
+$("back").addEventListener("click",()=>{if(index>0){index--;render()}});
+$("next").addEventListener("click",()=>{if(answers[index]===null)return;if(index<questions.length-1){index++;render()}else showResult()});
+function showResult(){$("quiz").classList.add("hidden");$("result").classList.remove("hidden");$("reflection").classList.remove("hidden");const total=answers.reduce((s,v)=>s+v,0);const score=Math.round(total/(questions.length*3)*100);const level=levels.find(x=>score<=x.max)||levels[3];const sums=Object.fromEntries(cats.map(c=>[c,{sum:0,n:0}]));questions.forEach((q,i)=>{sums[q.c].sum+=answers[i];sums[q.c].n++});const ranked=cats.map(c=>({c,p:Math.round(sums[c].sum/(sums[c].n*3)*100)})).sort((a,b)=>b.p-a.p);
+$("result").innerHTML='<div class="eyebrow">Il tuo profilo</div><h2>'+level.title+'</h2><div class="score">'+score+'<span style="font-size:1.2rem">/100</span></div><p>'+level.desc+'</p><div class="resultbox"><h3>Le tue aree di intesa</h3><div class="bars">'+ranked.map(x=>'<div class="barrow"><span>'+x.c+'</span><div class="bar"><i style="width:'+x.p+'%"></i></div><b>'+x.p+'</b></div>').join("")+'</div><p class="muted" style="font-size:.83rem;margin-bottom:0">I punteggi descrivono le tue risposte a questo questionario, non la qualità della tua vita sessuale.</p></div><div class="resultbox"><h3>Un suggerimento per te</h3><p>'+advice[ranked[ranked.length-1].c][Math.min(3,Math.floor((100-ranked[ranked.length-1].p)/25))]+'</p></div><div class="resultbox"><h3>Un punto di forza da coltivare</h3><p>'+advice[ranked[0].c][Math.min(3,Math.floor((100-ranked[0].p)/25))]+'</p></div><div class="actions"><button class="btn secondary" id="restart">Rifai il test</button><button class="btn primary" id="print">Stampa / salva PDF</button></div>';
+$("restart").addEventListener("click",()=>{answers.fill(null);index=0;$("result").classList.add("hidden");$("reflection").classList.add("hidden");$("quiz").classList.remove("hidden");render();window.scrollTo({top:0,behavior:"smooth"})});$("print").addEventListener("click",()=>window.print());window.scrollTo({top:0,behavior:"smooth"})}
+</script></body></html>
